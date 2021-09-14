@@ -1,17 +1,92 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
+import 'inter-ui';
+import '@reach/dialog/styles.css';
+// import 'polyfills';
+import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
+import { isMobile } from 'react-device-detect';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactGA from 'react-ga';
+import { Provider } from 'react-redux';
+import { HashRouter } from 'react-router-dom';
+// import Blocklist from './components/Blocklist';
+import getLibrary from 'utils/getLibrary';
+import store from 'state/index';
+import { NetworkContextName } from './constants/misc';
+import { LanguageProvider } from './i18n';
+import App from './pages/App';
+// import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+// import ApplicationUpdater from './state/application/updater';
+// import ListsUpdater from './state/lists/updater';
+// import MulticallUpdater from './state/multicall/updater';
+// import LogsUpdater from './state/logs/updater';
+// import TransactionUpdater from './state/transactions/updater';
+// import UserUpdater from './state/user/updater';
+import ThemeProvider, { ThemedGlobalStyle } from './theme/index';
+import RadialGradientByChainUpdater from './theme/RadialGradientByChainUpdater';
+
+const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
+
+if (window.ethereum) {
+  window.ethereum.autoRefreshOnNetworkChange = false;
+}
+
+const GOOGLE_ANALYTICS_ID: string | undefined = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
+if (typeof GOOGLE_ANALYTICS_ID === 'string') {
+  ReactGA.initialize(GOOGLE_ANALYTICS_ID, {
+    gaOptions: {
+      storage: 'none',
+      storeGac: false,
+    },
+  });
+  ReactGA.set({
+    anonymizeIp: true,
+    customBrowserType: !isMobile
+      ? 'desktop'
+      : 'web3' in window || 'ethereum' in window
+      ? 'mobileWeb3'
+      : 'mobileRegular',
+  });
+} else {
+  ReactGA.initialize('test', { testMode: true, debug: true });
+}
+
+function Updaters() {
+  return (
+    <>
+      <RadialGradientByChainUpdater />
+      {/* <ListsUpdater />
+            <UserUpdater />
+            <ApplicationUpdater />
+            <TransactionUpdater />
+            <MulticallUpdater />
+            <LogsUpdater /> */}
+    </>
+  );
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <StrictMode>
+    <Provider store={store}>
+      <HashRouter>
+        <LanguageProvider>
+          <Web3ReactProvider getLibrary={getLibrary}>
+            <Web3ProviderNetwork getLibrary={getLibrary}>
+              {/* <Blocklist> */}
+              <Updaters />
+              <ThemeProvider>
+                <ThemedGlobalStyle />
+                <App />
+              </ThemeProvider>
+              {/* </Blocklist> */}
+            </Web3ProviderNetwork>
+          </Web3ReactProvider>
+        </LanguageProvider>
+      </HashRouter>
+    </Provider>
+  </StrictMode>,
   document.getElementById('root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// if (process.env.REACT_APP_SERVICE_WORKER !== 'false') {
+//   serviceWorkerRegistration.register()
+// }
