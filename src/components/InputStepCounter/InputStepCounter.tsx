@@ -1,13 +1,13 @@
-import { useState, useCallback, useEffect, ReactNode } from 'react'
-import { OutlineCard } from 'components/Card'
-import { Input as NumericalInput } from '../NumericalInput'
-import styled, { keyframes } from 'styled-components/macro'
-import { TYPE } from 'theme'
-import { AutoColumn } from 'components/Column'
-import { ButtonGray } from 'components/Button'
-import { FeeAmount } from '@uniswap/v3-sdk'
-import { Trans } from '@lingui/macro'
-import { Plus, Minus } from 'react-feather'
+import { useState, useCallback, useEffect, ReactNode } from 'react';
+import { OutlineCard } from 'components/Card';
+import { Input as NumericalInput } from '../NumericalInput';
+import styled, { keyframes } from 'styled-components/macro';
+import { TYPE } from 'theme';
+import { AutoColumn } from 'components/Column';
+import { ButtonGray } from 'components/Button';
+import { FeeAmount } from '@uniswap/v3-sdk';
+import { Trans } from '@lingui/macro';
+import { Plus, Minus } from 'react-feather';
 
 const pulse = (color: string) => keyframes`
   0% {
@@ -21,24 +21,24 @@ const pulse = (color: string) => keyframes`
   100% {
     box-shadow: 0 0 0 0 ${color};
   }
-`
+`;
 
 const InputRow = styled.div`
   display: grid;
 
   grid-template-columns: 30px 1fr 30px;
-`
+`;
 
 const SmallButton = styled(ButtonGray)`
   border-radius: 8px;
   padding: 4px;
-`
+`;
 
 const FocusedOutlineCard = styled(OutlineCard)<{ active?: boolean; pulsing?: boolean }>`
   border-color: ${({ active, theme }) => active && theme.blue1};
   padding: 12px;
   animation: ${({ pulsing, theme }) => pulsing && pulse(theme.blue1)} 0.8s linear;
-`
+`;
 
 const StyledInput = styled(NumericalInput)<{ usePercent?: boolean }>`
   background-color: transparent;
@@ -54,32 +54,32 @@ const StyledInput = styled(NumericalInput)<{ usePercent?: boolean }>`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 12px;
   `};
-`
+`;
 
 const InputTitle = styled(TYPE.small)`
   color: ${({ theme }) => theme.text2};
   font-size: 12px;
   font-weight: 500;
-`
+`;
 
 const ButtonLabel = styled(TYPE.white)<{ disabled: boolean }>`
   color: ${({ theme, disabled }) => (disabled ? theme.text2 : theme.text1)} !important;
-`
+`;
 
 interface StepCounterProps {
-  value: string
-  onUserInput: (value: string) => void
-  decrement: () => string
-  increment: () => string
-  decrementDisabled?: boolean
-  incrementDisabled?: boolean
-  feeAmount?: FeeAmount
-  label?: string
-  width?: string
-  locked?: boolean // disable input
-  title: ReactNode
-  tokenA: string | undefined
-  tokenB: string | undefined
+  value: string;
+  onUserInput: (value: string) => void;
+  decrement: () => string;
+  increment: () => string;
+  decrementDisabled?: boolean;
+  incrementDisabled?: boolean;
+  feeAmount?: FeeAmount;
+  label?: string;
+  width?: string;
+  locked?: boolean; // disable input
+  title: ReactNode;
+  tokenA: string | undefined;
+  tokenB: string | undefined;
 }
 
 const StepCounter = ({
@@ -96,48 +96,48 @@ const StepCounter = ({
   tokenB,
 }: StepCounterProps) => {
   //  for focus state, styled components doesnt let you select input parent container
-  const [active, setActive] = useState(false)
+  const [active, setActive] = useState(false);
 
   // let user type value and only update parent value on blur
-  const [localValue, setLocalValue] = useState('')
-  const [useLocalValue, setUseLocalValue] = useState(false)
+  const [localValue, setLocalValue] = useState('');
+  const [useLocalValue, setUseLocalValue] = useState(false);
 
   // animation if parent value updates local value
-  const [pulsing, setPulsing] = useState<boolean>(false)
+  const [pulsing, setPulsing] = useState<boolean>(false);
 
   const handleOnFocus = () => {
-    setUseLocalValue(true)
-    setActive(true)
-  }
+    setUseLocalValue(true);
+    setActive(true);
+  };
 
   const handleOnBlur = useCallback(() => {
-    setUseLocalValue(false)
-    setActive(false)
-    onUserInput(localValue) // trigger update on parent value
-  }, [localValue, onUserInput])
+    setUseLocalValue(false);
+    setActive(false);
+    onUserInput(localValue); // trigger update on parent value
+  }, [localValue, onUserInput]);
 
   // for button clicks
   const handleDecrement = useCallback(() => {
-    setUseLocalValue(false)
-    onUserInput(decrement())
-  }, [decrement, onUserInput])
+    setUseLocalValue(false);
+    onUserInput(decrement());
+  }, [decrement, onUserInput]);
 
   const handleIncrement = useCallback(() => {
-    setUseLocalValue(false)
-    onUserInput(increment())
-  }, [increment, onUserInput])
+    setUseLocalValue(false);
+    onUserInput(increment());
+  }, [increment, onUserInput]);
 
   useEffect(() => {
     if (localValue !== value && !useLocalValue) {
       setTimeout(() => {
-        setLocalValue(value) // reset local value to match parent
-        setPulsing(true) // trigger animation
+        setLocalValue(value); // reset local value to match parent
+        setPulsing(true); // trigger animation
         setTimeout(function () {
-          setPulsing(false)
-        }, 1800)
-      }, 0)
+          setPulsing(false);
+        }, 1800);
+      }, 0);
     }
-  }, [localValue, useLocalValue, value])
+  }, [localValue, useLocalValue, value]);
 
   return (
     <FocusedOutlineCard pulsing={pulsing} active={active} onFocus={handleOnFocus} onBlur={handleOnBlur} width={width}>
@@ -161,7 +161,7 @@ const StepCounter = ({
             fontSize="20px"
             disabled={locked}
             onUserInput={(val) => {
-              setLocalValue(val)
+              setLocalValue(val);
             }}
           />
 
@@ -181,7 +181,7 @@ const StepCounter = ({
         </InputTitle>
       </AutoColumn>
     </FocusedOutlineCard>
-  )
-}
+  );
+};
 
-export default StepCounter
+export default StepCounter;

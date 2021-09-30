@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { FeeAmount } from '@uniswap/v3-sdk'
-import { Currency } from '@uniswap/sdk-core'
-import { Trans } from '@lingui/macro'
-import { AutoColumn } from 'components/Column'
-import { DynamicSection } from 'pages/AddLiquidity/styled'
-import { TYPE } from 'theme'
-import { RowBetween } from 'components/Row'
-import { ButtonGray, ButtonRadioChecked } from 'components/Button'
-import styled, { keyframes } from 'styled-components/macro'
-import Badge from 'components/Badge'
-import Card from 'components/Card'
-import usePrevious from 'hooks/usePrevious'
-import { useFeeTierDistribution } from 'hooks/useFeeTierDistribution'
-import ReactGA from 'react-ga'
-import { Box } from 'rebass'
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FeeAmount } from '@uniswap/v3-sdk';
+import { Currency } from '@uniswap/sdk-core';
+import { Trans } from '@lingui/macro';
+import { AutoColumn } from 'components/Column';
+import { DynamicSection } from 'pages/AddLiquidity/styled';
+import { TYPE } from 'theme';
+import { RowBetween } from 'components/Row';
+import { ButtonGray, ButtonRadioChecked } from 'components/Button';
+import styled, { keyframes } from 'styled-components/macro';
+import Badge from 'components/Badge';
+import Card from 'components/Card';
+import usePrevious from 'hooks/usePrevious';
+import { useFeeTierDistribution } from 'hooks/useFeeTierDistribution';
+import ReactGA from 'react-ga';
+import { Box } from 'rebass';
 
 const pulse = (color: string) => keyframes`
   0% {
@@ -27,7 +27,7 @@ const pulse = (color: string) => keyframes`
   100% {
     box-shadow: 0 0 0 0 ${color};
   }
-`
+`;
 
 const ResponsiveText = styled(TYPE.label)`
   line-height: 16px;
@@ -36,12 +36,12 @@ const ResponsiveText = styled(TYPE.label)`
     font-size: 12px;
     line-height: 12px;
   `};
-`
+`;
 
 const FocusedOutlineCard = styled(Card)<{ pulsing: boolean }>`
   border: 1px solid ${({ theme }) => theme.bg2};
   animation: ${({ pulsing, theme }) => pulsing && pulse(theme.primary1)} 0.6s linear;
-`
+`;
 
 const FeeAmountLabel = {
   [FeeAmount.LOW]: {
@@ -56,7 +56,7 @@ const FeeAmountLabel = {
     label: '1',
     description: <Trans>Best for exotic pairs.</Trans>,
   },
-}
+};
 
 const FeeTierPercentageBadge = ({ percentage }: { percentage: number | undefined }) => {
   return (
@@ -65,8 +65,8 @@ const FeeTierPercentageBadge = ({ percentage }: { percentage: number | undefined
         {percentage !== undefined ? <Trans>{percentage?.toFixed(0)}% select</Trans> : <Trans>Not created</Trans>}
       </TYPE.label>
     </Badge>
-  )
-}
+  );
+};
 
 export default function FeeSelector({
   disabled = false,
@@ -75,62 +75,62 @@ export default function FeeSelector({
   currencyA,
   currencyB,
 }: {
-  disabled?: boolean
-  feeAmount?: FeeAmount
-  handleFeePoolSelect: (feeAmount: FeeAmount) => void
-  currencyA?: Currency | undefined
-  currencyB?: Currency | undefined
+  disabled?: boolean;
+  feeAmount?: FeeAmount;
+  handleFeePoolSelect: (feeAmount: FeeAmount) => void;
+  currencyA?: Currency | undefined;
+  currencyB?: Currency | undefined;
 }) {
-  const { isLoading, isError, largestUsageFeeTier, distributions } = useFeeTierDistribution(currencyA, currencyB)
+  const { isLoading, isError, largestUsageFeeTier, distributions } = useFeeTierDistribution(currencyA, currencyB);
 
-  const [showOptions, setShowOptions] = useState(false)
-  const [pulsing, setPulsing] = useState(false)
+  const [showOptions, setShowOptions] = useState(false);
+  const [pulsing, setPulsing] = useState(false);
 
-  const previousFeeAmount = usePrevious(feeAmount)
+  const previousFeeAmount = usePrevious(feeAmount);
 
-  const recommended = useRef(false)
+  const recommended = useRef(false);
 
   const handleFeePoolSelectWithEvent = useCallback(
     (fee) => {
       ReactGA.event({
         category: 'FeePoolSelect',
         action: 'Manual',
-      })
-      handleFeePoolSelect(fee)
+      });
+      handleFeePoolSelect(fee);
     },
     [handleFeePoolSelect]
-  )
+  );
 
   useEffect(() => {
     if (feeAmount || isLoading || isError) {
-      return
+      return;
     }
 
     if (!largestUsageFeeTier) {
       // cannot recommend, open options
-      setShowOptions(true)
+      setShowOptions(true);
     } else {
-      setShowOptions(false)
+      setShowOptions(false);
 
-      recommended.current = true
+      recommended.current = true;
       ReactGA.event({
         category: 'FeePoolSelect',
         action: ' Recommended',
-      })
+      });
 
-      handleFeePoolSelect(largestUsageFeeTier)
+      handleFeePoolSelect(largestUsageFeeTier);
     }
-  }, [feeAmount, isLoading, isError, largestUsageFeeTier, handleFeePoolSelect])
+  }, [feeAmount, isLoading, isError, largestUsageFeeTier, handleFeePoolSelect]);
 
   useEffect(() => {
-    setShowOptions(isError)
-  }, [isError])
+    setShowOptions(isError);
+  }, [isError]);
 
   useEffect(() => {
     if (feeAmount && previousFeeAmount !== feeAmount) {
-      setPulsing(true)
+      setPulsing(true);
     }
-  }, [previousFeeAmount, feeAmount])
+  }, [previousFeeAmount, feeAmount]);
 
   return (
     <AutoColumn gap="16px">
@@ -225,5 +225,5 @@ export default function FeeSelector({
         )}
       </DynamicSection>
     </AutoColumn>
-  )
+  );
 }

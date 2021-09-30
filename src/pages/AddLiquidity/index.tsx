@@ -92,6 +92,7 @@ export default function AddLiquidity({
 
   // check for existing position if tokenId in url
   const { position: existingPositionDetails, loading: positionLoading } = useV3PositionFromTokenId(
+    //TODO podmienić zwracanie pozycji
     tokenId ? BigNumber.from(tokenId) : undefined
   );
   const hasExistingPosition = !!existingPositionDetails && !positionLoading;

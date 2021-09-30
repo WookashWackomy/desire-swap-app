@@ -10,7 +10,7 @@ import { TYPE, CloseIcon } from '../../theme';
 import { ButtonConfirmed, ButtonError } from '../Button';
 import ProgressCircles from '../ProgressSteps';
 import CurrencyInputPanel from '../CurrencyInputPanel';
-import { Pair } from '@uniswap/v2-sdk';
+import { Pair } from 'v2-sdk/src/index';
 import { Token, CurrencyAmount } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from '../../hooks/web3';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';

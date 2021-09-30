@@ -173,18 +173,18 @@ export default function WalletModal({
       action: 'Change Wallet',
       label: name,
     });
-    setPendingWallet(connector); // set wallet for pending view
+    setPendingWallet(c); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
 
     // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
-    if (connector instanceof WalletConnectConnector && connector.walletConnectProvider?.wc?.uri) {
-      connector.walletConnectProvider = undefined;
+    if (c instanceof WalletConnectConnector && (connector as WalletConnectConnector).walletConnectProvider?.wc?.uri) {
+      c.walletConnectProvider = undefined;
     }
 
-    connector &&
-      activate(connector, undefined, true).catch((e) => {
+    c &&
+      activate(c, undefined, true).catch((e) => {
         if (e instanceof UnsupportedChainIdError) {
-          activate(connector); // a little janky...can't use setError because the connector isn't set
+          activate(c); // a little janky...can't use setError because the connector isn't set
         } else {
           setPendingError(true);
         }

@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import React from 'react';
-import { Pair } from '@uniswap/v2-sdk';
+import { Pair } from 'v2-sdk/src/index';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { useState, useCallback, ReactNode } from 'react';
 import styled from 'styled-components/macro';

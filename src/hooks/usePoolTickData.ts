@@ -1,26 +1,26 @@
-import { Currency } from '@uniswap/sdk-core'
-import { FeeAmount, Pool, tickToPrice, TICK_SPACINGS } from '@uniswap/v3-sdk'
-import JSBI from 'jsbi'
-import { PoolState, usePool } from './usePools'
-import { useMemo } from 'react'
-import computeSurroundingTicks from 'utils/computeSurroundingTicks'
-import { useAllV3TicksQuery } from 'state/data/enhanced'
-import { skipToken } from '@reduxjs/toolkit/query/react'
-import ms from 'ms.macro'
-import { AllV3TicksQuery } from 'state/data/generated'
+import { Currency } from '@uniswap/sdk-core';
+import { FeeAmount, Pool, tickToPrice, TICK_SPACINGS } from '@uniswap/v3-sdk';
+import JSBI from 'jsbi';
+import { PoolState, usePool } from './usePools';
+import { useMemo } from 'react';
+import computeSurroundingTicks from 'utils/computeSurroundingTicks';
+import { useAllV3TicksQuery } from 'state/data/enhanced';
+import { skipToken } from '@reduxjs/toolkit/query/react';
+import ms from 'ms.macro';
+import { AllV3TicksQuery } from 'state/data/generated';
 
-const PRICE_FIXED_DIGITS = 8
+const PRICE_FIXED_DIGITS = 8;
 
 // Tick with fields parsed to JSBIs, and active liquidity computed.
 export interface TickProcessed {
-  tickIdx: number
-  liquidityActive: JSBI
-  liquidityNet: JSBI
-  price0: string
+  tickIdx: number;
+  liquidityActive: JSBI;
+  liquidityNet: JSBI;
+  price0: string;
 }
 
 const getActiveTick = (tickCurrent: number | undefined, feeAmount: FeeAmount | undefined) =>
-  tickCurrent && feeAmount ? Math.floor(tickCurrent / TICK_SPACINGS[feeAmount]) * TICK_SPACINGS[feeAmount] : undefined
+  tickCurrent && feeAmount ? Math.floor(tickCurrent / TICK_SPACINGS[feeAmount]) * TICK_SPACINGS[feeAmount] : undefined;
 
 // Fetches all ticks for a given pool
 export function useAllV3Ticks(
@@ -29,7 +29,9 @@ export function useAllV3Ticks(
   feeAmount: FeeAmount | undefined
 ) {
   const poolAddress =
-    currencyA && currencyB && feeAmount ? Pool.getAddress(currencyA?.wrapped, currencyB?.wrapped, feeAmount) : undefined
+    currencyA && currencyB && feeAmount
+      ? Pool.getAddress(currencyA?.wrapped, currencyB?.wrapped, feeAmount)
+      : undefined;
 
   //TODO(judo): determine if pagination is necessary for this query
   const { isLoading, isError, error, isUninitialized, data } = useAllV3TicksQuery(
@@ -37,7 +39,7 @@ export function useAllV3Ticks(
     {
       pollingInterval: ms`2m`,
     }
-  )
+  );
 
   return {
     isLoading,
@@ -45,7 +47,7 @@ export function useAllV3Ticks(
     isError,
     error,
     ticks: data?.ticks as AllV3TicksQuery['ticks'],
-  }
+  };
 }
 
 export function usePoolActiveLiquidity(
@@ -53,19 +55,19 @@ export function usePoolActiveLiquidity(
   currencyB: Currency | undefined,
   feeAmount: FeeAmount | undefined
 ): {
-  isLoading: boolean
-  isUninitialized: boolean
-  isError: boolean
-  error: any
-  activeTick: number | undefined
-  data: TickProcessed[] | undefined
+  isLoading: boolean;
+  isUninitialized: boolean;
+  isError: boolean;
+  error: any;
+  activeTick: number | undefined;
+  data: TickProcessed[] | undefined;
 } {
-  const pool = usePool(currencyA, currencyB, feeAmount)
+  const pool = usePool(currencyA, currencyB, feeAmount);
 
   // Find nearest valid tick for pool in case tick is not initialized.
-  const activeTick = useMemo(() => getActiveTick(pool[1]?.tickCurrent, feeAmount), [pool, feeAmount])
+  const activeTick = useMemo(() => getActiveTick(pool[1]?.tickCurrent, feeAmount), [pool, feeAmount]);
 
-  const { isLoading, isUninitialized, isError, error, ticks } = useAllV3Ticks(currencyA, currencyB, feeAmount)
+  const { isLoading, isUninitialized, isError, error, ticks } = useAllV3Ticks(currencyA, currencyB, feeAmount);
 
   return useMemo(() => {
     if (
@@ -85,20 +87,20 @@ export function usePoolActiveLiquidity(
         error,
         activeTick,
         data: undefined,
-      }
+      };
     }
 
-    const token0 = currencyA?.wrapped
-    const token1 = currencyB?.wrapped
+    const token0 = currencyA?.wrapped;
+    const token1 = currencyB?.wrapped;
 
     // find where the active tick would be to partition the array
     // if the active tick is initialized, the pivot will be an element
     // if not, take the previous tick as pivot
-    const pivot = ticks.findIndex(({ tickIdx }) => tickIdx > activeTick) - 1
+    const pivot = ticks.findIndex(({ tickIdx }) => tickIdx > activeTick) - 1;
 
     if (pivot < 0) {
       // consider setting a local error
-      console.error('TickData pivot not found')
+      console.error('TickData pivot not found');
       return {
         isLoading,
         isUninitialized,
@@ -106,7 +108,7 @@ export function usePoolActiveLiquidity(
         error,
         activeTick,
         data: undefined,
-      }
+      };
     }
 
     const activeTickProcessed: TickProcessed = {
@@ -115,13 +117,13 @@ export function usePoolActiveLiquidity(
       liquidityNet:
         Number(ticks[pivot].tickIdx) === activeTick ? JSBI.BigInt(ticks[pivot].liquidityNet) : JSBI.BigInt(0),
       price0: tickToPrice(token0, token1, activeTick).toFixed(PRICE_FIXED_DIGITS),
-    }
+    };
 
-    const subsequentTicks = computeSurroundingTicks(token0, token1, activeTickProcessed, ticks, pivot, true)
+    const subsequentTicks = computeSurroundingTicks(token0, token1, activeTickProcessed, ticks, pivot, true);
 
-    const previousTicks = computeSurroundingTicks(token0, token1, activeTickProcessed, ticks, pivot, false)
+    const previousTicks = computeSurroundingTicks(token0, token1, activeTickProcessed, ticks, pivot, false);
 
-    const ticksProcessed = previousTicks.concat(activeTickProcessed).concat(subsequentTicks)
+    const ticksProcessed = previousTicks.concat(activeTickProcessed).concat(subsequentTicks);
 
     return {
       isLoading,
@@ -130,6 +132,6 @@ export function usePoolActiveLiquidity(
       error,
       activeTick,
       data: ticksProcessed,
-    }
-  }, [currencyA, currencyB, activeTick, pool, ticks, isLoading, isUninitialized, isError, error])
+    };
+  }, [currencyA, currencyB, activeTick, pool, ticks, isLoading, isUninitialized, isError, error]);
 }

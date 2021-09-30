@@ -1,21 +1,21 @@
-import { useState, useCallback, useContext, ReactNode } from 'react'
-import { Position } from '@uniswap/v3-sdk'
-import { LightCard } from 'components/Card'
-import { AutoColumn } from 'components/Column'
-import { TYPE } from 'theme'
-import { RowBetween, RowFixed } from 'components/Row'
-import CurrencyLogo from 'components/CurrencyLogo'
-import { unwrappedToken } from 'utils/unwrappedToken'
-import { Break } from 'components/earn/styled'
-import { Trans } from '@lingui/macro'
-import { Currency } from '@uniswap/sdk-core'
-import RateToggle from 'components/RateToggle'
-import DoubleCurrencyLogo from 'components/DoubleLogo'
-import RangeBadge from 'components/Badge/RangeBadge'
-import { ThemeContext } from 'styled-components/macro'
-import JSBI from 'jsbi'
-import { Bound } from 'state/mint/v3/actions'
-import { formatTickPrice } from 'utils/formatTickPrice'
+import { useState, useCallback, useContext, ReactNode } from 'react';
+import { Position } from '@uniswap/v3-sdk';
+import { LightCard } from 'components/Card';
+import { AutoColumn } from 'components/Column';
+import { TYPE } from 'theme';
+import { RowBetween, RowFixed } from 'components/Row';
+import CurrencyLogo from 'components/CurrencyLogo';
+import { unwrappedToken } from 'utils/unwrappedToken';
+import { Break } from 'components/earn/styled';
+import { Trans } from '@lingui/macro';
+import { Currency } from '@uniswap/sdk-core';
+import RateToggle from 'components/RateToggle';
+import DoubleCurrencyLogo from 'components/DoubleLogo';
+import RangeBadge from 'components/Badge/RangeBadge';
+import { ThemeContext } from 'styled-components/macro';
+import JSBI from 'jsbi';
+import { Bound } from 'state/mint/v3/actions';
+import { formatTickPrice } from 'utils/formatTickPrice';
 
 export const PositionPreview = ({
   position,
@@ -24,16 +24,16 @@ export const PositionPreview = ({
   baseCurrencyDefault,
   ticksAtLimit,
 }: {
-  position: Position
-  title?: ReactNode
-  inRange: boolean
-  baseCurrencyDefault?: Currency | undefined
-  ticksAtLimit: { [bound: string]: boolean | undefined }
+  position: Position;
+  title?: ReactNode;
+  inRange: boolean;
+  baseCurrencyDefault?: Currency | undefined;
+  ticksAtLimit: { [bound: string]: boolean | undefined };
 }) => {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
-  const currency0 = unwrappedToken(position.pool.token0)
-  const currency1 = unwrappedToken(position.pool.token1)
+  const currency0 = unwrappedToken(position.pool.token0);
+  const currency1 = unwrappedToken(position.pool.token1);
 
   // track which currency should be base
   const [baseCurrency, setBaseCurrency] = useState(
@@ -44,21 +44,21 @@ export const PositionPreview = ({
         ? currency1
         : currency0
       : currency0
-  )
+  );
 
-  const sorted = baseCurrency === currency0
-  const quoteCurrency = sorted ? currency1 : currency0
+  const sorted = baseCurrency === currency0;
+  const quoteCurrency = sorted ? currency1 : currency0;
 
-  const price = sorted ? position.pool.priceOf(position.pool.token0) : position.pool.priceOf(position.pool.token1)
+  const price = sorted ? position.pool.priceOf(position.pool.token0) : position.pool.priceOf(position.pool.token1);
 
-  const priceLower = sorted ? position.token0PriceLower : position.token0PriceUpper.invert()
-  const priceUpper = sorted ? position.token0PriceUpper : position.token0PriceLower.invert()
+  const priceLower = sorted ? position.token0PriceLower : position.token0PriceUpper.invert();
+  const priceUpper = sorted ? position.token0PriceUpper : position.token0PriceLower.invert();
 
   const handleRateChange = useCallback(() => {
-    setBaseCurrency(quoteCurrency)
-  }, [quoteCurrency])
+    setBaseCurrency(quoteCurrency);
+  }, [quoteCurrency]);
 
-  const removed = position?.liquidity && JSBI.equal(position?.liquidity, JSBI.BigInt(0))
+  const removed = position?.liquidity && JSBI.equal(position?.liquidity, JSBI.BigInt(0));
 
   return (
     <AutoColumn gap="md" style={{ marginTop: '0.5rem' }}>
@@ -177,5 +177,5 @@ export const PositionPreview = ({
         </LightCard>
       </AutoColumn>
     </AutoColumn>
-  )
-}
+  );
+};

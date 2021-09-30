@@ -1,32 +1,32 @@
-import { Trans } from '@lingui/macro'
-import { Percent, Currency, TradeType } from '@uniswap/sdk-core'
-import { Trade as V2Trade } from '@uniswap/v2-sdk'
-import { Trade as V3Trade } from '@uniswap/v3-sdk'
-import { useContext, useMemo } from 'react'
-import { ThemeContext } from 'styled-components/macro'
-import { TYPE } from '../../theme'
-import { computeRealizedLPFeePercent } from '../../utils/prices'
-import { AutoColumn } from '../Column'
-import { RowBetween, RowFixed } from '../Row'
-import FormattedPriceImpact from './FormattedPriceImpact'
-import SwapRoute from './SwapRoute'
+import { Trans } from '@lingui/macro';
+import { Percent, Currency, TradeType } from '@uniswap/sdk-core';
+import { Trade as V2Trade } from 'v2-sdk/src/index';
+import { Trade as V3Trade } from '@uniswap/v3-sdk';
+import { useContext, useMemo } from 'react';
+import { ThemeContext } from 'styled-components/macro';
+import { TYPE } from '../../theme';
+import { computeRealizedLPFeePercent } from '../../utils/prices';
+import { AutoColumn } from '../Column';
+import { RowBetween, RowFixed } from '../Row';
+import FormattedPriceImpact from './FormattedPriceImpact';
+import SwapRoute from './SwapRoute';
 
 interface AdvancedSwapDetailsProps {
-  trade?: V2Trade<Currency, Currency, TradeType> | V3Trade<Currency, Currency, TradeType>
-  allowedSlippage: Percent
+  trade?: V2Trade<Currency, Currency, TradeType> | V3Trade<Currency, Currency, TradeType>;
+  allowedSlippage: Percent;
 }
 
 export function AdvancedSwapDetails({ trade, allowedSlippage }: AdvancedSwapDetailsProps) {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
   const { realizedLPFee, priceImpact } = useMemo(() => {
-    if (!trade) return { realizedLPFee: undefined, priceImpact: undefined }
+    if (!trade) return { realizedLPFee: undefined, priceImpact: undefined };
 
-    const realizedLpFeePercent = computeRealizedLPFeePercent(trade)
-    const realizedLPFee = trade.inputAmount.multiply(realizedLpFeePercent)
-    const priceImpact = trade.priceImpact.subtract(realizedLpFeePercent)
-    return { priceImpact, realizedLPFee }
-  }, [trade])
+    const realizedLpFeePercent = computeRealizedLPFeePercent(trade);
+    const realizedLPFee = trade.inputAmount.multiply(realizedLpFeePercent);
+    const priceImpact = trade.priceImpact.subtract(realizedLpFeePercent);
+    return { priceImpact, realizedLPFee };
+  }, [trade]);
 
   return !trade ? null : (
     <AutoColumn gap="8px">
@@ -87,5 +87,5 @@ export function AdvancedSwapDetails({ trade, allowedSlippage }: AdvancedSwapDeta
         </TYPE.black>
       </RowBetween>
     </AutoColumn>
-  )
+  );
 }

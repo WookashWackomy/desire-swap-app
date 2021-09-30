@@ -1,5 +1,5 @@
-import arbitrumLogoUrl from 'assets/svg/arbitrum_logo.svg'
-import optimismLogoUrl from 'assets/svg/optimism_logo.svg'
+import arbitrumLogoUrl from 'assets/svg/arbitrum_logo.svg';
+import optimismLogoUrl from 'assets/svg/optimism_logo.svg';
 
 export enum SupportedChainId {
   MAINNET = 1,
@@ -7,6 +7,8 @@ export enum SupportedChainId {
   RINKEBY = 4,
   GOERLI = 5,
   KOVAN = 42,
+
+  HARDHAT = 31337,
 
   ARBITRUM_ONE = 42161,
   ARBITRUM_RINKEBY = 421611,
@@ -21,11 +23,13 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.GOERLI,
   SupportedChainId.KOVAN,
 
+  SupportedChainId.HARDHAT,
+
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.ARBITRUM_RINKEBY,
   SupportedChainId.OPTIMISM,
   SupportedChainId.OPTIMISTIC_KOVAN,
-]
+];
 
 export const L1_CHAIN_IDS = [
   SupportedChainId.MAINNET,
@@ -33,34 +37,33 @@ export const L1_CHAIN_IDS = [
   SupportedChainId.RINKEBY,
   SupportedChainId.GOERLI,
   SupportedChainId.KOVAN,
-] as const
+] as const;
 
-export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number]
+export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number];
 
 export const L2_CHAIN_IDS = [
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.ARBITRUM_RINKEBY,
   SupportedChainId.OPTIMISM,
   SupportedChainId.OPTIMISTIC_KOVAN,
-] as const
+] as const;
 
-export type SupportedL2ChainId = typeof L2_CHAIN_IDS[number]
+export type SupportedL2ChainId = typeof L2_CHAIN_IDS[number];
 
 interface L1ChainInfo {
-  readonly docs: string
-  readonly explorer: string
-  readonly infoLink: string
-  readonly label: string
+  readonly docs: string;
+  readonly explorer: string;
+  readonly infoLink: string;
+  readonly label: string;
 }
 export interface L2ChainInfo extends L1ChainInfo {
-  readonly bridge: string
-  readonly logoUrl: string
+  readonly bridge: string;
+  readonly logoUrl: string;
 }
 
 type ChainInfo = { readonly [chainId: number]: L1ChainInfo | L2ChainInfo } & {
-  readonly [chainId in SupportedL2ChainId]: L2ChainInfo
-} &
-  { readonly [chainId in SupportedL1ChainId]: L1ChainInfo }
+  readonly [chainId in SupportedL2ChainId]: L2ChainInfo;
+} & { readonly [chainId in SupportedL1ChainId]: L1ChainInfo };
 
 export const CHAIN_INFO: ChainInfo = {
   [SupportedChainId.ARBITRUM_ONE]: {
@@ -125,4 +128,12 @@ export const CHAIN_INFO: ChainInfo = {
     label: 'Optimistic Kovan',
     logoUrl: optimismLogoUrl,
   },
-}
+  [SupportedChainId.HARDHAT]: {
+    bridge: 'https://http://localhost:8545/',
+    docs: 'https://optimism.io/',
+    explorer: 'https://optimistic.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/optimism',
+    label: 'HARDHAT',
+    logoUrl: optimismLogoUrl,
+  },
+};

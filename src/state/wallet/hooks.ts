@@ -2,8 +2,8 @@
 import { Currency, Token, CurrencyAmount, Ether } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
-//import { Interface } from '@ethersproject/abi'; TODO
 import { SupportedChainId } from 'constants/chains';
+import ERC20ABI from 'abis/erc20.json';
 // eslint-disable-next-line import/no-cycle
 import { useTotalUniEarned } from 'state/stake/hooks';
 import { UNI } from '../../constants/tokens';
@@ -13,6 +13,7 @@ import { useMulticall2Contract } from '../../hooks/useContract';
 import { isAddress } from '../../utils';
 import { useUserUnclaimedAmount } from '../claim/hooks';
 import { useMultipleContractSingleData, useSingleContractMultipleData } from '../multicall/hooks';
+import { Interface } from '@ethersproject/abi';
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
  */
@@ -71,7 +72,7 @@ export function useTokenBalancesWithLoadingIndicator(
   const { chainId } = useActiveWeb3React();
 
   const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [validatedTokens]);
-  const ERC20Interface = {} as any; //const ERC20Interface = new Interface(ERC20ABI) as Erc20Interface;
+  const ERC20Interface = new Interface(ERC20ABI);
   const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20Interface, 'balanceOf', [address], {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     gasRequired: (chainId && TOKEN_BALANCE_GAS_OVERRIDE[chainId]) ?? 100_000,

@@ -1,43 +1,43 @@
-import { useCallback, useMemo, useState } from 'react'
-import { useV3PositionFromTokenId } from 'hooks/useV3Positions'
-import { Redirect, RouteComponentProps } from 'react-router-dom'
-import { WETH9_EXTENDED } from '../../constants/tokens'
-import { calculateGasMargin } from '../../utils/calculateGasMargin'
-import AppBody from '../AppBody'
-import { BigNumber } from '@ethersproject/bignumber'
-import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler'
-import { useBurnV3ActionHandlers, useBurnV3State, useDerivedV3BurnInfo } from 'state/burn/v3/hooks'
-import Slider from 'components/Slider'
-import { AutoRow, RowBetween, RowFixed } from 'components/Row'
-import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
-import { AutoColumn } from 'components/Column'
-import { ButtonConfirmed, ButtonPrimary } from 'components/Button'
-import { LightCard } from 'components/Card'
-import { Text } from 'rebass'
-import CurrencyLogo from 'components/CurrencyLogo'
-import FormattedCurrencyAmount from 'components/FormattedCurrencyAmount'
-import { useV3NFTPositionManagerContract } from 'hooks/useContract'
-import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
-import useTransactionDeadline from 'hooks/useTransactionDeadline'
-import ReactGA from 'react-ga'
-import { useActiveWeb3React } from 'hooks/web3'
-import { TransactionResponse } from '@ethersproject/providers'
-import { useTransactionAdder } from 'state/transactions/hooks'
-import { Percent } from '@uniswap/sdk-core'
-import { TYPE } from 'theme'
-import { Wrapper, SmallMaxButton, ResponsiveHeaderText } from './styled'
-import Loader from 'components/Loader'
-import DoubleCurrencyLogo from 'components/DoubleLogo'
-import { Break } from 'components/earn/styled'
-import { NonfungiblePositionManager } from '@uniswap/v3-sdk'
-import useTheme from 'hooks/useTheme'
-import { AddRemoveTabs } from 'components/NavigationTabs'
-import RangeBadge from 'components/Badge/RangeBadge'
-import Toggle from 'components/Toggle'
-import { t, Trans } from '@lingui/macro'
-import { SupportedChainId } from 'constants/chains'
+import { useCallback, useMemo, useState } from 'react';
+import { useV3PositionFromTokenId } from 'hooks/useV3Positions';
+import { Redirect, RouteComponentProps } from 'react-router-dom';
+import { WETH9_EXTENDED } from '../../constants/tokens';
+import { calculateGasMargin } from '../../utils/calculateGasMargin';
+import AppBody from '../AppBody';
+import { BigNumber } from '@ethersproject/bignumber';
+import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler';
+import { useBurnV3ActionHandlers, useBurnV3State, useDerivedV3BurnInfo } from 'state/burn/v3/hooks';
+import Slider from 'components/Slider';
+import { AutoRow, RowBetween, RowFixed } from 'components/Row';
+import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal';
+import { AutoColumn } from 'components/Column';
+import { ButtonConfirmed, ButtonPrimary } from 'components/Button';
+import { LightCard } from 'components/Card';
+import { Text } from 'rebass';
+import CurrencyLogo from 'components/CurrencyLogo';
+import FormattedCurrencyAmount from 'components/FormattedCurrencyAmount';
+import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
+import useTransactionDeadline from 'hooks/useTransactionDeadline';
+import ReactGA from 'react-ga';
+import { useActiveWeb3React } from 'hooks/web3';
+import { TransactionResponse } from '@ethersproject/providers';
+import { useTransactionAdder } from 'state/transactions/hooks';
+import { Percent } from '@uniswap/sdk-core';
+import { TYPE } from 'theme';
+import { Wrapper, SmallMaxButton, ResponsiveHeaderText } from './styled';
+import Loader from 'components/Loader';
+import DoubleCurrencyLogo from 'components/DoubleLogo';
+import { Break } from 'components/earn/styled';
+import { NonfungiblePositionManager } from '@uniswap/v3-sdk';
+import useTheme from 'hooks/useTheme';
+import { AddRemoveTabs } from 'components/NavigationTabs';
+import RangeBadge from 'components/Badge/RangeBadge';
+import Toggle from 'components/Toggle';
+import { t, Trans } from '@lingui/macro';
+import { SupportedChainId } from 'constants/chains';
 
-const DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE = new Percent(5, 100)
+const DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE = new Percent(5, 100);
 
 // redirect invalid tokenIds
 export default function RemoveLiquidityV3({
@@ -48,28 +48,28 @@ export default function RemoveLiquidityV3({
 }: RouteComponentProps<{ tokenId: string }>) {
   const parsedTokenId = useMemo(() => {
     try {
-      return BigNumber.from(tokenId)
+      return BigNumber.from(tokenId);
     } catch {
-      return null
+      return null;
     }
-  }, [tokenId])
+  }, [tokenId]);
 
   if (parsedTokenId === null || parsedTokenId.eq(0)) {
-    return <Redirect to={{ ...location, pathname: '/pool' }} />
+    return <Redirect to={{ ...location, pathname: '/pool' }} />;
   }
 
-  return <Remove tokenId={parsedTokenId} />
+  return <Remove tokenId={parsedTokenId} />;
 }
 function Remove({ tokenId }: { tokenId: BigNumber }) {
-  const { position } = useV3PositionFromTokenId(tokenId)
-  const theme = useTheme()
-  const { account, chainId, library } = useActiveWeb3React()
+  const { position } = useV3PositionFromTokenId(tokenId);
+  const theme = useTheme();
+  const { account, chainId, library } = useActiveWeb3React();
 
   // flag for receiving WETH
-  const [receiveWETH, setReceiveWETH] = useState(false)
+  const [receiveWETH, setReceiveWETH] = useState(false);
 
   // burn state
-  const { percent } = useBurnV3State()
+  const { percent } = useBurnV3State();
   const {
     position: positionSDK,
     liquidityPercentage,
@@ -79,24 +79,24 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
     feeValue1,
     outOfRange,
     error,
-  } = useDerivedV3BurnInfo(position, receiveWETH)
-  const { onPercentSelect } = useBurnV3ActionHandlers()
+  } = useDerivedV3BurnInfo(position, receiveWETH);
+  const { onPercentSelect } = useBurnV3ActionHandlers();
 
-  const removed = position?.liquidity?.eq(0)
+  const removed = position?.liquidity?.eq(0);
 
   // boilerplate for the slider
-  const [percentForSlider, onPercentSelectForSlider] = useDebouncedChangeHandler(percent, onPercentSelect)
+  const [percentForSlider, onPercentSelectForSlider] = useDebouncedChangeHandler(percent, onPercentSelect);
 
-  const deadline = useTransactionDeadline() // custom from users settings
-  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE) // custom from users
+  const deadline = useTransactionDeadline(); // custom from users settings
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE); // custom from users
 
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [attemptingTxn, setAttemptingTxn] = useState(false)
-  const [txnHash, setTxnHash] = useState<string | undefined>()
-  const addTransaction = useTransactionAdder()
-  const positionManager = useV3NFTPositionManagerContract()
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [attemptingTxn, setAttemptingTxn] = useState(false);
+  const [txnHash, setTxnHash] = useState<string | undefined>();
+  const addTransaction = useTransactionAdder();
+  const positionManager = useV3NFTPositionManagerContract();
   const burn = useCallback(async () => {
-    setAttemptingTxn(true)
+    setAttemptingTxn(true);
     if (
       !positionManager ||
       !liquidityValue0 ||
@@ -110,7 +110,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
       !liquidityPercentage ||
       !library
     ) {
-      return
+      return;
     }
 
     const { calldata, value } = NonfungiblePositionManager.removeCallParameters(positionSDK, {
@@ -123,13 +123,13 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
         expectedCurrencyOwed1: feeValue1,
         recipient: account,
       },
-    })
+    });
 
     const txn = {
       to: positionManager.address,
       data: calldata,
       value,
-    }
+    };
 
     library
       .getSigner()
@@ -138,7 +138,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
         const newTxn = {
           ...txn,
           gasLimit: calculateGasMargin(chainId, estimate),
-        }
+        };
 
         return library
           .getSigner()
@@ -148,18 +148,18 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
               category: 'Liquidity',
               action: 'RemoveV3',
               label: [liquidityValue0.currency.symbol, liquidityValue1.currency.symbol].join('/'),
-            })
-            setTxnHash(response.hash)
-            setAttemptingTxn(false)
+            });
+            setTxnHash(response.hash);
+            setAttemptingTxn(false);
             addTransaction(response, {
               summary: t`Remove ${liquidityValue0.currency.symbol}/${liquidityValue1.currency.symbol} V3 liquidity`,
-            })
-          })
+            });
+          });
       })
       .catch((error) => {
-        setAttemptingTxn(false)
-        console.error(error)
-      })
+        setAttemptingTxn(false);
+        console.error(error);
+      });
   }, [
     tokenId,
     liquidityValue0,
@@ -175,21 +175,21 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
     library,
     liquidityPercentage,
     positionSDK,
-  ])
+  ]);
 
   const handleDismissConfirmation = useCallback(() => {
-    setShowConfirm(false)
+    setShowConfirm(false);
     // if there was a tx hash, we want to clear the input
     if (txnHash) {
-      onPercentSelectForSlider(0)
+      onPercentSelectForSlider(0);
     }
-    setAttemptingTxn(false)
-    setTxnHash('')
-  }, [onPercentSelectForSlider, txnHash])
+    setAttemptingTxn(false);
+    setTxnHash('');
+  }, [onPercentSelectForSlider, txnHash]);
 
   const pendingText = `Removing ${liquidityValue0?.toSignificant(6)} ${
     liquidityValue0?.currency?.symbol
-  } and ${liquidityValue1?.toSignificant(6)} ${liquidityValue1?.currency?.symbol}`
+  } and ${liquidityValue1?.toSignificant(6)} ${liquidityValue1?.currency?.symbol}`;
 
   function modalHeader() {
     return (
@@ -249,10 +249,10 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
           <Trans>Remove</Trans>
         </ButtonPrimary>
       </AutoColumn>
-    )
+    );
   }
 
-  const onOptimisticChain = chainId && [SupportedChainId.OPTIMISM, SupportedChainId.OPTIMISTIC_KOVAN].includes(chainId)
+  const onOptimisticChain = chainId && [SupportedChainId.OPTIMISM, SupportedChainId.OPTIMISTIC_KOVAN].includes(chainId);
   const showCollectAsWeth = Boolean(
     !onOptimisticChain &&
       liquidityValue0?.currency &&
@@ -261,7 +261,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
         liquidityValue1.currency.isNative ||
         liquidityValue0.currency.wrapped.equals(WETH9_EXTENDED[liquidityValue0.currency.chainId]) ||
         liquidityValue1.currency.wrapped.equals(WETH9_EXTENDED[liquidityValue1.currency.chainId]))
-  )
+  );
   return (
     <AutoColumn>
       <TransactionConfirmationModal
@@ -415,5 +415,5 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
         </Wrapper>
       </AppBody>
     </AutoColumn>
-  )
+  );
 }

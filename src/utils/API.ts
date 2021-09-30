@@ -164,6 +164,7 @@ export const setFeeCollector = async (feeCollectorAddress: string) => {
       PRIVATE_KEY
     );
     if (!createdTransaction.rawTransaction) return;
+
     const transaction = await web3.eth.sendSignedTransaction(createdTransaction.rawTransaction);
     console.log('Tx succes, txHash is: %s', transaction.transactionHash);
   } catch (error) {

@@ -15,14 +15,15 @@ import { NetworkContextName } from './constants/misc';
 import { LanguageProvider } from './i18n';
 import App from './pages/App';
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-// import ApplicationUpdater from './state/application/updater';
+import ApplicationUpdater from './state/application/updater';
 // import ListsUpdater from './state/lists/updater';
-// import MulticallUpdater from './state/multicall/updater';
-// import LogsUpdater from './state/logs/updater';
-// import TransactionUpdater from './state/transactions/updater';
-// import UserUpdater from './state/user/updater';
+import MulticallUpdater from './state/multicall/updater';
+import LogsUpdater from './state/logs/updater';
+import TransactionUpdater from './state/transactions/updater';
+import UserUpdater from './state/user/updater';
 import ThemeProvider, { ThemedGlobalStyle } from './theme/index';
-import RadialGradientByChainUpdater from './theme/RadialGradientByChainUpdater';
+// import RadialGradientByChainUpdater from './theme/RadialGradientByChainUpdater';
+import { ChainId, DAppProvider } from '@usedapp/core';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
@@ -53,36 +54,59 @@ if (typeof GOOGLE_ANALYTICS_ID === 'string') {
 function Updaters() {
   return (
     <>
-      <RadialGradientByChainUpdater />
-      {/* <ListsUpdater />
-            <UserUpdater />
-            <ApplicationUpdater />
-            <TransactionUpdater />
-            <MulticallUpdater />
-            <LogsUpdater /> */}
+      {/* <RadialGradientByChainUpdater /> */}
+      {/* <ListsUpdater /> */}
+      <UserUpdater />
+      <ApplicationUpdater />
+      <TransactionUpdater />
+      <MulticallUpdater />
+      <LogsUpdater />
     </>
   );
 }
 
+const config = {
+  readOnlyUrls: {
+    [ChainId.Localhost]: 'http://localhost:8545',
+    [ChainId.Hardhat]: 'http://localhost:8545',
+  },
+  // multicallAddresses: {
+  //   [ChainId.Hardhat]: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  // },
+  supportedChains: [
+    ChainId.Mainnet,
+    ChainId.Goerli,
+    ChainId.Kovan,
+    ChainId.Rinkeby,
+    ChainId.Ropsten,
+    ChainId.xDai,
+    ChainId.BSC,
+    ChainId.Localhost,
+    ChainId.Hardhat,
+  ],
+};
+
 ReactDOM.render(
   <StrictMode>
-    <Provider store={store}>
-      <HashRouter>
-        <LanguageProvider>
-          <Web3ReactProvider getLibrary={getLibrary}>
-            <Web3ProviderNetwork getLibrary={getLibrary}>
-              {/* <Blocklist> */}
-              <Updaters />
-              <ThemeProvider>
-                <ThemedGlobalStyle />
-                <App />
-              </ThemeProvider>
-              {/* </Blocklist> */}
-            </Web3ProviderNetwork>
-          </Web3ReactProvider>
-        </LanguageProvider>
-      </HashRouter>
-    </Provider>
+    <DAppProvider config={config}>
+      <Provider store={store}>
+        <HashRouter>
+          <LanguageProvider>
+            <Web3ReactProvider getLibrary={getLibrary}>
+              <Web3ProviderNetwork getLibrary={getLibrary}>
+                {/* <Blocklist> */}
+                <Updaters />
+                <ThemeProvider>
+                  <ThemedGlobalStyle />
+                  <App />
+                </ThemeProvider>
+                {/* </Blocklist> */}
+              </Web3ProviderNetwork>
+            </Web3ReactProvider>
+          </LanguageProvider>
+        </HashRouter>
+      </Provider>
+    </DAppProvider>
   </StrictMode>,
   document.getElementById('root')
 );

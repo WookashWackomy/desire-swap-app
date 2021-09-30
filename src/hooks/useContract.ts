@@ -39,6 +39,8 @@ import { getContract } from 'utils';
 // import { Erc20, ArgentWalletDetector, EnsPublicResolver, EnsRegistrar, Weth } from '../abis/types'
 import { UNI, WETH9_EXTENDED } from '../constants/tokens';
 import { useActiveWeb3React } from './web3';
+//import DesireSwapAbi from 'abis/factory';
+import { ethers } from 'ethers';
 
 export interface Erc20 extends Contract {
   todo: string;
@@ -186,4 +188,9 @@ export function useV3NFTPositionManagerContract(withSignerIfPossible?: boolean):
 
 export function useV3Quoter() {
   return useContract<Quoter>(QUOTER_ADDRESSES, QuoterABI);
+}
+
+export function useDesireSwapContract() {
+  const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/');
+  return new ethers.Contract('0x5FbDB2315678afecb367f032d93F642f64180aa3', QuoterABI, provider);
 }
