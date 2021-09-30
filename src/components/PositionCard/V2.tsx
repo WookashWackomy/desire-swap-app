@@ -1,7 +1,7 @@
 import JSBI from 'jsbi';
 import { useState } from 'react';
 import { Percent, CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { Pair } from 'v2-sdk/src/index';
+import { Pair } from '../../v2sdk/entities/pair';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Link } from 'react-router-dom';
 import { Text } from 'rebass';

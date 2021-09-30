@@ -22,7 +22,7 @@ import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/
 import { SwitchLocaleLink } from '../../components/SwitchLocaleLink';
 import { useStakingInfo } from '../../state/stake/hooks';
 import { BIG_INT_ZERO } from '../../constants/misc';
-import { Pair } from 'v2-sdk/src/index';
+import { Pair } from '../../v2sdk/entities/pair';
 import { Trans } from '@lingui/macro';
 import { L2_CHAIN_IDS } from 'constants/chains';
 

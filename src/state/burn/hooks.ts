@@ -1,7 +1,7 @@
 import { t } from '@lingui/macro';
 import JSBI from 'jsbi';
 import { Token, Currency, Percent, CurrencyAmount } from '@uniswap/sdk-core';
-import { Pair } from 'v2-sdk/src/index';
+import { Pair } from '../../v2sdk/entities/pair';
 import { useCallback } from 'react';
 import { useV2Pair } from '../../hooks/useV2Pairs';
 import { useTotalSupply } from '../../hooks/useTotalSupply';

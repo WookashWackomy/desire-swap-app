@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import { Trans } from '@lingui/macro';
 import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from 'v2-sdk/src/index';
+import { Trade as V2Trade } from '../../v2sdk/entities/trade';
 import { Trade as V3Trade } from '@uniswap/v3-sdk';
 import { NetworkAlert } from 'components/NetworkAlert/NetworkAlert';
 import { AdvancedSwapDetails } from 'components/swap/AdvancedSwapDetails';

@@ -1,6 +1,6 @@
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { Trade as V3Trade } from '@uniswap/v3-sdk';
-import { Trade as V2Trade } from 'v2-sdk/src/index';
+import { Trade as V2Trade } from '../v2sdk/entities/trade';
 import { useMemo } from 'react';
 import { useUserSlippageToleranceWithDefault } from '../state/user/hooks';
 import { useActiveWeb3React } from './web3';

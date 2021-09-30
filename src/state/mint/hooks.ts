@@ -2,7 +2,7 @@ import { t } from '@lingui/macro';
 import { useCallback, useMemo } from 'react';
 import { AppState } from '../index';
 import { Field, typeInput } from './actions';
-import { Pair } from 'v2-sdk/src/index';
+import { Pair } from '../../v2sdk/entities/pair';
 import { Currency, Token, Percent, Price, CurrencyAmount } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import { PairState, useV2Pair } from '../../hooks/useV2Pairs';

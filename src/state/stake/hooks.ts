@@ -1,6 +1,6 @@
 import { t } from '@lingui/macro';
 import { Token, CurrencyAmount } from '@uniswap/sdk-core';
-import { Pair } from 'v2-sdk/src/index';
+import { Pair } from '../../v2sdk/entities/pair';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
 import { DAI, UNI, USDC, USDT, WBTC, WETH9_EXTENDED } from '../../constants/tokens';

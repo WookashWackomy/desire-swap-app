@@ -1,5 +1,5 @@
 import { Currency, TradeType } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from 'v2-sdk/src/index';
+import { Trade as V2Trade } from '../../v2sdk/entities/trade';
 import { Trade as V3Trade, FeeAmount } from '@uniswap/v3-sdk';
 import { Fragment, memo, useContext } from 'react';
 import { ChevronRight } from 'react-feather';

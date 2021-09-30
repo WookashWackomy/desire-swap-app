@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { t } from '@lingui/macro';
-import { Router, Trade as V2Trade } from 'v2-sdk/src/index';
+import { Trade as V2Trade } from '../v2sdk/entities/trade';
+import { Router } from '../v2sdk/router';
 import { SwapRouter, Trade as V3Trade } from '@uniswap/v3-sdk';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';

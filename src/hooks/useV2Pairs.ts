@@ -1,4 +1,4 @@
-import { computePairAddress, Pair } from 'v2-sdk/src/index';
+import { computePairAddress, Pair } from '../v2sdk/entities/pair';
 import { useMemo } from 'react';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { Interface } from '@ethersproject/abi';
