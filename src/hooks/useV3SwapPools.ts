@@ -1,5 +1,5 @@
 import { Currency, Token } from '@uniswap/sdk-core';
-import { FeeAmount, Pool } from '@uniswap/v3-sdk';
+import { FeeAmount, Pool } from 'v3sdk/index';
 import { useMemo } from 'react';
 import { useAllCurrencyCombinations } from './useAllCurrencyCombinations';
 import { PoolState, usePools } from './usePools';

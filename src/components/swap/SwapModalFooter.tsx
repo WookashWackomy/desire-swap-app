@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/macro';
 import { Currency, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '../../v2sdk/entities/trade';
-import { Trade as V3Trade } from '@uniswap/v3-sdk';
+import { Trade as V3Trade } from 'v3sdk/index';
 
 import { ReactNode } from 'react';
 import { Text } from 'rebass';

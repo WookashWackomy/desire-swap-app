@@ -1,4 +1,4 @@
-import { FeeAmount, TICK_SPACINGS } from '@uniswap/v3-sdk';
+import { FeeAmount, TICK_SPACINGS } from 'v3sdk/index';
 import { Token } from '@uniswap/sdk-core';
 import computeSurroundingTicks from './computeSurroundingTicks';
 import JSBI from 'jsbi';

@@ -1,9 +1,11 @@
-import { useEtherBalance, useEthers } from '@usedapp/core';
-import { formatEther } from 'ethers/lib/utils';
+//// USEDAPP UNUSED
+export {};
+// import { useEtherBalance, useEthers } from '@usedapp/core';
+// import { formatEther } from 'ethers/lib/utils';
 
-export const EtherBalance = () => {
-  const { account } = useEthers();
-  const etherBalance = useEtherBalance(account);
+// export const EtherBalance = () => {
+//   const { account } = useEthers();
+//   const etherBalance = useEtherBalance(account);
 
-  return <div>{etherBalance && <p>Balance: {formatEther(etherBalance)}</p>}</div>;
-};
+//   return <div>{etherBalance && <p>Balance: {formatEther(etherBalance)}</p>}</div>;
+// };

@@ -2,7 +2,7 @@ import { useSingleCallResult } from 'state/multicall/hooks';
 import { useEffect, useState } from 'react';
 import { useV3NFTPositionManagerContract } from './useContract';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Pool } from '@uniswap/v3-sdk';
+import { Pool } from 'v3sdk/index';
 import { CurrencyAmount, Currency } from '@uniswap/sdk-core';
 import { useBlockNumber } from 'state/application/hooks';
 import { unwrappedToken } from 'utils/unwrappedToken';

@@ -1,5 +1,5 @@
 import { useState, useCallback, useContext, ReactNode } from 'react';
-import { Position } from '@uniswap/v3-sdk';
+import { Position } from 'v3sdk/index';
 import { LightCard } from 'components/Card';
 import { AutoColumn } from 'components/Column';
 import { TYPE } from 'theme';

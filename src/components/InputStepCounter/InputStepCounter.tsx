@@ -5,7 +5,7 @@ import styled, { keyframes } from 'styled-components/macro';
 import { TYPE } from 'theme';
 import { AutoColumn } from 'components/Column';
 import { ButtonGray } from 'components/Button';
-import { FeeAmount } from '@uniswap/v3-sdk';
+import { FeeAmount } from 'v3sdk/index';
 import { Trans } from '@lingui/macro';
 import { Plus, Minus } from 'react-feather';
 

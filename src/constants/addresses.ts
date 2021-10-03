@@ -1,7 +1,8 @@
 import { FACTORY_ADDRESS as V2_FACTORY_ADDRESS } from '../v2sdk/constants';
-import { FACTORY_ADDRESS as V3_FACTORY_ADDRESS } from '@uniswap/v3-sdk';
+import { FACTORY_ADDRESS as V3_FACTORY_ADDRESS } from 'v3sdk/index';
 import { constructSameAddressMap } from '../utils/constructSameAddressMap';
 import { SupportedChainId } from './chains';
+import { HARDHAT_MULTICALL_ADDRESS } from 'hardhatConsts';
 
 type AddressMap = { [chainId: number]: string };
 
@@ -11,7 +12,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [SupportedChainId.OPTIMISM]: '0x90f872b3d8f33f305e0250db6A2761B354f7710A',
   [SupportedChainId.ARBITRUM_ONE]: '0xadF885960B47eA2CD9B55E6DAc6B42b7Cb2806dB',
   [SupportedChainId.ARBITRUM_RINKEBY]: '0xa501c031958F579dB7676fF1CE78AD305794d579',
-  [SupportedChainId.HARDHAT]: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  [SupportedChainId.HARDHAT]: HARDHAT_MULTICALL_ADDRESS,
 };
 export const V2_FACTORY_ADDRESSES: AddressMap = constructSameAddressMap(V2_FACTORY_ADDRESS);
 export const V2_ROUTER_ADDRESS: AddressMap = constructSameAddressMap('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D');

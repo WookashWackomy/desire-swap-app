@@ -29,7 +29,7 @@ import { Wrapper, SmallMaxButton, ResponsiveHeaderText } from './styled';
 import Loader from 'components/Loader';
 import DoubleCurrencyLogo from 'components/DoubleLogo';
 import { Break } from 'components/earn/styled';
-import { NonfungiblePositionManager } from '@uniswap/v3-sdk';
+import { NonfungiblePositionManager } from 'v3sdk/index';
 import useTheme from 'hooks/useTheme';
 import { AddRemoveTabs } from 'components/NavigationTabs';
 import RangeBadge from 'components/Badge/RangeBadge';

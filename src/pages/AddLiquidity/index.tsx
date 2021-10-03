@@ -16,7 +16,7 @@ import {
   useRangeHopCallbacks,
   useV3DerivedMintInfo,
 } from 'state/mint/v3/hooks';
-import { FeeAmount, NonfungiblePositionManager } from '@uniswap/v3-sdk';
+import { FeeAmount, NonfungiblePositionManager } from 'v3sdk/index';
 import { useV3PositionFromTokenId } from 'hooks/useV3Positions';
 import { useDerivedPositionInfo } from 'hooks/useDerivedPositionInfo';
 import { PositionPreview } from 'components/PositionPreview';

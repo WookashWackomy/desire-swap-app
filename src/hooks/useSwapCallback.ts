@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { t } from '@lingui/macro';
 import { Trade as V2Trade } from '../v2sdk/entities/trade';
 import { Router } from '../v2sdk/router';
-import { SwapRouter, Trade as V3Trade } from '@uniswap/v3-sdk';
+import { SwapRouter, Trade as V3Trade } from 'v3sdk/index';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { SWAP_ROUTER_ADDRESSES } from '../constants/addresses';

@@ -1,4 +1,4 @@
-import { FeeAmount, nearestUsableTick, TickMath, TICK_SPACINGS } from '@uniswap/v3-sdk';
+import { FeeAmount, nearestUsableTick, TickMath, TICK_SPACINGS } from 'v3sdk/index';
 import { useMemo } from 'react';
 import { Bound } from 'state/mint/v3/actions';
 

@@ -2,7 +2,7 @@
 import { Trans } from '@lingui/macro';
 import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '../../v2sdk/entities/trade';
-import { Trade as V3Trade } from '@uniswap/v3-sdk';
+import { Trade as V3Trade } from 'v3sdk/index';
 import { NetworkAlert } from 'components/NetworkAlert/NetworkAlert';
 import { AdvancedSwapDetails } from 'components/swap/AdvancedSwapDetails';
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter';
@@ -58,12 +58,13 @@ import { isTradeBetter } from '../../utils/isTradeBetter';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { warningSeverity } from '../../utils/prices';
 import AppBody from '../AppBody';
-import { useDesireSwapContract } from 'hooks/useContract';
-import { TokenBalance } from 'pages/TokenBalance';
-import { EtherBalance } from 'pages/EtherBalance';
-import { ConnectWallet } from 'pages/ConnectWallet';
-import { SendTransactionTo } from 'pages/SendTransactionTo';
-import { Token0Supply } from 'pages/Token0Supply';
+// import { useDesireSwapContract } from 'hooks/useContract';
+
+// import { TokenBalance } from 'pages/TokenBalance';
+// import { EtherBalance } from 'pages/EtherBalance';
+// import { ConnectWallet } from 'pages/ConnectWallet';
+// import { SendTransactionTo } from 'pages/SendTransactionTo';
+// import { Token0Supply } from 'pages/Token0Supply';
 
 const StyledInfo = styled(Info)`
   opacity: 0.4;
@@ -133,8 +134,8 @@ export default function Swap({ history }: RouteComponentProps) {
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const { address: recipientAddress } = useENSAddress(recipient);
 
-  const desireSwap = useDesireSwapContract();
-  console.log(desireSwap);
+  // const desireSwap = useDesireSwapContract();
+  // console.log(desireSwap);
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -375,11 +376,11 @@ export default function Swap({ history }: RouteComponentProps) {
       <NetworkAlert />
       <AppBody>
         <SwapHeader allowedSlippage={allowedSlippage} />
-        <Token0Supply />
+        {/* <Token0Supply />
         <SendTransactionTo />
         <ConnectWallet />
         <TokenBalance />
-        <EtherBalance />
+        <EtherBalance /> */}
         <Wrapper id="swap-page">
           <ConfirmSwapModal
             isOpen={showConfirm}

@@ -14,7 +14,7 @@ import {
   TICK_SPACINGS,
   encodeSqrtRatioX96,
   nearestUsableTick,
-} from '@uniswap/v3-sdk/dist/';
+} from 'v3sdk/index';
 import { Currency, Token, CurrencyAmount, Price, Rounding } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
 import { useActiveWeb3React } from '../../../hooks/web3';
@@ -111,8 +111,8 @@ export function useV3DerivedMintInfo(
   dependentField: Field;
   parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> };
   position: Position | undefined;
-  noLiquidity?: boolean;
   errorMessage?: string;
+  noLiquidity?: boolean;
   invalidPool: boolean;
   outOfRange: boolean;
   invalidRange: boolean;
@@ -211,12 +211,12 @@ export function useV3DerivedMintInfo(
       const currentSqrt = TickMath.getSqrtRatioAtTick(currentTick);
       return new Pool(tokenA, tokenB, feeAmount, currentSqrt, JSBI.BigInt(0), currentTick, []);
     } else {
-      return undefined;
+      return null;
     }
   }, [feeAmount, invalidPrice, price, tokenA, tokenB]);
 
   // if pool exists use it, if not use the mock pool
-  const poolForPosition: Pool | undefined = pool ?? mockPool;
+  const poolForPosition: Pool | null = pool ?? mockPool;
 
   // lower and upper limits in the tick space for `feeAmount`
   const tickSpaceLimits: {

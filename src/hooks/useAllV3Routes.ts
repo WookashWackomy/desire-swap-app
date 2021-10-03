@@ -1,5 +1,5 @@
 import { Currency } from '@uniswap/sdk-core';
-import { Pool, Route } from '@uniswap/v3-sdk';
+import { Pool, Route } from 'v3sdk/index';
 import { useMemo } from 'react';
 import { useUserSingleHopOnly } from '../state/user/hooks';
 import { useActiveWeb3React } from './web3';

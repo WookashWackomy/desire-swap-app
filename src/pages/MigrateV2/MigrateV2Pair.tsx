@@ -24,7 +24,7 @@ import { calculateGasMargin } from '../../utils/calculateGasMargin';
 import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
 import { BodyWrapper } from '../AppBody';
 import { PoolState, usePool } from 'hooks/usePools';
-import { FeeAmount, Pool, Position, priceToClosestTick, TickMath } from '@uniswap/v3-sdk';
+import { FeeAmount, Pool, Position, priceToClosestTick, TickMath } from 'v3sdk/index';
 import { BlueCard, DarkGreyCard, LightCard, YellowCard } from 'components/Card';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { Dots } from 'components/swap/styleds';

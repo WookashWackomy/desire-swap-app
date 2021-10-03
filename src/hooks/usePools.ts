@@ -1,20 +1,22 @@
-import { computePoolAddress } from '@uniswap/v3-sdk';
-import { V3_CORE_FACTORY_ADDRESSES } from '../constants/addresses';
+// import { computePoolAddress } from 'v3sdk/index';
+// import { V3_CORE_FACTORY_ADDRESSES } from '../constants/addresses';
 //import { IUniswapV3PoolStateInterface } from '../types/v3/IUniswapV3PoolState'
 import { Token, Currency } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from './web3';
-import { useMultipleContractSingleData } from '../state/multicall/hooks';
+import { Result, useMultipleContractSingleData, useSingleContractMultipleData } from '../state/multicall/hooks';
 
-import { Pool, FeeAmount } from '@uniswap/v3-sdk';
-import { abi as IUniswapV3PoolStateABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/pool/IUniswapV3PoolState.sol/IUniswapV3PoolState.json';
+import { Pool, FeeAmount } from 'v3sdk/index';
 import { Interface } from '@ethersproject/abi';
+import DesireSwapV0FactoryABI from 'abis/DesireSwapV0Factory.json';
+import DesireSwapV0PoolABI from 'abis/DesireSwapV0Pool.json';
+import { Contract } from 'ethers';
+import { DESIRE_SWAP_V0_FACTORY_ADDRESS } from 'hardhatConsts';
 
-interface IUniswapV3PoolStateInterface extends Interface {
-  todo: string;
-}
+const DesireSwapV0FactoryInterface = new Interface(DesireSwapV0FactoryABI);
+const DesireSwapV0FactoryContract = new Contract(DESIRE_SWAP_V0_FACTORY_ADDRESS, DesireSwapV0FactoryInterface);
 
-const POOL_STATE_INTERFACE = new Interface(IUniswapV3PoolStateABI) as IUniswapV3PoolStateInterface;
+const DesireSwapV0PoolInterface = new Interface(DesireSwapV0PoolABI);
 
 export enum PoolState {
   LOADING,
@@ -40,46 +42,50 @@ export function usePools(
     });
   }, [chainId, poolKeys]);
 
-  const poolAddresses: (string | undefined)[] = useMemo(() => {
-    const v3CoreFactoryAddress = chainId && V3_CORE_FACTORY_ADDRESSES[chainId];
+  const poolAddressCallInputs = transformed
+    .map((value) => {
+      if (value === null) return null;
+      return [value[0].address, value[1].address, '500000000000000']; //TODO fee
+    })
+    .filter((val) => val !== null) as [string, string, string][];
 
-    return transformed.map((value) => {
-      if (!v3CoreFactoryAddress || !value) return undefined;
-      return computePoolAddress({
-        factoryAddress: v3CoreFactoryAddress,
-        tokenA: value[0],
-        tokenB: value[1],
-        fee: value[2],
-      });
-    });
-  }, [chainId, transformed]);
+  const poolAddressResult = useSingleContractMultipleData(
+    DesireSwapV0FactoryContract,
+    'poolAddress',
+    poolAddressCallInputs
+  );
 
-  const slot0s = useMultipleContractSingleData(poolAddresses, POOL_STATE_INTERFACE, 'slot0');
-  const liquidities = useMultipleContractSingleData(poolAddresses, POOL_STATE_INTERFACE, 'liquidity');
+  if (poolAddressResult.length > 0) console.log(poolAddressResult);
+  const poolAddresses = poolAddressResult
+    .map(({ result }) => result)
+    .filter((result): result is Result => !!result)
+    .map((result) => result[0]);
+
+  const slot0s = useMultipleContractSingleData(poolAddresses, DesireSwapV0PoolInterface, 'slot0');
 
   return useMemo(() => {
     return poolKeys.map((_key, index) => {
-      const [token0, token1, fee] = transformed[index] ?? [];
-      if (!token0 || !token1 || !fee) return [PoolState.INVALID, null];
-
-      const { result: slot0, loading: slot0Loading, valid: slot0Valid } = slot0s[index];
-      const { result: liquidity, loading: liquidityLoading, valid: liquidityValid } = liquidities[index];
-
-      if (!slot0Valid || !liquidityValid) return [PoolState.INVALID, null];
-      if (slot0Loading || liquidityLoading) return [PoolState.LOADING, null];
-
-      if (!slot0 || !liquidity) return [PoolState.NOT_EXISTS, null];
-
-      if (!slot0.sqrtPriceX96 || slot0.sqrtPriceX96.eq(0)) return [PoolState.NOT_EXISTS, null];
-
       try {
-        return [PoolState.EXISTS, new Pool(token0, token1, fee, slot0.sqrtPriceX96, liquidity[0], slot0.tick)];
+        if (!slot0s[index]) return [PoolState.NOT_EXISTS, null];
+        const [token0, token1, fee] = transformed[index] ?? [];
+        if (!token0 || !token1 || !fee) return [PoolState.INVALID, null];
+
+        const { result: slot0, loading: slot0Loading, valid: slot0Valid } = slot0s[index];
+
+        if (!slot0Valid) return [PoolState.INVALID, null];
+        if (slot0Loading) return [PoolState.LOADING, null];
+
+        if (!slot0) return [PoolState.NOT_EXISTS, null];
+
+        if (!slot0.currentPrice || slot0.currentPrice.eq(0)) return [PoolState.NOT_EXISTS, null];
+
+        return [PoolState.EXISTS, new Pool(token0, token1, fee, slot0.currentPrice, slot0.L, slot0.usingRange)];
       } catch (error) {
         console.error('Error when constructing the pool', error);
         return [PoolState.NOT_EXISTS, null];
       }
     });
-  }, [liquidities, poolKeys, slot0s, transformed]);
+  }, [poolKeys, slot0s, transformed]);
 }
 
 export function usePool(

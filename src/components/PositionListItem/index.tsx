@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import { useMemo } from 'react';
-import { Position } from '@uniswap/v3-sdk';
+import { Position } from 'v3sdk/index';
 import Badge from 'components/Badge';
 import DoubleCurrencyLogo from 'components/DoubleLogo';
 import { usePool } from 'hooks/usePools';

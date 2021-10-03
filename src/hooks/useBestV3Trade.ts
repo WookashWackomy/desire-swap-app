@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core';
-import { encodeRouteToPath, Route, Trade } from '@uniswap/v3-sdk';
+import { encodeRouteToPath, Route, Trade } from 'v3sdk/index';
 import { SupportedChainId } from 'constants/chains';
 import { BigNumber } from 'ethers';
 import { useMemo } from 'react';

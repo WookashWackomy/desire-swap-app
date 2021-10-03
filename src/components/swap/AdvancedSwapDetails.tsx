@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/macro';
 import { Percent, Currency, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '../../v2sdk/entities/trade';
-import { Trade as V3Trade } from '@uniswap/v3-sdk';
+import { Trade as V3Trade } from 'v3sdk/index';
 import { useContext, useMemo } from 'react';
 import { ThemeContext } from 'styled-components/macro';
 import { TYPE } from '../../theme';

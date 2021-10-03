@@ -14,7 +14,7 @@ import { Chart } from './Chart';
 import { useDensityChartData } from './hooks';
 import { format } from 'd3';
 import { Bound } from 'state/mint/v3/actions';
-import { FeeAmount } from '@uniswap/v3-sdk';
+import { FeeAmount } from 'v3sdk/index';
 import ReactGA from 'react-ga';
 import { ZoomLevels } from './types';
 

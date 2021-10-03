@@ -71,6 +71,7 @@
       "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
       "plugins": ["react", "react-hooks", "@typescript-eslint"],
       "rules": {
+        "@typescript-eslint/no-inferrable-types": "off",
         "no-extra-boolean-cast": "off",
         "react/react-in-jsx-scope": "off", // TODO reactivate
         "react/prop-types": "off",
