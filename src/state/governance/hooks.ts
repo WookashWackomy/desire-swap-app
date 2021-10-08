@@ -1,7 +1,7 @@
 import { TransactionResponse } from '@ethersproject/providers';
 import { t } from '@lingui/macro';
 import { abi as GOV_ABI } from '@uniswap/governance/build/GovernorAlpha.json';
-import { CurrencyAmount, Token } from '@uniswap/sdk-core';
+import { CurrencyAmount, Token } from 'sdkCore/index';
 import { UNISWAP_GRANTS_PROPOSAL_DESCRIPTION } from 'constants/proposals/uniswap_grants_proposal_description';
 import { Contract } from 'ethers';
 import {

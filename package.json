@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ethersproject/address": "^5.0.2",
+    "big.js": "^5.2.2",
+    "decimal.js-light": "^2.5.0",
+    "toformat": "^2.0.0",
     "@ethersproject/solidity": "^5.0.9",
     "@uniswap/v3-staker": "1.0.0",
     "tiny-invariant": "^1.1.0",
@@ -67,11 +71,8 @@
     "@uniswap/merkle-distributor": "1.0.1",
     "@uniswap/sdk-core": "^3.0.1",
     "@uniswap/token-lists": "^1.0.0-beta.25",
-    "@uniswap/v2-core": "1.0.0",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
-    "@uniswap/v3-core": "1.0.0",
     "@uniswap/v3-periphery": "^1.1.1",
-    "@uniswap/v3-sdk": "^3.3.0",
     "@usedapp/core": "^0.4.8",
     "@web3-react/core": "^6.0.9",
     "@web3-react/fortmatic-connector": "^6.0.9",
@@ -161,6 +162,9 @@
     ]
   },
   "devDependencies": {
+    "@types/big.js": "^4.0.5",
+    "@types/jest": "^24.0.25",
+    "tsdx": "^0.14.1",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
     "eslint": "^7.32.0",

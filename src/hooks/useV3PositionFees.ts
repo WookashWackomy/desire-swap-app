@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useV3NFTPositionManagerContract } from './useContract';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Pool } from 'v3sdk/index';
-import { CurrencyAmount, Currency } from '@uniswap/sdk-core';
+import { CurrencyAmount, Currency } from 'sdkCore/index';
 import { useBlockNumber } from 'state/application/hooks';
 import { unwrappedToken } from 'utils/unwrappedToken';
 

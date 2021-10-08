@@ -1,4 +1,4 @@
-import { Currency } from '@uniswap/sdk-core';
+import { Currency } from 'sdkCore/index';
 import { Pool, Route } from 'v3sdk/index';
 import { useMemo } from 'react';
 import { useUserSingleHopOnly } from '../state/user/hooks';

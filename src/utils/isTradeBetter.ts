@@ -1,5 +1,5 @@
 import { ZERO_PERCENT, ONE_HUNDRED_PERCENT } from '../constants/misc';
-import { Percent, Currency, TradeType } from '@uniswap/sdk-core';
+import { Percent, Currency, TradeType } from 'sdkCore/index';
 import { Trade as V2Trade } from '../v2sdk/entities/trade';
 import { Trade as V3Trade } from 'v3sdk/index';
 

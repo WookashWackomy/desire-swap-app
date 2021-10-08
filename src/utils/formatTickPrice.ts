@@ -1,6 +1,6 @@
-import { Bound } from '../state/mint/v3/actions'
-import { Price, Token } from '@uniswap/sdk-core'
-import { formatPrice } from './formatCurrencyAmount'
+import { Bound } from '../state/mint/v3/actions';
+import { Price, Token } from 'sdkCore/index';
+import { formatPrice } from './formatCurrencyAmount';
 
 export function formatTickPrice(
   price: Price<Token, Token> | undefined,
@@ -9,12 +9,12 @@ export function formatTickPrice(
   placeholder?: string
 ) {
   if (atLimit[direction]) {
-    return direction === Bound.LOWER ? '0' : '∞'
+    return direction === Bound.LOWER ? '0' : '∞';
   }
 
   if (!price && placeholder !== undefined) {
-    return placeholder
+    return placeholder;
   }
 
-  return formatPrice(price, 5)
+  return formatPrice(price, 5);
 }

@@ -1,5 +1,5 @@
 import { FeeAmount, TICK_SPACINGS } from 'v3sdk/index';
-import { Token } from '@uniswap/sdk-core';
+import { Token } from 'sdkCore/index';
 import computeSurroundingTicks from './computeSurroundingTicks';
 import JSBI from 'jsbi';
 import { AllV3TicksQuery } from 'state/data/generated';

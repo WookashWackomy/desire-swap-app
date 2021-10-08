@@ -1,10 +1,10 @@
-import React from 'react'
-import AddressInputPanel from 'components/AddressInputPanel'
-import CurrencyInputPanel from 'components/CurrencyInputPanel'
-import styled from 'styled-components/macro'
-import { ProposalAction } from './ProposalActionSelector'
-import { Currency } from '@uniswap/sdk-core'
-import { Trans } from '@lingui/macro'
+import React from 'react';
+import AddressInputPanel from 'components/AddressInputPanel';
+import CurrencyInputPanel from 'components/CurrencyInputPanel';
+import styled from 'styled-components/macro';
+import { ProposalAction } from './ProposalActionSelector';
+import { Currency } from 'sdkCore/index';
+import { Trans } from '@lingui/macro';
 
 enum ProposalActionDetailField {
   ADDRESS,
@@ -16,7 +16,7 @@ const ProposalActionDetailContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   grid-gap: 10px;
-`
+`;
 
 export const ProposalActionDetail = ({
   className,
@@ -28,14 +28,14 @@ export const ProposalActionDetail = ({
   onAmountInput,
   onToAddressInput,
 }: {
-  className?: string
-  proposalAction: ProposalAction
-  currency: Currency | undefined
-  amount: string
-  toAddress: string
-  onCurrencySelect: (currency: Currency) => void
-  onAmountInput: (amount: string) => void
-  onToAddressInput: (address: string) => void
+  className?: string;
+  proposalAction: ProposalAction;
+  currency: Currency | undefined;
+  amount: string;
+  toAddress: string;
+  onCurrencySelect: (currency: Currency) => void;
+  onAmountInput: (amount: string) => void;
+  onToAddressInput: (address: string) => void;
 }) => {
   const proposalActionsData = {
     [ProposalAction.TRANSFER_TOKEN]: [
@@ -56,7 +56,7 @@ export const ProposalActionDetail = ({
         type: ProposalActionDetailField.CURRENCY,
       },
     ],
-  }
+  };
 
   return (
     <ProposalActionDetailContainer className={className}>
@@ -80,5 +80,5 @@ export const ProposalActionDetail = ({
         ) : null
       )}
     </ProposalActionDetailContainer>
-  )
-}
+  );
+};

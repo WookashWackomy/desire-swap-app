@@ -1,13 +1,13 @@
-import { useCallback } from 'react'
-import { Price, Currency } from '@uniswap/sdk-core'
-import { useContext } from 'react'
-import { Text } from 'rebass'
-import styled, { ThemeContext } from 'styled-components/macro'
+import { useCallback } from 'react';
+import { Price, Currency } from 'sdkCore/index';
+import { useContext } from 'react';
+import { Text } from 'rebass';
+import styled, { ThemeContext } from 'styled-components/macro';
 
 interface TradePriceProps {
-  price: Price<Currency, Currency>
-  showInverted: boolean
-  setShowInverted: (showInverted: boolean) => void
+  price: Price<Currency, Currency>;
+  showInverted: boolean;
+  setShowInverted: (showInverted: boolean) => void;
 }
 
 const StyledPriceContainer = styled.button`
@@ -21,23 +21,23 @@ const StyledPriceContainer = styled.button`
   border: none;
   height: 24px;
   cursor: pointer;
-`
+`;
 
 export default function TradePrice({ price, showInverted, setShowInverted }: TradePriceProps) {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
-  let formattedPrice: string
+  let formattedPrice: string;
   try {
-    formattedPrice = showInverted ? price.toSignificant(4) : price.invert()?.toSignificant(4)
+    formattedPrice = showInverted ? price.toSignificant(4) : price.invert()?.toSignificant(4);
   } catch (error) {
-    formattedPrice = '0'
+    formattedPrice = '0';
   }
 
-  const label = showInverted ? `${price.quoteCurrency?.symbol}` : `${price.baseCurrency?.symbol} `
-  const labelInverted = showInverted ? `${price.baseCurrency?.symbol} ` : `${price.quoteCurrency?.symbol}`
-  const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted])
+  const label = showInverted ? `${price.quoteCurrency?.symbol}` : `${price.baseCurrency?.symbol} `;
+  const labelInverted = showInverted ? `${price.baseCurrency?.symbol} ` : `${price.quoteCurrency?.symbol}`;
+  const flipPrice = useCallback(() => setShowInverted(!showInverted), [setShowInverted, showInverted]);
 
-  const text = `${'1 ' + labelInverted + ' = ' + formattedPrice ?? '-'} ${label}`
+  const text = `${'1 ' + labelInverted + ' = ' + formattedPrice ?? '-'} ${label}`;
 
   return (
     <StyledPriceContainer onClick={flipPrice} title={text}>
@@ -47,5 +47,5 @@ export default function TradePrice({ price, showInverted, setShowInverted }: Tra
         </Text>
       </div>
     </StyledPriceContainer>
-  )
+  );
 }

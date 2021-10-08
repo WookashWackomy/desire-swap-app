@@ -1,4 +1,4 @@
-import { CurrencyAmount, Percent, Currency } from '@uniswap/sdk-core';
+import { CurrencyAmount, Percent, Currency } from 'sdkCore/index';
 import { Position } from 'v3sdk/index';
 import { usePool } from 'hooks/usePools';
 import { useActiveWeb3React } from 'hooks/web3';

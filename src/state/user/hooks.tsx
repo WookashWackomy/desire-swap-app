@@ -1,4 +1,4 @@
-import { Percent, Token } from '@uniswap/sdk-core';
+import { Percent, Token } from 'sdkCore/index';
 import { computePairAddress, Pair } from '../../v2sdk/entities/pair';
 import { L2_CHAIN_IDS } from 'constants/chains';
 import { SupportedLocale } from 'constants/locales';

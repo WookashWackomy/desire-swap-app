@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Percent, CurrencyAmount, Token } from '@uniswap/sdk-core';
+import { Percent, CurrencyAmount, Token } from 'sdkCore/index';
 import { Pair } from '../../v2sdk/entities/pair';
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'react-feather';

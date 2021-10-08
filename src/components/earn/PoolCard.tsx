@@ -1,21 +1,21 @@
-import { AutoColumn } from '../Column'
-import { RowBetween } from '../Row'
-import styled from 'styled-components/macro'
-import { TYPE, StyledInternalLink } from '../../theme'
-import DoubleCurrencyLogo from '../DoubleLogo'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import JSBI from 'jsbi'
-import { ButtonPrimary } from '../Button'
-import { StakingInfo } from '../../state/stake/hooks'
-import { useColor } from '../../hooks/useColor'
-import { currencyId } from '../../utils/currencyId'
-import { Break, CardNoise, CardBGImage } from './styled'
-import { unwrappedToken } from '../../utils/unwrappedToken'
-import { useTotalSupply } from '../../hooks/useTotalSupply'
-import { useV2Pair } from '../../hooks/useV2Pairs'
-import useUSDCPrice from '../../hooks/useUSDCPrice'
-import { BIG_INT_SECONDS_IN_WEEK } from '../../constants/misc'
-import { Trans } from '@lingui/macro'
+import { AutoColumn } from '../Column';
+import { RowBetween } from '../Row';
+import styled from 'styled-components/macro';
+import { TYPE, StyledInternalLink } from '../../theme';
+import DoubleCurrencyLogo from '../DoubleLogo';
+import { CurrencyAmount, Token } from 'sdkCore/index';
+import JSBI from 'jsbi';
+import { ButtonPrimary } from '../Button';
+import { StakingInfo } from '../../state/stake/hooks';
+import { useColor } from '../../hooks/useColor';
+import { currencyId } from '../../utils/currencyId';
+import { Break, CardNoise, CardBGImage } from './styled';
+import { unwrappedToken } from '../../utils/unwrappedToken';
+import { useTotalSupply } from '../../hooks/useTotalSupply';
+import { useV2Pair } from '../../hooks/useV2Pairs';
+import useUSDCPrice from '../../hooks/useUSDCPrice';
+import { BIG_INT_SECONDS_IN_WEEK } from '../../constants/misc';
+import { Trans } from '@lingui/macro';
 
 const StatContainer = styled.div`
   display: flex;
@@ -28,7 +28,7 @@ const StatContainer = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
   display: none;
 `};
-`
+`;
 
 const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
   border-radius: 12px;
@@ -44,7 +44,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
     showBackground &&
     `  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);`}
-`
+`;
 
 const TopSection = styled.div`
   display: grid;
@@ -56,7 +56,7 @@ const TopSection = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     grid-template-columns: 48px 1fr 96px;
   `};
-`
+`;
 
 const BottomSection = styled.div<{ showBackground: boolean }>`
   padding: 12px 16px;
@@ -67,27 +67,27 @@ const BottomSection = styled.div<{ showBackground: boolean }>`
   align-items: baseline;
   justify-content: space-between;
   z-index: 1;
-`
+`;
 
 export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) {
-  const token0 = stakingInfo.tokens[0]
-  const token1 = stakingInfo.tokens[1]
+  const token0 = stakingInfo.tokens[0];
+  const token1 = stakingInfo.tokens[1];
 
-  const currency0 = unwrappedToken(token0)
-  const currency1 = unwrappedToken(token1)
+  const currency0 = unwrappedToken(token0);
+  const currency1 = unwrappedToken(token1);
 
-  const isStaking = Boolean(stakingInfo.stakedAmount.greaterThan('0'))
+  const isStaking = Boolean(stakingInfo.stakedAmount.greaterThan('0'));
 
   // get the color of the token
-  const token = currency0.isNative ? token1 : token0
-  const WETH = currency0.isNative ? token0 : token1
-  const backgroundColor = useColor(token)
+  const token = currency0.isNative ? token1 : token0;
+  const WETH = currency0.isNative ? token0 : token1;
+  const backgroundColor = useColor(token);
 
-  const totalSupplyOfStakingToken = useTotalSupply(stakingInfo.stakedAmount.currency)
-  const [, stakingTokenPair] = useV2Pair(...stakingInfo.tokens)
+  const totalSupplyOfStakingToken = useTotalSupply(stakingInfo.stakedAmount.currency);
+  const [, stakingTokenPair] = useV2Pair(...stakingInfo.tokens);
 
   // let returnOverMonth: Percent = new Percent('0')
-  let valueOfTotalStakedAmountInWETH: CurrencyAmount<Token> | undefined
+  let valueOfTotalStakedAmountInWETH: CurrencyAmount<Token> | undefined;
   if (totalSupplyOfStakingToken && stakingTokenPair) {
     // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
     valueOfTotalStakedAmountInWETH = CurrencyAmount.fromRawAmount(
@@ -99,13 +99,13 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
         ),
         totalSupplyOfStakingToken.quotient
       )
-    )
+    );
   }
 
   // get the USD value of staked WETH
-  const USDPrice = useUSDCPrice(WETH)
+  const USDPrice = useUSDCPrice(WETH);
   const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInWETH && USDPrice?.quote(valueOfTotalStakedAmountInWETH)
+    valueOfTotalStakedAmountInWETH && USDPrice?.quote(valueOfTotalStakedAmountInWETH);
 
   return (
     <Wrapper showBackground={isStaking} bgColor={backgroundColor}>
@@ -192,5 +192,5 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
         </>
       )}
     </Wrapper>
-  )
+  );
 }

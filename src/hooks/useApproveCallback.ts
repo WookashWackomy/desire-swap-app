@@ -1,6 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
-import { CurrencyAmount, Percent, Currency, TradeType } from '@uniswap/sdk-core';
+import { CurrencyAmount, Percent, Currency, TradeType } from 'sdkCore/index';
 import { Trade as V2Trade } from '../v2sdk/entities/trade';
 import { Trade as V3Trade } from 'v3sdk/index';
 import { useCallback, useMemo } from 'react';

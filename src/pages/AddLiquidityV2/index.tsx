@@ -1,51 +1,51 @@
-import { BigNumber } from '@ethersproject/bignumber'
-import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core'
-import { useCallback, useContext, useState } from 'react'
-import { Plus } from 'react-feather'
-import ReactGA from 'react-ga'
-import { RouteComponentProps } from 'react-router-dom'
-import { Text } from 'rebass'
-import { ThemeContext } from 'styled-components/macro'
-import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
-import { BlueCard, LightCard } from '../../components/Card'
-import { AutoColumn, ColumnCenter } from '../../components/Column'
-import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
-import CurrencyInputPanel from '../../components/CurrencyInputPanel'
-import DoubleCurrencyLogo from '../../components/DoubleLogo'
-import { AddRemoveTabs } from '../../components/NavigationTabs'
-import { MinimalPositionCard } from '../../components/PositionCard'
-import Row, { RowBetween, RowFlat } from '../../components/Row'
+import { BigNumber } from '@ethersproject/bignumber';
+import { TransactionResponse } from '@ethersproject/providers';
+import { Currency, CurrencyAmount, Percent } from 'sdkCore/index';
+import { useCallback, useContext, useState } from 'react';
+import { Plus } from 'react-feather';
+import ReactGA from 'react-ga';
+import { RouteComponentProps } from 'react-router-dom';
+import { Text } from 'rebass';
+import { ThemeContext } from 'styled-components/macro';
+import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button';
+import { BlueCard, LightCard } from '../../components/Card';
+import { AutoColumn, ColumnCenter } from '../../components/Column';
+import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal';
+import CurrencyInputPanel from '../../components/CurrencyInputPanel';
+import DoubleCurrencyLogo from '../../components/DoubleLogo';
+import { AddRemoveTabs } from '../../components/NavigationTabs';
+import { MinimalPositionCard } from '../../components/PositionCard';
+import Row, { RowBetween, RowFlat } from '../../components/Row';
 
-import { ZERO_PERCENT } from '../../constants/misc'
-import { WETH9_EXTENDED } from '../../constants/tokens'
-import { useV2RouterContract } from '../../hooks/useContract'
-import { PairState } from '../../hooks/useV2Pairs'
-import { useActiveWeb3React } from '../../hooks/web3'
-import { useCurrency } from '../../hooks/Tokens'
-import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
-import { useIsSwapUnsupported } from '../../hooks/useIsSwapUnsupported'
-import useTransactionDeadline from '../../hooks/useTransactionDeadline'
-import { useWalletModalToggle } from '../../state/application/hooks'
-import { Field } from '../../state/mint/actions'
-import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../state/mint/hooks'
+import { ZERO_PERCENT } from '../../constants/misc';
+import { WETH9_EXTENDED } from '../../constants/tokens';
+import { useV2RouterContract } from '../../hooks/useContract';
+import { PairState } from '../../hooks/useV2Pairs';
+import { useActiveWeb3React } from '../../hooks/web3';
+import { useCurrency } from '../../hooks/Tokens';
+import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback';
+import { useIsSwapUnsupported } from '../../hooks/useIsSwapUnsupported';
+import useTransactionDeadline from '../../hooks/useTransactionDeadline';
+import { useWalletModalToggle } from '../../state/application/hooks';
+import { Field } from '../../state/mint/actions';
+import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../state/mint/hooks';
 
-import { useTransactionAdder } from '../../state/transactions/hooks'
-import { useIsExpertMode, useUserSlippageToleranceWithDefault } from '../../state/user/hooks'
-import { TYPE } from '../../theme'
-import { calculateGasMargin } from '../../utils/calculateGasMargin'
-import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount'
-import { maxAmountSpend } from '../../utils/maxAmountSpend'
-import AppBody from '../AppBody'
-import { Dots, Wrapper } from '../Pool/styleds'
-import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
-import { currencyId } from '../../utils/currencyId'
-import { PoolPriceBar } from './PoolPriceBar'
-import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-import { SwitchLocaleLink } from 'components/SwitchLocaleLink'
-import { t, Trans } from '@lingui/macro'
+import { useTransactionAdder } from '../../state/transactions/hooks';
+import { useIsExpertMode, useUserSlippageToleranceWithDefault } from '../../state/user/hooks';
+import { TYPE } from '../../theme';
+import { calculateGasMargin } from '../../utils/calculateGasMargin';
+import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
+import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import AppBody from '../AppBody';
+import { Dots, Wrapper } from '../Pool/styleds';
+import { ConfirmAddModalBottom } from './ConfirmAddModalBottom';
+import { currencyId } from '../../utils/currencyId';
+import { PoolPriceBar } from './PoolPriceBar';
+import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter';
+import { SwitchLocaleLink } from 'components/SwitchLocaleLink';
+import { t, Trans } from '@lingui/macro';
 
-const DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE = new Percent(50, 10_000)
+const DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
 export default function AddLiquidity({
   match: {
@@ -53,24 +53,24 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-  const { account, chainId, library } = useActiveWeb3React()
-  const theme = useContext(ThemeContext)
+  const { account, chainId, library } = useActiveWeb3React();
+  const theme = useContext(ThemeContext);
 
-  const currencyA = useCurrency(currencyIdA)
-  const currencyB = useCurrency(currencyIdB)
+  const currencyA = useCurrency(currencyIdA);
+  const currencyB = useCurrency(currencyIdB);
 
   const oneCurrencyIsWETH = Boolean(
     chainId &&
       ((currencyA && currencyA.equals(WETH9_EXTENDED[chainId])) ||
         (currencyB && currencyB.equals(WETH9_EXTENDED[chainId])))
-  )
+  );
 
-  const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
+  const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
 
-  const expertMode = useIsExpertMode()
+  const expertMode = useIsExpertMode();
 
   // mint state
-  const { independentField, typedValue, otherTypedValue } = useMintState()
+  const { independentField, typedValue, otherTypedValue } = useMintState();
   const {
     dependentField,
     currencies,
@@ -83,26 +83,26 @@ export default function AddLiquidity({
     liquidityMinted,
     poolTokenPercentage,
     error,
-  } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
+  } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined);
 
-  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity);
 
-  const isValid = !error
+  const isValid = !error;
 
   // modal and loading
-  const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
 
   // txn values
-  const deadline = useTransactionDeadline() // custom from users settings
-  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE) // custom from users
-  const [txHash, setTxHash] = useState<string>('')
+  const deadline = useTransactionDeadline(); // custom from users settings
+  const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE); // custom from users
+  const [txHash, setTxHash] = useState<string>('');
 
   // get formatted amounts
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-  }
+  };
 
   // get the max amounts user can add
   const maxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
@@ -110,50 +110,50 @@ export default function AddLiquidity({
       return {
         ...accumulator,
         [field]: maxAmountSpend(currencyBalances[field]),
-      }
+      };
     },
     {}
-  )
+  );
 
   const atMaxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
     (accumulator, field) => {
       return {
         ...accumulator,
         [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
-      }
+      };
     },
     {}
-  )
+  );
 
-  const router = useV2RouterContract()
+  const router = useV2RouterContract();
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], router?.address)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], router?.address)
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], router?.address);
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], router?.address);
 
-  const addTransaction = useTransactionAdder()
+  const addTransaction = useTransactionAdder();
 
   async function onAdd() {
-    if (!chainId || !library || !account || !router) return
+    if (!chainId || !library || !account || !router) return;
 
-    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
+    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
-      return
+      return;
     }
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? ZERO_PERCENT : allowedSlippage)[0],
       [Field.CURRENCY_B]: calculateSlippageAmount(parsedAmountB, noLiquidity ? ZERO_PERCENT : allowedSlippage)[0],
-    }
+    };
 
     let estimate,
       method: (...args: any) => Promise<TransactionResponse>,
       args: Array<string | string[] | number>,
-      value: BigNumber | null
+      value: BigNumber | null;
     if (currencyA.isNative || currencyB.isNative) {
-      const tokenBIsETH = currencyB.isNative
-      estimate = router.estimateGas.addLiquidityETH
-      method = router.addLiquidityETH
+      const tokenBIsETH = currencyB.isNative;
+      estimate = router.estimateGas.addLiquidityETH;
+      method = router.addLiquidityETH;
       args = [
         (tokenBIsETH ? currencyA : currencyB)?.wrapped?.address ?? '', // token
         (tokenBIsETH ? parsedAmountA : parsedAmountB).quotient.toString(), // token desired
@@ -161,11 +161,11 @@ export default function AddLiquidity({
         amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
         account,
         deadline.toHexString(),
-      ]
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).quotient.toString())
+      ];
+      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).quotient.toString());
     } else {
-      estimate = router.estimateGas.addLiquidity
-      method = router.addLiquidity
+      estimate = router.estimateGas.addLiquidity;
+      method = router.addLiquidity;
       args = [
         currencyA?.wrapped?.address ?? '',
         currencyB?.wrapped?.address ?? '',
@@ -175,41 +175,41 @@ export default function AddLiquidity({
         amountsMin[Field.CURRENCY_B].toString(),
         account,
         deadline.toHexString(),
-      ]
-      value = null
+      ];
+      value = null;
     }
 
-    setAttemptingTxn(true)
+    setAttemptingTxn(true);
     await estimate(...args, value ? { value } : {})
       .then((estimatedGasLimit) =>
         method(...args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(chainId, estimatedGasLimit),
         }).then((response) => {
-          setAttemptingTxn(false)
+          setAttemptingTxn(false);
 
           addTransaction(response, {
             summary: t`Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
               currencies[Field.CURRENCY_A]?.symbol
             } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
-          })
+          });
 
-          setTxHash(response.hash)
+          setTxHash(response.hash);
 
           ReactGA.event({
             category: 'Liquidity',
             action: 'Add',
             label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/'),
-          })
+          });
         })
       )
       .catch((error) => {
-        setAttemptingTxn(false)
+        setAttemptingTxn(false);
         // we only care if the error is something _other_ than the user rejected the tx
         if (error?.code !== 4001) {
-          console.error(error)
+          console.error(error);
         }
-      })
+      });
   }
 
   const modalHeader = () => {
@@ -252,8 +252,8 @@ export default function AddLiquidity({
           </Trans>
         </TYPE.italic>
       </AutoColumn>
-    )
-  }
+    );
+  };
 
   const modalBottom = () => {
     return (
@@ -265,52 +265,52 @@ export default function AddLiquidity({
         onAdd={onAdd}
         poolTokenPercentage={poolTokenPercentage}
       />
-    )
-  }
+    );
+  };
 
   const pendingText = t`Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
     currencies[Field.CURRENCY_A]?.symbol
-  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
+  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`;
 
   const handleCurrencyASelect = useCallback(
     (currencyA: Currency) => {
-      const newCurrencyIdA = currencyId(currencyA)
+      const newCurrencyIdA = currencyId(currencyA);
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/add/v2/${currencyIdB}/${currencyIdA}`)
+        history.push(`/add/v2/${currencyIdB}/${currencyIdA}`);
       } else {
-        history.push(`/add/v2/${newCurrencyIdA}/${currencyIdB}`)
+        history.push(`/add/v2/${newCurrencyIdA}/${currencyIdB}`);
       }
     },
     [currencyIdB, history, currencyIdA]
-  )
+  );
   const handleCurrencyBSelect = useCallback(
     (currencyB: Currency) => {
-      const newCurrencyIdB = currencyId(currencyB)
+      const newCurrencyIdB = currencyId(currencyB);
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/add/v2/${currencyIdB}/${newCurrencyIdB}`)
+          history.push(`/add/v2/${currencyIdB}/${newCurrencyIdB}`);
         } else {
-          history.push(`/add/v2/${newCurrencyIdB}`)
+          history.push(`/add/v2/${newCurrencyIdB}`);
         }
       } else {
-        history.push(`/add/v2/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`)
+        history.push(`/add/v2/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`);
       }
     },
     [currencyIdA, history, currencyIdB]
-  )
+  );
 
   const handleDismissConfirmation = useCallback(() => {
-    setShowConfirm(false)
+    setShowConfirm(false);
     // if there was a tx hash, we want to clear the input
     if (txHash) {
-      onFieldAInput('')
+      onFieldAInput('');
     }
-    setTxHash('')
-  }, [onFieldAInput, txHash])
+    setTxHash('');
+  }, [onFieldAInput, txHash]);
 
-  const isCreate = history.location.pathname.includes('/create')
+  const isCreate = history.location.pathname.includes('/create');
 
-  const addIsUnsupported = useIsSwapUnsupported(currencies?.CURRENCY_A, currencies?.CURRENCY_B)
+  const addIsUnsupported = useIsSwapUnsupported(currencies?.CURRENCY_A, currencies?.CURRENCY_B);
 
   return (
     <>
@@ -373,7 +373,7 @@ export default function AddLiquidity({
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onFieldAInput}
               onMax={() => {
-                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '');
               }}
               onCurrencySelect={handleCurrencyASelect}
               showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
@@ -389,7 +389,7 @@ export default function AddLiquidity({
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
               onMax={() => {
-                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '');
               }}
               showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
               currency={currencies[Field.CURRENCY_B]}
@@ -472,7 +472,7 @@ export default function AddLiquidity({
                   )}
                 <ButtonError
                   onClick={() => {
-                    expertMode ? onAdd() : setShowConfirm(true)
+                    expertMode ? onAdd() : setShowConfirm(true);
                   }}
                   disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
                   error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
@@ -501,5 +501,5 @@ export default function AddLiquidity({
         />
       )}
     </>
-  )
+  );
 }

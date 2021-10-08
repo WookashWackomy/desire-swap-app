@@ -1,13 +1,13 @@
-import { defaultAbiCoder } from '@ethersproject/abi'
-import { getCreate2Address } from '@ethersproject/address'
-import { keccak256 } from '@ethersproject/solidity'
-import { Token } from '@uniswap/sdk-core'
+import { defaultAbiCoder } from '@ethersproject/abi';
+import { getCreate2Address } from '@ethersproject/address';
+import { keccak256 } from '@ethersproject/solidity';
+import { Token } from 'sdkCore/index';
 import {
   FeeAmount,
   POOL_INIT_CODE_HASH,
   POOL_INIT_CODE_HASH_OPTIMISM,
-  POOL_INIT_CODE_HASH_OPTIMISM_KOVAN
-} from '../constants'
+  POOL_INIT_CODE_HASH_OPTIMISM_KOVAN,
+} from '../constants';
 
 /**
  * Computes a pool address
@@ -22,15 +22,15 @@ export function computePoolAddress({
   tokenA,
   tokenB,
   fee,
-  initCodeHashManualOverride
+  initCodeHashManualOverride,
 }: {
-  factoryAddress: string
-  tokenA: Token
-  tokenB: Token
-  fee: FeeAmount
-  initCodeHashManualOverride?: string
+  factoryAddress: string;
+  tokenA: Token;
+  tokenB: Token;
+  fee: FeeAmount;
+  initCodeHashManualOverride?: string;
 }): string {
-  const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
+  const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]; // does safety checks
   return getCreate2Address(
     factoryAddress,
     keccak256(
@@ -43,5 +43,5 @@ export function computePoolAddress({
         : tokenA.chainId === 69
         ? POOL_INIT_CODE_HASH_OPTIMISM_KOVAN
         : POOL_INIT_CODE_HASH)
-  )
+  );
 }

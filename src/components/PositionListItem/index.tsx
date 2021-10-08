@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { HideSmall, MEDIA_WIDTHS, SmallOnly } from 'theme';
 import { PositionDetails } from 'types/position';
-import { Price, Token, Percent } from '@uniswap/sdk-core';
+import { Price, Token, Percent } from 'sdkCore/index';
 import { formatTickPrice } from 'utils/formatTickPrice';
 import Loader from 'components/Loader';
 import { unwrappedToken } from 'utils/unwrappedToken';

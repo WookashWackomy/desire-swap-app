@@ -1,5 +1,5 @@
 import React from 'react';
-import { Currency } from '@uniswap/sdk-core';
+import { Currency } from 'sdkCore/index';
 import styled from 'styled-components/macro';
 import CurrencyLogo from '../CurrencyLogo';
 

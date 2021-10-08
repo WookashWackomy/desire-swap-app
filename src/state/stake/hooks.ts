@@ -1,5 +1,5 @@
 import { t } from '@lingui/macro';
-import { Token, CurrencyAmount } from '@uniswap/sdk-core';
+import { Token, CurrencyAmount } from 'sdkCore/index';
 import { Pair } from '../../v2sdk/entities/pair';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';

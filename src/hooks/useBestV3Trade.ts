@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, TradeType } from 'sdkCore/index';
 import { encodeRouteToPath, Route, Trade } from 'v3sdk/index';
 import { SupportedChainId } from 'constants/chains';
 import { BigNumber } from 'ethers';

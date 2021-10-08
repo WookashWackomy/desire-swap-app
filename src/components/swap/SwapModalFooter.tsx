@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Currency, TradeType } from '@uniswap/sdk-core';
+import { Currency, TradeType } from 'sdkCore/index';
 import { Trade as V2Trade } from '../../v2sdk/entities/trade';
 import { Trade as V3Trade } from 'v3sdk/index';
 

@@ -1,9 +1,9 @@
-import { Trans } from '@lingui/macro'
-import { Currency, Price, Token } from '@uniswap/sdk-core'
-import StepCounter from 'components/InputStepCounter/InputStepCounter'
-import { RowBetween } from 'components/Row'
-import { AutoColumn } from 'components/Column'
-import { Bound } from 'state/mint/v3/actions'
+import { Trans } from '@lingui/macro';
+import { Currency, Price, Token } from 'sdkCore/index';
+import StepCounter from 'components/InputStepCounter/InputStepCounter';
+import { RowBetween } from 'components/Row';
+import { AutoColumn } from 'components/Column';
+import { Bound } from 'state/mint/v3/actions';
 
 // currencyA is the base token
 export default function RangeSelector({
@@ -20,25 +20,25 @@ export default function RangeSelector({
   feeAmount,
   ticksAtLimit,
 }: {
-  priceLower?: Price<Token, Token>
-  priceUpper?: Price<Token, Token>
-  getDecrementLower: () => string
-  getIncrementLower: () => string
-  getDecrementUpper: () => string
-  getIncrementUpper: () => string
-  onLeftRangeInput: (typedValue: string) => void
-  onRightRangeInput: (typedValue: string) => void
-  currencyA?: Currency | null
-  currencyB?: Currency | null
-  feeAmount?: number
-  ticksAtLimit: { [bound in Bound]?: boolean | undefined }
+  priceLower?: Price<Token, Token>;
+  priceUpper?: Price<Token, Token>;
+  getDecrementLower: () => string;
+  getIncrementLower: () => string;
+  getDecrementUpper: () => string;
+  getIncrementUpper: () => string;
+  onLeftRangeInput: (typedValue: string) => void;
+  onRightRangeInput: (typedValue: string) => void;
+  currencyA?: Currency | null;
+  currencyB?: Currency | null;
+  feeAmount?: number;
+  ticksAtLimit: { [bound in Bound]?: boolean | undefined };
 }) {
-  const tokenA = (currencyA ?? undefined)?.wrapped
-  const tokenB = (currencyB ?? undefined)?.wrapped
-  const isSorted = tokenA && tokenB && tokenA.sortsBefore(tokenB)
+  const tokenA = (currencyA ?? undefined)?.wrapped;
+  const tokenB = (currencyB ?? undefined)?.wrapped;
+  const isSorted = tokenA && tokenB && tokenA.sortsBefore(tokenB);
 
-  const leftPrice = isSorted ? priceLower : priceUpper?.invert()
-  const rightPrice = isSorted ? priceUpper : priceLower?.invert()
+  const leftPrice = isSorted ? priceLower : priceUpper?.invert();
+  const rightPrice = isSorted ? priceUpper : priceLower?.invert();
 
   return (
     <AutoColumn gap="md">
@@ -73,5 +73,5 @@ export default function RangeSelector({
         />
       </RowBetween>
     </AutoColumn>
-  )
+  );
 }

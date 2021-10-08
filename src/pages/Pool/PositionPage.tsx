@@ -24,7 +24,7 @@ import { currencyId } from 'utils/currencyId';
 import { formatCurrencyAmount } from 'utils/formatCurrencyAmount';
 import { useV3PositionFees } from 'hooks/useV3PositionFees';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Token, Currency, CurrencyAmount, Percent, Fraction, Price } from '@uniswap/sdk-core';
+import { Token, Currency, CurrencyAmount, Percent, Fraction, Price } from 'sdkCore/index';
 import { useActiveWeb3React } from 'hooks/web3';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks';

@@ -1,33 +1,33 @@
-import { Trans } from '@lingui/macro'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import { CHAIN_INFO, SupportedChainId } from 'constants/chains'
-import { useMemo } from 'react'
-import { X } from 'react-feather'
-import styled from 'styled-components/macro'
-import tokenLogo from '../../assets/images/token-logo.png'
-import { UNI } from '../../constants/tokens'
-import { useMerkleDistributorContract } from '../../hooks/useContract'
-import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp'
-import { useTotalSupply } from '../../hooks/useTotalSupply'
-import useUSDCPrice from '../../hooks/useUSDCPrice'
-import { useActiveWeb3React } from '../../hooks/web3'
-import { useTotalUniEarned } from '../../state/stake/hooks'
-import { useAggregateUniBalance, useTokenBalance } from '../../state/wallet/hooks'
-import { ExternalLink, StyledInternalLink, TYPE, UniTokenAnimated } from '../../theme'
-import { computeUniCirculation } from '../../utils/computeUniCirculation'
-import { AutoColumn } from '../Column'
-import { Break, CardBGImage, CardNoise, CardSection, DataCard } from '../earn/styled'
-import { RowBetween } from '../Row'
+import { Trans } from '@lingui/macro';
+import { CurrencyAmount, Token } from 'sdkCore/index';
+import { CHAIN_INFO, SupportedChainId } from 'constants/chains';
+import { useMemo } from 'react';
+import { X } from 'react-feather';
+import styled from 'styled-components/macro';
+import tokenLogo from '../../assets/images/token-logo.png';
+import { UNI } from '../../constants/tokens';
+import { useMerkleDistributorContract } from '../../hooks/useContract';
+import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp';
+import { useTotalSupply } from '../../hooks/useTotalSupply';
+import useUSDCPrice from '../../hooks/useUSDCPrice';
+import { useActiveWeb3React } from '../../hooks/web3';
+import { useTotalUniEarned } from '../../state/stake/hooks';
+import { useAggregateUniBalance, useTokenBalance } from '../../state/wallet/hooks';
+import { ExternalLink, StyledInternalLink, TYPE, UniTokenAnimated } from '../../theme';
+import { computeUniCirculation } from '../../utils/computeUniCirculation';
+import { AutoColumn } from '../Column';
+import { Break, CardBGImage, CardNoise, CardSection, DataCard } from '../earn/styled';
+import { RowBetween } from '../Row';
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
-`
+`;
 
 const ModalUpper = styled(DataCard)`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   background: radial-gradient(76.02% 75.41% at 1.84% 0%, #ff007a 0%, #021d43 100%);
   padding: 0.5rem;
-`
+`;
 
 const StyledClose = styled(X)`
   position: absolute;
@@ -37,30 +37,30 @@ const StyledClose = styled(X)`
   :hover {
     cursor: pointer;
   }
-`
+`;
 
 /**
  * Content for balance stats modal
  */
 export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowUniBalanceModal: any }) {
-  const { account, chainId } = useActiveWeb3React()
-  const uni = chainId ? UNI[chainId] : undefined
+  const { account, chainId } = useActiveWeb3React();
+  const uni = chainId ? UNI[chainId] : undefined;
 
-  const total = useAggregateUniBalance()
-  const uniBalance: CurrencyAmount<Token> | undefined = useTokenBalance(account ?? undefined, uni)
-  const uniToClaim: CurrencyAmount<Token> | undefined = useTotalUniEarned()
+  const total = useAggregateUniBalance();
+  const uniBalance: CurrencyAmount<Token> | undefined = useTokenBalance(account ?? undefined, uni);
+  const uniToClaim: CurrencyAmount<Token> | undefined = useTotalUniEarned();
 
-  const totalSupply: CurrencyAmount<Token> | undefined = useTotalSupply(uni)
-  const uniPrice = useUSDCPrice(uni)
-  const blockTimestamp = useCurrentBlockTimestamp()
-  const unclaimedUni = useTokenBalance(useMerkleDistributorContract()?.address, uni)
+  const totalSupply: CurrencyAmount<Token> | undefined = useTotalSupply(uni);
+  const uniPrice = useUSDCPrice(uni);
+  const blockTimestamp = useCurrentBlockTimestamp();
+  const unclaimedUni = useTokenBalance(useMerkleDistributorContract()?.address, uni);
   const circulation: CurrencyAmount<Token> | undefined = useMemo(
     () =>
       blockTimestamp && uni && chainId === 1 ? computeUniCirculation(uni, blockTimestamp, unclaimedUni) : totalSupply,
     [blockTimestamp, chainId, totalSupply, unclaimedUni, uni]
-  )
+  );
 
-  const { infoLink } = CHAIN_INFO[chainId ? chainId : SupportedChainId.MAINNET]
+  const { infoLink } = CHAIN_INFO[chainId ? chainId : SupportedChainId.MAINNET];
 
   return (
     <ContentWrapper gap="lg">
@@ -139,5 +139,5 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
         </CardSection>
       </ModalUpper>
     </ContentWrapper>
-  )
+  );
 }

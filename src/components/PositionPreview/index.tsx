@@ -8,7 +8,7 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { Break } from 'components/earn/styled';
 import { Trans } from '@lingui/macro';
-import { Currency } from '@uniswap/sdk-core';
+import { Currency } from 'sdkCore/index';
 import RateToggle from 'components/RateToggle';
 import DoubleCurrencyLogo from 'components/DoubleLogo';
 import RangeBadge from 'components/Badge/RangeBadge';

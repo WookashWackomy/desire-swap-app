@@ -1,24 +1,24 @@
-import { Currency, Token } from '@uniswap/sdk-core'
-import { useCallback, useEffect, useState } from 'react'
-import useLast from '../../hooks/useLast'
-import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo'
-import Modal from '../Modal'
-import { CurrencySearch } from './CurrencySearch'
-import { ImportToken } from './ImportToken'
-import usePrevious from 'hooks/usePrevious'
-import Manage from './Manage'
-import { TokenList } from '@uniswap/token-lists'
-import { ImportList } from './ImportList'
+import { Currency, Token } from 'sdkCore/index';
+import { useCallback, useEffect, useState } from 'react';
+import useLast from '../../hooks/useLast';
+import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo';
+import Modal from '../Modal';
+import { CurrencySearch } from './CurrencySearch';
+import { ImportToken } from './ImportToken';
+import usePrevious from 'hooks/usePrevious';
+import Manage from './Manage';
+import { TokenList } from '@uniswap/token-lists';
+import { ImportList } from './ImportList';
 
 interface CurrencySearchModalProps {
-  isOpen: boolean
-  onDismiss: () => void
-  selectedCurrency?: Currency | null
-  onCurrencySelect: (currency: Currency) => void
-  otherSelectedCurrency?: Currency | null
-  showCommonBases?: boolean
-  showCurrencyAmount?: boolean
-  disableNonToken?: boolean
+  isOpen: boolean;
+  onDismiss: () => void;
+  selectedCurrency?: Currency | null;
+  onCurrencySelect: (currency: Currency) => void;
+  otherSelectedCurrency?: Currency | null;
+  showCommonBases?: boolean;
+  showCurrencyAmount?: boolean;
+  disableNonToken?: boolean;
 }
 
 export enum CurrencyModalView {
@@ -38,35 +38,35 @@ export default function CurrencySearchModal({
   showCurrencyAmount = true,
   disableNonToken = false,
 }: CurrencySearchModalProps) {
-  const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.manage)
-  const lastOpen = useLast(isOpen)
+  const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.manage);
+  const lastOpen = useLast(isOpen);
 
   useEffect(() => {
     if (isOpen && !lastOpen) {
-      setModalView(CurrencyModalView.search)
+      setModalView(CurrencyModalView.search);
     }
-  }, [isOpen, lastOpen])
+  }, [isOpen, lastOpen]);
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
-      onCurrencySelect(currency)
-      onDismiss()
+      onCurrencySelect(currency);
+      onDismiss();
     },
     [onDismiss, onCurrencySelect]
-  )
+  );
 
   // for token import view
-  const prevView = usePrevious(modalView)
+  const prevView = usePrevious(modalView);
 
   // used for import token flow
-  const [importToken, setImportToken] = useState<Token | undefined>()
+  const [importToken, setImportToken] = useState<Token | undefined>();
 
   // used for import list
-  const [importList, setImportList] = useState<TokenList | undefined>()
-  const [listURL, setListUrl] = useState<string | undefined>()
+  const [importList, setImportList] = useState<TokenList | undefined>();
+  const [listURL, setListUrl] = useState<string | undefined>();
 
   // change min height if not searching
-  const minHeight = modalView === CurrencyModalView.importToken || modalView === CurrencyModalView.importList ? 40 : 80
+  const minHeight = modalView === CurrencyModalView.importToken || modalView === CurrencyModalView.importList ? 40 : 80;
 
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={80} minHeight={minHeight}>
@@ -108,5 +108,5 @@ export default function CurrencySearchModal({
         ''
       )}
     </Modal>
-  )
+  );
 }

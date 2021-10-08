@@ -1,17 +1,17 @@
-import { useState } from 'react'
-import styled from 'styled-components/macro'
-import { TYPE, CloseIcon, ExternalLink } from 'theme'
-import { ButtonEmpty } from 'components/Button'
-import Modal from 'components/Modal'
-import Card, { OutlineCard } from 'components/Card'
-import { RowBetween, AutoRow } from 'components/Row'
-import { AutoColumn } from 'components/Column'
-import CurrencyLogo from 'components/CurrencyLogo'
-import { useActiveWeb3React } from 'hooks/web3'
-import { Currency, Token } from '@uniswap/sdk-core'
-import { useUnsupportedTokens } from '../../hooks/Tokens'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
-import { Trans } from '@lingui/macro'
+import { useState } from 'react';
+import styled from 'styled-components/macro';
+import { TYPE, CloseIcon, ExternalLink } from 'theme';
+import { ButtonEmpty } from 'components/Button';
+import Modal from 'components/Modal';
+import Card, { OutlineCard } from 'components/Card';
+import { RowBetween, AutoRow } from 'components/Row';
+import { AutoColumn } from 'components/Column';
+import CurrencyLogo from 'components/CurrencyLogo';
+import { useActiveWeb3React } from 'hooks/web3';
+import { Currency, Token } from 'sdkCore/index';
+import { useUnsupportedTokens } from '../../hooks/Tokens';
+import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
+import { Trans } from '@lingui/macro';
 
 const DetailsFooter = styled.div<{ show: boolean }>`
   padding-top: calc(16px + 2rem);
@@ -28,7 +28,7 @@ const DetailsFooter = styled.div<{ show: boolean }>`
   transform: ${({ show }) => (show ? 'translateY(0%)' : 'translateY(-100%)')};
   transition: transform 300ms ease-in-out;
   text-align: center;
-`
+`;
 
 const AddressText = styled(TYPE.blue)`
   font-size: 12px;
@@ -36,26 +36,26 @@ const AddressText = styled(TYPE.blue)`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 10px;
 `}
-`
+`;
 
 export default function UnsupportedCurrencyFooter({
   show,
   currencies,
 }: {
-  show: boolean
-  currencies: (Currency | undefined | null)[]
+  show: boolean;
+  currencies: (Currency | undefined | null)[];
 }) {
-  const { chainId } = useActiveWeb3React()
-  const [showDetails, setShowDetails] = useState(false)
+  const { chainId } = useActiveWeb3React();
+  const [showDetails, setShowDetails] = useState(false);
 
   const tokens =
     chainId && currencies
       ? currencies.map((currency) => {
-          return currency?.wrapped
+          return currency?.wrapped;
         })
-      : []
+      : [];
 
-  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens()
+  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens();
 
   return (
     <DetailsFooter show={show}>
@@ -87,7 +87,7 @@ export default function UnsupportedCurrencyFooter({
                     </AutoColumn>
                   </OutlineCard>
                 )
-              )
+              );
             })}
             <AutoColumn gap="lg">
               <TYPE.body fontWeight={500}>
@@ -106,5 +106,5 @@ export default function UnsupportedCurrencyFooter({
         </TYPE.blue>
       </ButtonEmpty>
     </DetailsFooter>
-  )
+  );
 }

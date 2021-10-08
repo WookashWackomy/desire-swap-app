@@ -15,7 +15,7 @@ import {
   encodeSqrtRatioX96,
   nearestUsableTick,
 } from 'v3sdk/index';
-import { Currency, Token, CurrencyAmount, Price, Rounding } from '@uniswap/sdk-core';
+import { Currency, Token, CurrencyAmount, Price, Rounding } from 'sdkCore/index';
 import { useCallback, useMemo } from 'react';
 import { useActiveWeb3React } from '../../../hooks/web3';
 import { AppState } from '../../index';

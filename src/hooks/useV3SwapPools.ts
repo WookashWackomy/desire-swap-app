@@ -1,4 +1,4 @@
-import { Currency, Token } from '@uniswap/sdk-core';
+import { Currency, Token } from 'sdkCore/index';
 import { FeeAmount, Pool } from 'v3sdk/index';
 import { useMemo } from 'react';
 import { useAllCurrencyCombinations } from './useAllCurrencyCombinations';

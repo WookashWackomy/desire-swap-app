@@ -1,6 +1,6 @@
 // a list of tokens by chain
-import { Currency, Token } from '@uniswap/sdk-core'
-import { SupportedChainId } from './chains'
+import { Currency, Token } from 'sdkCore/index';
+import { SupportedChainId } from './chains';
 import {
   AMPL,
   DAI,
@@ -18,26 +18,26 @@ import {
   DAI_OPTIMISM,
   USDT_OPTIMISM,
   WBTC_OPTIMISM,
-} from './tokens'
+} from './tokens';
 
 type ChainTokenList = {
-  readonly [chainId: number]: Token[]
-}
+  readonly [chainId: number]: Token[];
+};
 
 type ChainCurrencyList = {
-  readonly [chainId: number]: Currency[]
-}
+  readonly [chainId: number]: Currency[];
+};
 
 const WETH_ONLY: ChainTokenList = Object.fromEntries(
   Object.entries(WETH9_EXTENDED).map(([key, value]) => [key, [value]])
-)
+);
 
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
   [SupportedChainId.MAINNET]: [...WETH_ONLY[SupportedChainId.MAINNET], DAI, USDC, USDT, WBTC],
   [SupportedChainId.OPTIMISM]: [...WETH_ONLY[SupportedChainId.OPTIMISM], DAI_OPTIMISM, USDT_OPTIMISM, WBTC_OPTIMISM],
-}
+};
 export const ADDITIONAL_BASES: { [chainId: number]: { [tokenAddress: string]: Token[] } } = {
   [SupportedChainId.MAINNET]: {
     '0xF16E4d813f4DcfDe4c5b44f305c908742De84eF0': [ETH2X_FLI],
@@ -48,7 +48,7 @@ export const ADDITIONAL_BASES: { [chainId: number]: { [tokenAddress: string]: To
     [WBTC.address]: [renBTC],
     [renBTC.address]: [WBTC],
   },
-}
+};
 /**
  * Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these
  * tokens.
@@ -57,7 +57,7 @@ export const CUSTOM_BASES: { [chainId: number]: { [tokenAddress: string]: Token[
   [SupportedChainId.MAINNET]: {
     [AMPL.address]: [DAI, WETH9_EXTENDED[SupportedChainId.MAINNET]],
   },
-}
+};
 
 /**
  * Shows up in the currency select for swap and add liquidity
@@ -91,13 +91,13 @@ export const COMMON_BASES: ChainCurrencyList = {
   ],
   [SupportedChainId.OPTIMISM]: [ExtendedEther.onChain(SupportedChainId.OPTIMISM)],
   [SupportedChainId.OPTIMISTIC_KOVAN]: [ExtendedEther.onChain(SupportedChainId.OPTIMISTIC_KOVAN)],
-}
+};
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
   [SupportedChainId.MAINNET]: [...WETH_ONLY[SupportedChainId.MAINNET], DAI, USDC, USDT, WBTC],
-}
+};
 export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
   [SupportedChainId.MAINNET]: [
     [
@@ -113,4 +113,4 @@ export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
     [USDC, USDT],
     [DAI, USDT],
   ],
-}
+};

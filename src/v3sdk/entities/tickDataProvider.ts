@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BigintIsh } from '@uniswap/sdk-core';
+import { BigintIsh } from 'sdkCore/index';
 
 /**
  * Provides information about ticks

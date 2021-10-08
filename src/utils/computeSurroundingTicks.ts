@@ -1,4 +1,4 @@
-import { Token } from '@uniswap/sdk-core';
+import { Token } from 'sdkCore/index';
 import { tickToPrice } from 'v3sdk/index';
 import { TickProcessed } from 'hooks/usePoolTickData';
 import JSBI from 'jsbi';

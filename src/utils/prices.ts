@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Currency, CurrencyAmount, Fraction, Percent, TradeType } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Fraction, Percent, TradeType } from 'sdkCore/index';
 import { Trade as V2Trade } from '../v2sdk/entities/trade';
 import { Trade as V3Trade } from 'v3sdk/index';
 import {

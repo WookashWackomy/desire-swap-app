@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
+import { Currency, Percent, TradeType } from 'sdkCore/index';
 import { Trade as V2Trade } from '../../v2sdk/entities/trade';
 import { Trade as V3Trade } from 'v3sdk/index';
 import { ReactNode, useCallback, useMemo } from 'react';

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { Currency } from '@uniswap/sdk-core';
+import { Currency } from 'sdkCore/index';
 import { FeeAmount } from 'v3sdk/index';
 import { usePoolActiveLiquidity } from 'hooks/usePoolTickData';
 import { ChartEntry } from './types';

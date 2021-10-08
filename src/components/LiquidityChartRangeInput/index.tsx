@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { Trans } from '@lingui/macro';
-import { Currency, Price, Token } from '@uniswap/sdk-core';
+import { Currency, Price, Token } from 'sdkCore/index';
 import { AutoColumn, ColumnCenter } from 'components/Column';
 import Loader from 'components/Loader';
 import { useColor } from 'hooks/useColor';

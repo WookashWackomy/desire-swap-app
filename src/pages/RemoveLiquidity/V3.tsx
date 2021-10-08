@@ -23,7 +23,7 @@ import ReactGA from 'react-ga';
 import { useActiveWeb3React } from 'hooks/web3';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { Percent } from '@uniswap/sdk-core';
+import { Percent } from 'sdkCore/index';
 import { TYPE } from 'theme';
 import { Wrapper, SmallMaxButton, ResponsiveHeaderText } from './styled';
 import Loader from 'components/Loader';

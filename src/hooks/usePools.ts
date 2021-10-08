@@ -1,7 +1,7 @@
 // import { computePoolAddress } from 'v3sdk/index';
 // import { V3_CORE_FACTORY_ADDRESSES } from '../constants/addresses';
 //import { IUniswapV3PoolStateInterface } from '../types/v3/IUniswapV3PoolState'
-import { Token, Currency } from '@uniswap/sdk-core';
+import { Token, Currency } from 'sdkCore/index';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from './web3';
 import { Result, useMultipleContractSingleData, useSingleContractMultipleData } from '../state/multicall/hooks';

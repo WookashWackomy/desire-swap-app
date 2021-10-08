@@ -5,8 +5,8 @@ import {
   TICK_SPACINGS,
   encodeSqrtRatioX96,
   TickMath,
-} from '@uniswap/v3-sdk/dist/';
-import { Price, Token } from '@uniswap/sdk-core';
+} from 'v3sdk/index';
+import { Price, Token } from 'sdkCore/index';
 import JSBI from 'jsbi';
 
 export function tryParsePrice(baseToken?: Token, quoteToken?: Token, value?: string) {

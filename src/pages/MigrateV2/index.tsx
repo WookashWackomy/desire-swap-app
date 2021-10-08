@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useMemo } from 'react';
 import { Pair } from '../../v2sdk/entities/pair';
-import { Token } from '@uniswap/sdk-core';
+import { Token } from 'sdkCore/index';
 import { ThemeContext } from 'styled-components/macro';
 import { AutoColumn } from '../../components/Column';
 import { AutoRow } from '../../components/Row';

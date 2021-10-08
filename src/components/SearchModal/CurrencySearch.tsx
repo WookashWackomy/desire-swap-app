@@ -1,35 +1,35 @@
-import { Currency, Token } from '@uniswap/sdk-core'
-import { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import ReactGA from 'react-ga'
-import { t, Trans } from '@lingui/macro'
-import { FixedSizeList } from 'react-window'
-import { Text } from 'rebass'
-import { ExtendedEther } from '../../constants/tokens'
-import { useActiveWeb3React } from '../../hooks/web3'
-import { useAllTokens, useToken, useIsUserAddedToken, useSearchInactiveTokenLists } from '../../hooks/Tokens'
-import { CloseIcon, TYPE, ButtonText, IconWrapper } from '../../theme'
-import { isAddress } from '../../utils'
-import Column from '../Column'
-import Row, { RowBetween, RowFixed } from '../Row'
-import CommonBases from './CommonBases'
-import CurrencyList from './CurrencyList'
-import { filterTokens, useSortedTokensByQuery } from './filtering'
-import { useTokenComparator } from './sorting'
-import { PaddedColumn, SearchInput, Separator } from './styleds'
-import AutoSizer from 'react-virtualized-auto-sizer'
-import styled from 'styled-components/macro'
-import useToggle from 'hooks/useToggle'
-import { useOnClickOutside } from 'hooks/useOnClickOutside'
-import useTheme from 'hooks/useTheme'
-import ImportRow from './ImportRow'
-import { Edit } from 'react-feather'
-import useDebounce from 'hooks/useDebounce'
+import { Currency, Token } from 'sdkCore/index';
+import { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactGA from 'react-ga';
+import { t, Trans } from '@lingui/macro';
+import { FixedSizeList } from 'react-window';
+import { Text } from 'rebass';
+import { ExtendedEther } from '../../constants/tokens';
+import { useActiveWeb3React } from '../../hooks/web3';
+import { useAllTokens, useToken, useIsUserAddedToken, useSearchInactiveTokenLists } from '../../hooks/Tokens';
+import { CloseIcon, TYPE, ButtonText, IconWrapper } from '../../theme';
+import { isAddress } from '../../utils';
+import Column from '../Column';
+import Row, { RowBetween, RowFixed } from '../Row';
+import CommonBases from './CommonBases';
+import CurrencyList from './CurrencyList';
+import { filterTokens, useSortedTokensByQuery } from './filtering';
+import { useTokenComparator } from './sorting';
+import { PaddedColumn, SearchInput, Separator } from './styleds';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import styled from 'styled-components/macro';
+import useToggle from 'hooks/useToggle';
+import { useOnClickOutside } from 'hooks/useOnClickOutside';
+import useTheme from 'hooks/useTheme';
+import ImportRow from './ImportRow';
+import { Edit } from 'react-feather';
+import useDebounce from 'hooks/useDebounce';
 
 const ContentWrapper = styled(Column)`
   width: 100%;
   flex: 1 1;
   position: relative;
-`
+`;
 
 const Footer = styled.div`
   width: 100%;
@@ -39,20 +39,20 @@ const Footer = styled.div`
   border-top-right-radius: 0;
   background-color: ${({ theme }) => theme.bg1};
   border-top: 1px solid ${({ theme }) => theme.bg2};
-`
+`;
 
 interface CurrencySearchProps {
-  isOpen: boolean
-  onDismiss: () => void
-  selectedCurrency?: Currency | null
-  onCurrencySelect: (currency: Currency) => void
-  otherSelectedCurrency?: Currency | null
-  showCommonBases?: boolean
-  showCurrencyAmount?: boolean
-  disableNonToken?: boolean
-  showManageView: () => void
-  showImportView: () => void
-  setImportToken: (token: Token) => void
+  isOpen: boolean;
+  onDismiss: () => void;
+  selectedCurrency?: Currency | null;
+  onCurrencySelect: (currency: Currency) => void;
+  otherSelectedCurrency?: Currency | null;
+  showCommonBases?: boolean;
+  showCurrencyAmount?: boolean;
+  disableNonToken?: boolean;
+  showManageView: () => void;
+  showImportView: () => void;
+  setImportToken: (token: Token) => void;
 }
 
 export function CurrencySearch({
@@ -68,25 +68,25 @@ export function CurrencySearch({
   showImportView,
   setImportToken,
 }: CurrencySearchProps) {
-  const { chainId } = useActiveWeb3React()
-  const theme = useTheme()
+  const { chainId } = useActiveWeb3React();
+  const theme = useTheme();
 
   // refs for fixed size lists
-  const fixedList = useRef<FixedSizeList>()
+  const fixedList = useRef<FixedSizeList>();
 
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const debouncedQuery = useDebounce(searchQuery, 200)
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedQuery = useDebounce(searchQuery, 200);
 
-  const [invertSearchOrder] = useState<boolean>(false)
+  const [invertSearchOrder] = useState<boolean>(false);
 
-  const allTokens = useAllTokens()
+  const allTokens = useAllTokens();
 
   // if they input an address, use it
-  const isAddressSearch = isAddress(debouncedQuery)
+  const isAddressSearch = isAddress(debouncedQuery);
 
-  const searchToken = useToken(debouncedQuery)
+  const searchToken = useToken(debouncedQuery);
 
-  const searchTokenIsAdded = useIsUserAddedToken(searchToken)
+  const searchTokenIsAdded = useIsUserAddedToken(searchToken);
 
   useEffect(() => {
     if (isAddressSearch) {
@@ -94,82 +94,82 @@ export function CurrencySearch({
         category: 'Currency Select',
         action: 'Search by address',
         label: isAddressSearch,
-      })
+      });
     }
-  }, [isAddressSearch])
+  }, [isAddressSearch]);
 
-  const tokenComparator = useTokenComparator(invertSearchOrder)
+  const tokenComparator = useTokenComparator(invertSearchOrder);
 
   const filteredTokens: Token[] = useMemo(() => {
-    return filterTokens(Object.values(allTokens), debouncedQuery)
-  }, [allTokens, debouncedQuery])
+    return filterTokens(Object.values(allTokens), debouncedQuery);
+  }, [allTokens, debouncedQuery]);
 
   const sortedTokens: Token[] = useMemo(() => {
-    return filteredTokens.sort(tokenComparator)
-  }, [filteredTokens, tokenComparator])
+    return filteredTokens.sort(tokenComparator);
+  }, [filteredTokens, tokenComparator]);
 
-  const filteredSortedTokens = useSortedTokensByQuery(sortedTokens, debouncedQuery)
+  const filteredSortedTokens = useSortedTokensByQuery(sortedTokens, debouncedQuery);
 
-  const ether = useMemo(() => chainId && ExtendedEther.onChain(chainId), [chainId])
+  const ether = useMemo(() => chainId && ExtendedEther.onChain(chainId), [chainId]);
 
   const filteredSortedTokensWithETH: Currency[] = useMemo(() => {
-    const s = debouncedQuery.toLowerCase().trim()
+    const s = debouncedQuery.toLowerCase().trim();
     if (s === '' || s === 'e' || s === 'et' || s === 'eth') {
-      return ether ? [ether, ...filteredSortedTokens] : filteredSortedTokens
+      return ether ? [ether, ...filteredSortedTokens] : filteredSortedTokens;
     }
-    return filteredSortedTokens
-  }, [debouncedQuery, ether, filteredSortedTokens])
+    return filteredSortedTokens;
+  }, [debouncedQuery, ether, filteredSortedTokens]);
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
-      onCurrencySelect(currency)
-      onDismiss()
+      onCurrencySelect(currency);
+      onDismiss();
     },
     [onDismiss, onCurrencySelect]
-  )
+  );
 
   // clear the input on open
   useEffect(() => {
-    if (isOpen) setSearchQuery('')
-  }, [isOpen])
+    if (isOpen) setSearchQuery('');
+  }, [isOpen]);
 
   // manage focus on modal show
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>();
   const handleInput = useCallback((event) => {
-    const input = event.target.value
-    const checksummedInput = isAddress(input)
-    setSearchQuery(checksummedInput || input)
-    fixedList.current?.scrollTo(0)
-  }, [])
+    const input = event.target.value;
+    const checksummedInput = isAddress(input);
+    setSearchQuery(checksummedInput || input);
+    fixedList.current?.scrollTo(0);
+  }, []);
 
   const handleEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
-        const s = debouncedQuery.toLowerCase().trim()
+        const s = debouncedQuery.toLowerCase().trim();
         if (s === 'eth' && ether) {
-          handleCurrencySelect(ether)
+          handleCurrencySelect(ether);
         } else if (filteredSortedTokensWithETH.length > 0) {
           if (
             filteredSortedTokensWithETH[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
             filteredSortedTokensWithETH.length === 1
           ) {
-            handleCurrencySelect(filteredSortedTokensWithETH[0])
+            handleCurrencySelect(filteredSortedTokensWithETH[0]);
           }
         }
       }
     },
     [debouncedQuery, ether, filteredSortedTokensWithETH, handleCurrencySelect]
-  )
+  );
 
   // menu ui
-  const [open, toggle] = useToggle(false)
-  const node = useRef<HTMLDivElement>()
-  useOnClickOutside(node, open ? toggle : undefined)
+  const [open, toggle] = useToggle(false);
+  const node = useRef<HTMLDivElement>();
+  useOnClickOutside(node, open ? toggle : undefined);
 
   // if no results on main list, show option to expand into inactive
   const filteredInactiveTokens = useSearchInactiveTokenLists(
     filteredTokens.length === 0 || (debouncedQuery.length > 2 && !isAddressSearch) ? debouncedQuery : undefined
-  )
+  );
 
   return (
     <ContentWrapper>
@@ -242,5 +242,5 @@ export function CurrencySearch({
         </Row>
       </Footer>
     </ContentWrapper>
-  )
+  );
 }

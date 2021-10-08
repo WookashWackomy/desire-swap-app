@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import JSBI from 'jsbi';
 import { useCallback, useMemo, useState, useEffect, ReactNode } from 'react';
-import { Fraction, Percent, Price, Token, CurrencyAmount } from '@uniswap/sdk-core';
+import { Fraction, Percent, Price, Token, CurrencyAmount } from 'sdkCore/index';
 import { Redirect, RouteComponentProps } from 'react-router';
 import { Text } from 'rebass';
 import { AutoColumn } from '../../components/Column';

@@ -1,4 +1,4 @@
-import { Currency } from '@uniswap/sdk-core';
+import { Currency } from 'sdkCore/index';
 import { FeeAmount, Pool, tickToPrice, TICK_SPACINGS } from 'v3sdk/index';
 import JSBI from 'jsbi';
 import { PoolState, usePool } from './usePools';

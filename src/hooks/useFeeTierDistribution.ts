@@ -1,5 +1,5 @@
 import { FeeAmount } from 'v3sdk/index';
-import { Token, Currency } from '@uniswap/sdk-core';
+import { Token, Currency } from 'sdkCore/index';
 import { useFeeTierDistributionQuery } from 'state/data/enhanced';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { reduce } from 'lodash';

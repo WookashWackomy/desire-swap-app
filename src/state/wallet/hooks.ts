@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Currency, Token, CurrencyAmount, Ether } from '@uniswap/sdk-core';
+import { Currency, Token, CurrencyAmount, Ether } from 'sdkCore/index';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
 import { SupportedChainId } from 'constants/chains';

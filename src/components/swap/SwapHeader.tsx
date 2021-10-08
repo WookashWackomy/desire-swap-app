@@ -1,16 +1,16 @@
-import { Trans } from '@lingui/macro'
-import styled from 'styled-components/macro'
-import SettingsTab from '../Settings'
-import { Percent } from '@uniswap/sdk-core'
+import { Trans } from '@lingui/macro';
+import styled from 'styled-components/macro';
+import SettingsTab from '../Settings';
+import { Percent } from 'sdkCore/index';
 
-import { RowBetween, RowFixed } from '../Row'
-import { TYPE } from '../../theme'
+import { RowBetween, RowFixed } from '../Row';
+import { TYPE } from '../../theme';
 
 const StyledSwapHeader = styled.div`
   padding: 1rem 1.25rem 0.5rem 1.25rem;
   width: 100%;
   color: ${({ theme }) => theme.text2};
-`
+`;
 
 export default function SwapHeader({ allowedSlippage }: { allowedSlippage: Percent }) {
   return (
@@ -26,5 +26,5 @@ export default function SwapHeader({ allowedSlippage }: { allowedSlippage: Perce
         </RowFixed>
       </RowBetween>
     </StyledSwapHeader>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Percent, CurrencyAmount, Currency, TradeType, Token } from '@uniswap/sdk-core';
+import { Percent, CurrencyAmount, Currency, TradeType, Token } from 'sdkCore/index';
 import { Trade as V2Trade } from '../v2sdk/entities/trade';
 import { Trade as V3Trade } from 'v3sdk/index';
 import { splitSignature } from 'ethers/lib/utils';

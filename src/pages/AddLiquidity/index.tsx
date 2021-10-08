@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Percent } from 'sdkCore/index';
 import { AlertTriangle } from 'react-feather';
 import ReactGA from 'react-ga';
 import { RouteComponentProps } from 'react-router-dom';

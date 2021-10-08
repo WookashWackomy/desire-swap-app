@@ -1,56 +1,56 @@
-import { Currency } from '@uniswap/sdk-core'
-import { ReactNode, useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components/macro'
-import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink'
-import Modal from '../Modal'
-import { ExternalLink } from '../../theme'
-import { Text } from 'rebass'
-import { CloseIcon, CustomLightSpinner } from '../../theme/components'
-import { RowBetween, RowFixed } from '../Row'
-import { AlertCircle, AlertTriangle, ArrowUpCircle, CheckCircle } from 'react-feather'
-import { ButtonPrimary, ButtonLight } from '../Button'
-import { AutoColumn, ColumnCenter } from '../Column'
-import Circle from '../../assets/images/blue-loader.svg'
-import MetaMaskLogo from '../../assets/images/metamask.png'
-import { useActiveWeb3React } from '../../hooks/web3'
-import useAddTokenToMetamask from 'hooks/useAddTokenToMetamask'
-import { Trans } from '@lingui/macro'
-import { CHAIN_INFO, L2_CHAIN_IDS, SupportedL2ChainId } from 'constants/chains'
-import { useIsTransactionConfirmed, useTransaction } from 'state/transactions/hooks'
-import Badge from 'components/Badge'
-import AnimatedConfirmation from './AnimatedConfirmation'
+import { Currency } from 'sdkCore/index';
+import { ReactNode, useContext } from 'react';
+import styled, { ThemeContext } from 'styled-components/macro';
+import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
+import Modal from '../Modal';
+import { ExternalLink } from '../../theme';
+import { Text } from 'rebass';
+import { CloseIcon, CustomLightSpinner } from '../../theme/components';
+import { RowBetween, RowFixed } from '../Row';
+import { AlertCircle, AlertTriangle, ArrowUpCircle, CheckCircle } from 'react-feather';
+import { ButtonPrimary, ButtonLight } from '../Button';
+import { AutoColumn, ColumnCenter } from '../Column';
+import Circle from '../../assets/images/blue-loader.svg';
+import MetaMaskLogo from '../../assets/images/metamask.png';
+import { useActiveWeb3React } from '../../hooks/web3';
+import useAddTokenToMetamask from 'hooks/useAddTokenToMetamask';
+import { Trans } from '@lingui/macro';
+import { CHAIN_INFO, L2_CHAIN_IDS, SupportedL2ChainId } from 'constants/chains';
+import { useIsTransactionConfirmed, useTransaction } from 'state/transactions/hooks';
+import Badge from 'components/Badge';
+import AnimatedConfirmation from './AnimatedConfirmation';
 
 const Wrapper = styled.div`
   width: 100%;
   padding: 1rem;
-`
+`;
 const Section = styled(AutoColumn)<{ inline?: boolean }>`
   padding: ${({ inline }) => (inline ? '0' : '0')};
-`
+`;
 
 const BottomSection = styled(Section)`
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-`
+`;
 
 const ConfirmedIcon = styled(ColumnCenter)<{ inline?: boolean }>`
   padding: ${({ inline }) => (inline ? '20px 0' : '32px 0;')};
-`
+`;
 
 const StyledLogo = styled.img`
   height: 16px;
   width: 16px;
   margin-left: 6px;
-`
+`;
 
 function ConfirmationPendingContent({
   onDismiss,
   pendingText,
   inline,
 }: {
-  onDismiss: () => void
-  pendingText: ReactNode
-  inline?: boolean // not in modal
+  onDismiss: () => void;
+  pendingText: ReactNode;
+  inline?: boolean; // not in modal
 }) {
   return (
     <Wrapper>
@@ -77,7 +77,7 @@ function ConfirmationPendingContent({
         </AutoColumn>
       </AutoColumn>
     </Wrapper>
-  )
+  );
 }
 function TransactionSubmittedContent({
   onDismiss,
@@ -86,17 +86,17 @@ function TransactionSubmittedContent({
   currencyToAdd,
   inline,
 }: {
-  onDismiss: () => void
-  hash: string | undefined
-  chainId: number
-  currencyToAdd?: Currency | undefined
-  inline?: boolean // not in modal
+  onDismiss: () => void;
+  hash: string | undefined;
+  chainId: number;
+  currencyToAdd?: Currency | undefined;
+  inline?: boolean; // not in modal
 }) {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
-  const { library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React();
 
-  const { addToken, success } = useAddTokenToMetamask(currencyToAdd)
+  const { addToken, success } = useAddTokenToMetamask(currencyToAdd);
 
   return (
     <Wrapper>
@@ -145,7 +145,7 @@ function TransactionSubmittedContent({
         </AutoColumn>
       </Section>
     </Wrapper>
-  )
+  );
 }
 
 export function ConfirmationModalContent({
@@ -154,10 +154,10 @@ export function ConfirmationModalContent({
   onDismiss,
   topContent,
 }: {
-  title: ReactNode
-  onDismiss: () => void
-  topContent: () => ReactNode
-  bottomContent?: () => ReactNode | undefined
+  title: ReactNode;
+  onDismiss: () => void;
+  topContent: () => ReactNode;
+  bottomContent?: () => ReactNode | undefined;
 }) {
   return (
     <Wrapper>
@@ -172,11 +172,11 @@ export function ConfirmationModalContent({
       </Section>
       {bottomContent && <BottomSection gap="12px">{bottomContent()}</BottomSection>}
     </Wrapper>
-  )
+  );
 }
 
 export function TransactionErrorContent({ message, onDismiss }: { message: ReactNode; onDismiss: () => void }) {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
   return (
     <Wrapper>
       <Section>
@@ -204,7 +204,7 @@ export function TransactionErrorContent({ message, onDismiss }: { message: React
         </ButtonPrimary>
       </BottomSection>
     </Wrapper>
-  )
+  );
 }
 
 function L2Content({
@@ -214,25 +214,25 @@ function L2Content({
   pendingText,
   inline,
 }: {
-  onDismiss: () => void
-  hash: string | undefined
-  chainId: number
-  currencyToAdd?: Currency | undefined
-  pendingText: ReactNode
-  inline?: boolean // not in modal
+  onDismiss: () => void;
+  hash: string | undefined;
+  chainId: number;
+  currencyToAdd?: Currency | undefined;
+  pendingText: ReactNode;
+  inline?: boolean; // not in modal
 }) {
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
-  const transaction = useTransaction(hash)
-  const confirmed = useIsTransactionConfirmed(hash)
-  const transactionSuccess = transaction?.receipt?.status === 1
+  const transaction = useTransaction(hash);
+  const confirmed = useIsTransactionConfirmed(hash);
+  const transactionSuccess = transaction?.receipt?.status === 1;
 
   // convert unix time difference to seconds
   const secondsToConfirm = transaction?.confirmedTime
     ? (transaction.confirmedTime - transaction.addedTime) / 1000
-    : undefined
+    : undefined;
 
-  const info = CHAIN_INFO[chainId as SupportedL2ChainId]
+  const info = CHAIN_INFO[chainId as SupportedL2ChainId];
 
   return (
     <Wrapper>
@@ -304,17 +304,17 @@ function L2Content({
         </AutoColumn>
       </Section>
     </Wrapper>
-  )
+  );
 }
 
 interface ConfirmationModalProps {
-  isOpen: boolean
-  onDismiss: () => void
-  hash: string | undefined
-  content: () => ReactNode
-  attemptingTxn: boolean
-  pendingText: ReactNode
-  currencyToAdd?: Currency | undefined
+  isOpen: boolean;
+  onDismiss: () => void;
+  hash: string | undefined;
+  content: () => ReactNode;
+  attemptingTxn: boolean;
+  pendingText: ReactNode;
+  currencyToAdd?: Currency | undefined;
 }
 
 export default function TransactionConfirmationModal({
@@ -326,11 +326,11 @@ export default function TransactionConfirmationModal({
   content,
   currencyToAdd,
 }: ConfirmationModalProps) {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useActiveWeb3React();
 
-  const isL2 = Boolean(chainId && L2_CHAIN_IDS.includes(chainId))
+  const isL2 = Boolean(chainId && L2_CHAIN_IDS.includes(chainId));
 
-  if (!chainId) return null
+  if (!chainId) return null;
 
   // confirmation screen
   return (
@@ -350,5 +350,5 @@ export default function TransactionConfirmationModal({
         content()
       )}
     </Modal>
-  )
+  );
 }

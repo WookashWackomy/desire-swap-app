@@ -1,35 +1,35 @@
-import JSBI from 'jsbi'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import { isAddress } from 'ethers/lib/utils'
-import { useEffect, useState } from 'react'
-import { Text } from 'rebass'
-import styled from 'styled-components/macro'
-import Circle from '../../assets/images/blue-loader.svg'
-import tokenLogo from '../../assets/images/token-logo.png'
-import { useActiveWeb3React } from '../../hooks/web3'
-import { ApplicationModal } from '../../state/application/actions'
-import { useModalOpen, useToggleSelfClaimModal } from '../../state/application/hooks'
-import { useClaimCallback, useUserClaimData, useUserUnclaimedAmount } from '../../state/claim/hooks'
-import { useUserHasSubmittedClaim } from '../../state/transactions/hooks'
-import { CloseIcon, CustomLightSpinner, ExternalLink, TYPE, UniTokenAnimated } from '../../theme'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
-import { ButtonPrimary } from '../Button'
-import { AutoColumn, ColumnCenter } from '../Column'
-import Confetti from '../Confetti'
-import { Break, CardBGImage, CardBGImageSmaller, CardNoise, CardSection, DataCard } from '../earn/styled'
-import { Trans } from '@lingui/macro'
+import JSBI from 'jsbi';
+import { CurrencyAmount, Token } from 'sdkCore/index';
+import { isAddress } from 'ethers/lib/utils';
+import { useEffect, useState } from 'react';
+import { Text } from 'rebass';
+import styled from 'styled-components/macro';
+import Circle from '../../assets/images/blue-loader.svg';
+import tokenLogo from '../../assets/images/token-logo.png';
+import { useActiveWeb3React } from '../../hooks/web3';
+import { ApplicationModal } from '../../state/application/actions';
+import { useModalOpen, useToggleSelfClaimModal } from '../../state/application/hooks';
+import { useClaimCallback, useUserClaimData, useUserUnclaimedAmount } from '../../state/claim/hooks';
+import { useUserHasSubmittedClaim } from '../../state/transactions/hooks';
+import { CloseIcon, CustomLightSpinner, ExternalLink, TYPE, UniTokenAnimated } from '../../theme';
+import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
+import { ButtonPrimary } from '../Button';
+import { AutoColumn, ColumnCenter } from '../Column';
+import Confetti from '../Confetti';
+import { Break, CardBGImage, CardBGImageSmaller, CardNoise, CardSection, DataCard } from '../earn/styled';
+import { Trans } from '@lingui/macro';
 
-import Modal from '../Modal'
-import { RowBetween } from '../Row'
+import Modal from '../Modal';
+import { RowBetween } from '../Row';
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
-`
+`;
 
 const ModalUpper = styled(DataCard)`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   background: radial-gradient(76.02% 75.41% at 1.84% 0%, #ff007a 0%, #021d43 100%);
-`
+`;
 
 const ConfirmOrLoadingWrapper = styled.div<{ activeBG: boolean }>`
   width: 100%;
@@ -38,57 +38,57 @@ const ConfirmOrLoadingWrapper = styled.div<{ activeBG: boolean }>`
   background: ${({ activeBG }) =>
     activeBG &&
     'radial-gradient(76.02% 75.41% at 1.84% 0%, rgba(255, 0, 122, 0.2) 0%, rgba(33, 114, 229, 0.2) 100%), #FFFFFF;'};
-`
+`;
 
 const ConfirmedIcon = styled(ColumnCenter)`
   padding: 60px 0;
-`
+`;
 
-const SOCKS_AMOUNT = 1000
-const USER_AMOUNT = 400
+const SOCKS_AMOUNT = 1000;
+const USER_AMOUNT = 400;
 
 export default function ClaimModal() {
-  const isOpen = useModalOpen(ApplicationModal.SELF_CLAIM)
-  const toggleClaimModal = useToggleSelfClaimModal()
+  const isOpen = useModalOpen(ApplicationModal.SELF_CLAIM);
+  const toggleClaimModal = useToggleSelfClaimModal();
 
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React();
 
   // used for UI loading states
-  const [attempting, setAttempting] = useState<boolean>(false)
+  const [attempting, setAttempting] = useState<boolean>(false);
 
   // get user claim data
-  const userClaimData = useUserClaimData(account)
+  const userClaimData = useUserClaimData(account);
 
   // monitor the status of the claim from contracts and txns
-  const { claimCallback } = useClaimCallback(account)
-  const unclaimedAmount: CurrencyAmount<Token> | undefined = useUserUnclaimedAmount(account)
-  const { claimSubmitted, claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
-  const claimConfirmed = Boolean(claimTxn?.receipt)
+  const { claimCallback } = useClaimCallback(account);
+  const unclaimedAmount: CurrencyAmount<Token> | undefined = useUserUnclaimedAmount(account);
+  const { claimSubmitted, claimTxn } = useUserHasSubmittedClaim(account ?? undefined);
+  const claimConfirmed = Boolean(claimTxn?.receipt);
 
   function onClaim() {
-    setAttempting(true)
+    setAttempting(true);
     claimCallback()
       // reset modal and log error
       .catch((error) => {
-        setAttempting(false)
-        console.log(error)
-      })
+        setAttempting(false);
+        console.log(error);
+      });
   }
 
   // once confirmed txn is found, if modal is closed open, mark as not attempting regradless
   useEffect(() => {
     if (claimConfirmed && claimSubmitted && attempting) {
-      setAttempting(false)
+      setAttempting(false);
       if (!isOpen) {
-        toggleClaimModal()
+        toggleClaimModal();
       }
     }
-  }, [attempting, claimConfirmed, claimSubmitted, isOpen, toggleClaimModal])
+  }, [attempting, claimConfirmed, claimSubmitted, isOpen, toggleClaimModal]);
 
   const nonLPAmount = JSBI.multiply(
     JSBI.BigInt((userClaimData?.flags?.isSOCKS ? SOCKS_AMOUNT : 0) + (userClaimData?.flags?.isUser ? USER_AMOUNT : 0)),
     JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18))
-  )
+  );
 
   return (
     <Modal isOpen={isOpen} onDismiss={toggleClaimModal} maxHeight={90}>
@@ -228,5 +228,5 @@ export default function ClaimModal() {
         </ConfirmOrLoadingWrapper>
       )}
     </Modal>
-  )
+  );
 }

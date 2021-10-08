@@ -5,7 +5,7 @@ import { Trade as V3Trade } from 'v3sdk/index';
 import { useBestV3TradeExactIn, useBestV3TradeExactOut, V3TradeState } from '../../hooks/useBestV3Trade';
 import useENS from '../../hooks/useENS';
 import { parseUnits } from '@ethersproject/units';
-import { Currency, CurrencyAmount, Percent, TradeType } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Percent, TradeType } from 'sdkCore/index';
 import { Trade as V2Trade } from '../../v2sdk/entities/trade';
 import { ParsedQs } from 'qs';
 import { useCallback, useEffect, useState } from 'react';

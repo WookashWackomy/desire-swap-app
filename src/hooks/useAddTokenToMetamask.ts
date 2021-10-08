@@ -1,17 +1,17 @@
-import { getTokenLogoURL } from './../components/CurrencyLogo/index'
-import { Currency, Token } from '@uniswap/sdk-core'
-import { useCallback, useState } from 'react'
-import { useActiveWeb3React } from 'hooks/web3'
+import { getTokenLogoURL } from './../components/CurrencyLogo/index';
+import { Currency, Token } from 'sdkCore/index';
+import { useCallback, useState } from 'react';
+import { useActiveWeb3React } from 'hooks/web3';
 
 export default function useAddTokenToMetamask(currencyToAdd: Currency | undefined): {
-  addToken: () => void
-  success: boolean | undefined
+  addToken: () => void;
+  success: boolean | undefined;
 } {
-  const { library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React();
 
-  const token: Token | undefined = currencyToAdd?.wrapped
+  const token: Token | undefined = currencyToAdd?.wrapped;
 
-  const [success, setSuccess] = useState<boolean | undefined>()
+  const [success, setSuccess] = useState<boolean | undefined>();
 
   const addToken = useCallback(() => {
     if (library && library.provider.isMetaMask && library.provider.request && token) {
@@ -30,13 +30,13 @@ export default function useAddTokenToMetamask(currencyToAdd: Currency | undefine
           },
         })
         .then((success) => {
-          setSuccess(success)
+          setSuccess(success);
         })
-        .catch(() => setSuccess(false))
+        .catch(() => setSuccess(false));
     } else {
-      setSuccess(false)
+      setSuccess(false);
     }
-  }, [library, token])
+  }, [library, token]);
 
-  return { addToken, success }
+  return { addToken, success };
 }

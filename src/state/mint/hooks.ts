@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { AppState } from '../index';
 import { Field, typeInput } from './actions';
 import { Pair } from '../../v2sdk/entities/pair';
-import { Currency, Token, Percent, Price, CurrencyAmount } from '@uniswap/sdk-core';
+import { Currency, Token, Percent, Price, CurrencyAmount } from 'sdkCore/index';
 import JSBI from 'jsbi';
 import { PairState, useV2Pair } from '../../hooks/useV2Pairs';
 import { useTotalSupply } from '../../hooks/useTotalSupply';

@@ -1,17 +1,17 @@
-import { CSSProperties } from 'react'
-import { Token } from '@uniswap/sdk-core'
-import { AutoRow, RowFixed } from 'components/Row'
-import { AutoColumn } from 'components/Column'
-import CurrencyLogo from 'components/CurrencyLogo'
-import { TYPE } from 'theme'
-import ListLogo from 'components/ListLogo'
-import useTheme from 'hooks/useTheme'
-import { ButtonPrimary } from 'components/Button'
-import styled from 'styled-components/macro'
-import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens'
-import { CheckCircle } from 'react-feather'
-import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo'
-import { Trans } from '@lingui/macro'
+import { CSSProperties } from 'react';
+import { Token } from 'sdkCore/index';
+import { AutoRow, RowFixed } from 'components/Row';
+import { AutoColumn } from 'components/Column';
+import CurrencyLogo from 'components/CurrencyLogo';
+import { TYPE } from 'theme';
+import ListLogo from 'components/ListLogo';
+import useTheme from 'hooks/useTheme';
+import { ButtonPrimary } from 'components/Button';
+import styled from 'styled-components/macro';
+import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens';
+import { CheckCircle } from 'react-feather';
+import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo';
+import { Trans } from '@lingui/macro';
 
 const TokenSection = styled.div<{ dim?: boolean }>`
   padding: 4px 20px;
@@ -22,14 +22,14 @@ const TokenSection = styled.div<{ dim?: boolean }>`
   align-items: center;
 
   opacity: ${({ dim }) => (dim ? '0.4' : '1')};
-`
+`;
 
 const CheckIcon = styled(CheckCircle)`
   height: 16px;
   width: 16px;
   margin-right: 6px;
   stroke: ${({ theme }) => theme.green1};
-`
+`;
 
 const NameOverflow = styled.div`
   white-space: nowrap;
@@ -38,7 +38,7 @@ const NameOverflow = styled.div`
   text-overflow: ellipsis;
   max-width: 140px;
   font-size: 12px;
-`
+`;
 
 export default function ImportRow({
   token,
@@ -47,19 +47,19 @@ export default function ImportRow({
   showImportView,
   setImportToken,
 }: {
-  token: Token
-  style?: CSSProperties
-  dim?: boolean
-  showImportView: () => void
-  setImportToken: (token: Token) => void
+  token: Token;
+  style?: CSSProperties;
+  dim?: boolean;
+  showImportView: () => void;
+  setImportToken: (token: Token) => void;
 }) {
-  const theme = useTheme()
+  const theme = useTheme();
 
   // check if already active on list or local storage tokens
-  const isAdded = useIsUserAddedToken(token)
-  const isActive = useIsTokenActive(token)
+  const isAdded = useIsUserAddedToken(token);
+  const isActive = useIsTokenActive(token);
 
-  const list = token instanceof WrappedTokenInfo ? token.list : undefined
+  const list = token instanceof WrappedTokenInfo ? token.list : undefined;
 
   return (
     <TokenSection style={style}>
@@ -87,8 +87,8 @@ export default function ImportRow({
           fontWeight={500}
           fontSize="14px"
           onClick={() => {
-            setImportToken && setImportToken(token)
-            showImportView()
+            setImportToken && setImportToken(token);
+            showImportView();
           }}
         >
           <Trans>Import</Trans>
@@ -102,5 +102,5 @@ export default function ImportRow({
         </RowFixed>
       )}
     </TokenSection>
-  )
+  );
 }

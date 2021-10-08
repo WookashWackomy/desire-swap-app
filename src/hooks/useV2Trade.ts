@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, TradeType } from 'sdkCore/index';
 import { Pair } from '../v2sdk/entities/pair';
 import { Trade } from '../v2sdk/entities/trade';
 import { useMemo } from 'react';

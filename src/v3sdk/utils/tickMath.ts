@@ -1,6 +1,6 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable complexity */
-import { MaxUint256 } from '@uniswap/sdk-core';
+import { MaxUint256 } from 'sdkCore/index';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import { ONE, ZERO } from '../internalConstants';

@@ -1,11 +1,11 @@
-import { Currency, CurrencyAmount, Fraction, Percent } from '@uniswap/sdk-core'
-import { Text } from 'rebass'
-import { ButtonPrimary } from '../../components/Button'
-import { RowBetween, RowFixed } from '../../components/Row'
-import CurrencyLogo from '../../components/CurrencyLogo'
-import { Field } from '../../state/mint/actions'
-import { TYPE } from '../../theme'
-import { Trans } from '@lingui/macro'
+import { Currency, CurrencyAmount, Fraction, Percent } from 'sdkCore/index';
+import { Text } from 'rebass';
+import { ButtonPrimary } from '../../components/Button';
+import { RowBetween, RowFixed } from '../../components/Row';
+import CurrencyLogo from '../../components/CurrencyLogo';
+import { Field } from '../../state/mint/actions';
+import { TYPE } from '../../theme';
+import { Trans } from '@lingui/macro';
 
 export function ConfirmAddModalBottom({
   noLiquidity,
@@ -15,12 +15,12 @@ export function ConfirmAddModalBottom({
   poolTokenPercentage,
   onAdd,
 }: {
-  noLiquidity?: boolean
-  price?: Fraction
-  currencies: { [field in Field]?: Currency }
-  parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> }
-  poolTokenPercentage?: Percent
-  onAdd: () => void
+  noLiquidity?: boolean;
+  price?: Fraction;
+  currencies: { [field in Field]?: Currency };
+  parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> };
+  poolTokenPercentage?: Percent;
+  onAdd: () => void;
 }) {
   return (
     <>
@@ -73,5 +73,5 @@ export function ConfirmAddModalBottom({
         </Text>
       </ButtonPrimary>
     </>
-  )
+  );
 }
