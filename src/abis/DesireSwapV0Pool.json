@@ -28,7 +28,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "sqrtRangeMultiplier_",
+        "name": "ticksInRange_",
         "type": "uint256"
       },
       {
@@ -802,6 +802,39 @@
   },
   {
     "inputs": [],
+    "name": "inUseInfo",
+    "outputs": [
+      {
+        "internalType": "int24",
+        "name": "usingRange",
+        "type": "int24"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inUseLiq",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inUseReserve0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inUseReserve1",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "inUseRange",
     "outputs": [
       {
@@ -1114,29 +1147,6 @@
     "name": "setSwapRouter",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "slot0",
-    "outputs": [
-      {
-        "internalType": "int24",
-        "name": "usingRange",
-        "type": "int24"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentPrice",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "L",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

@@ -41,6 +41,7 @@ const NETWORK_URLS: { [key in SupportedChainId]: string } = {
   [SupportedChainId.ARBITRUM_ONE]: `https://rinkeby.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM_RINKEBY]: `https://rinkeby.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.HARDHAT]: `https://http://localhost:8545/`,
+  [SupportedChainId.KONRAD]: `https://http://localhost:8545/`,
 };
 
 export const network = new NetworkConnector({

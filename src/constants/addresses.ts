@@ -13,6 +13,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [SupportedChainId.ARBITRUM_ONE]: '0xadF885960B47eA2CD9B55E6DAc6B42b7Cb2806dB',
   [SupportedChainId.ARBITRUM_RINKEBY]: '0xa501c031958F579dB7676fF1CE78AD305794d579',
   [SupportedChainId.HARDHAT]: HARDHAT_MULTICALL_ADDRESS,
+  [SupportedChainId.KONRAD]: HARDHAT_MULTICALL_ADDRESS,
 };
 export const V2_FACTORY_ADDRESSES: AddressMap = constructSameAddressMap(V2_FACTORY_ADDRESS);
 export const V2_ROUTER_ADDRESS: AddressMap = constructSameAddressMap('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D');
@@ -64,6 +65,7 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = constructSameA
     SupportedChainId.ARBITRUM_ONE,
     SupportedChainId.ARBITRUM_RINKEBY,
     SupportedChainId.HARDHAT,
+    SupportedChainId.KONRAD,
   ]
 );
 // export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = constructSameAddressMap(

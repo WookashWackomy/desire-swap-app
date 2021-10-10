@@ -2,7 +2,7 @@ import { BigintIsh, Price, Token, CurrencyAmount } from 'sdkCore/index';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import { FACTORY_ADDRESS, FeeAmount, TICK_SPACINGS } from '../constants';
-import { NEGATIVE_ONE, ONE, Q192, ZERO } from '../internalConstants';
+import { NEGATIVE_ONE, ONE, ZERO } from '../internalConstants';
 import { computePoolAddress } from '../utils/computePoolAddress';
 import { LiquidityMath } from '../utils/liquidityMath';
 import { SwapMath } from '../utils/swapMath';
@@ -10,6 +10,8 @@ import { TickMath } from '../utils/tickMath';
 import { Tick, TickConstructorArgs } from './tick';
 import { NoTickDataProvider, TickDataProvider } from './tickDataProvider';
 import { TickListDataProvider } from './tickListDataProvider';
+
+const D = JSBI.BigInt("1000000000000000000");
 
 interface StepComputations {
   sqrtPriceStartX96: JSBI;
@@ -66,13 +68,13 @@ export class Pool {
   ) {
     invariant(Number.isInteger(fee) && fee < 1_000_000, 'FEE');
 
-    const tickCurrentSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent);
-    const nextTickSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent + 1);
-    invariant(
-      JSBI.greaterThanOrEqual(JSBI.BigInt(sqrtRatioX96), tickCurrentSqrtRatioX96) &&
-        JSBI.lessThanOrEqual(JSBI.BigInt(sqrtRatioX96), nextTickSqrtRatioX96),
-      'PRICE_BOUNDS'
-    );
+    // const tickCurrentSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent);
+    // const nextTickSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent + 1);
+    // invariant(
+    //   JSBI.greaterThanOrEqual(JSBI.BigInt(sqrtRatioX96), tickCurrentSqrtRatioX96) &&
+    //     JSBI.lessThanOrEqual(JSBI.BigInt(sqrtRatioX96), nextTickSqrtRatioX96),
+    //   'PRICE_BOUNDS'
+    // );
     // always create a copy of the list since we want the pool's tick list to be immutable
     [this.token0, this.token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA];
     this.fee = fee;
@@ -100,8 +102,8 @@ export class Pool {
       (this._token0Price = new Price(
         this.token0,
         this.token1,
-        Q192,
-        JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96)
+        JSBI.BigInt(D),
+        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D)
       ))
     );
   }
@@ -115,8 +117,8 @@ export class Pool {
       (this._token1Price = new Price(
         this.token1,
         this.token0,
-        JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),
-        Q192
+        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D),
+        D
       ))
     );
   }
@@ -144,7 +146,7 @@ export class Pool {
    * @param sqrtPriceLimitX96 The Q64.96 sqrt price limit
    * @returns The output amount and the pool with updated state
    */
-  public async getOutputAmount(
+  public async getOutputAmount( //TODO sqrtRatioX96
     inputAmount: CurrencyAmount<Token>,
     sqrtPriceLimitX96?: JSBI
   ): Promise<[CurrencyAmount<Token>, Pool]> {
@@ -171,7 +173,7 @@ export class Pool {
    * @param sqrtPriceLimitX96 The Q64.96 sqrt price limit. If zero for one, the price cannot be less than this value after the swap. If one for zero, the price cannot be greater than this value after the swap
    * @returns The input amount and the pool with updated state
    */
-  public async getInputAmount(
+  public async getInputAmount( //TODO sqrtRatioX96
     outputAmount: CurrencyAmount<Token>,
     sqrtPriceLimitX96?: JSBI
   ): Promise<[CurrencyAmount<Token>, Pool]> {
@@ -202,7 +204,7 @@ export class Pool {
    * @returns liquidity
    * @returns tickCurrent
    */
-  private async swap(
+  private async swap( //TODO sqrtRatioX96
     zeroForOne: boolean,
     amountSpecified: JSBI,
     sqrtPriceLimitX96?: JSBI
@@ -227,16 +229,16 @@ export class Pool {
     const state = {
       amountSpecifiedRemaining: amountSpecified,
       amountCalculated: ZERO,
-      sqrtPriceX96: this.sqrtRatioX96,
+      sqrtRatioX96: this.sqrtRatioX96,
       tick: this.tickCurrent,
       liquidity: this.liquidity,
     };
 
     // start swap while loop
     // eslint-disable-next-line eqeqeq
-    while (JSBI.notEqual(state.amountSpecifiedRemaining, ZERO) && state.sqrtPriceX96 != sqrtPriceLimitX96) {
+    while (JSBI.notEqual(state.amountSpecifiedRemaining, ZERO) && state.sqrtRatioX96 != sqrtPriceLimitX96) {
       const step: Partial<StepComputations> = {};
-      step.sqrtPriceStartX96 = state.sqrtPriceX96;
+      step.sqrtPriceStartX96 = state.sqrtRatioX96;
 
       // because each iteration of the while loop rounds, we can't optimize this code (relative to the smart contract)
       // by simply traversing to the next available tick, we instead need to exactly replicate
@@ -254,8 +256,8 @@ export class Pool {
       }
 
       step.sqrtPriceNextX96 = TickMath.getSqrtRatioAtTick(step.tickNext);
-      [state.sqrtPriceX96, step.amountIn, step.amountOut, step.feeAmount] = SwapMath.computeSwapStep(
-        state.sqrtPriceX96,
+      [state.sqrtRatioX96, step.amountIn, step.amountOut, step.feeAmount] = SwapMath.computeSwapStep(
+        state.sqrtRatioX96,
         (
           zeroForOne
             ? JSBI.lessThan(step.sqrtPriceNextX96, sqrtPriceLimitX96)
@@ -280,7 +282,7 @@ export class Pool {
       }
 
       // TODO
-      if (JSBI.equal(state.sqrtPriceX96, step.sqrtPriceNextX96)) {
+      if (JSBI.equal(state.sqrtRatioX96, step.sqrtPriceNextX96)) {
         // if the tick is initialized, run the tick transition
         if (step.initialized) {
           let liquidityNet = JSBI.BigInt((await this.tickDataProvider.getTick(step.tickNext)).liquidityNet);
@@ -293,15 +295,15 @@ export class Pool {
 
         state.tick = zeroForOne ? step.tickNext - 1 : step.tickNext;
         // eslint-disable-next-line eqeqeq
-      } else if (state.sqrtPriceX96 != step.sqrtPriceStartX96) {
+      } else if (state.sqrtRatioX96 != step.sqrtPriceStartX96) {
         // recompute unless we're on a lower tick boundary (i.e. already transitioned ticks), and haven't moved
-        state.tick = TickMath.getTickAtSqrtRatio(state.sqrtPriceX96);
+        state.tick = TickMath.getTickAtSqrtRatio(state.sqrtRatioX96);
       }
     }
 
     return {
       amountCalculated: state.amountCalculated,
-      sqrtRatioX96: state.sqrtPriceX96,
+      sqrtRatioX96: state.sqrtRatioX96,
       liquidity: state.liquidity,
       tickCurrent: state.tick,
     };

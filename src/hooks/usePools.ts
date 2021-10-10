@@ -1,6 +1,7 @@
 // import { computePoolAddress } from 'v3sdk/index';
 // import { V3_CORE_FACTORY_ADDRESSES } from '../constants/addresses';
 //import { IUniswapV3PoolStateInterface } from '../types/v3/IUniswapV3PoolState'
+import { BigNumber } from 'ethers';
 import { Token, Currency } from 'sdkCore/index';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from './web3';
@@ -45,7 +46,7 @@ export function usePools(
   const poolAddressCallInputs = transformed
     .map((value) => {
       if (value === null) return null;
-      return [value[0].address, value[1].address, '500000000000000']; //TODO fee
+      return [value[0].address, value[1].address, BigNumber.from(value[2]).mul(BigNumber.from("1000000000000")).toString()]; //TODO fee
     })
     .filter((val) => val !== null) as [string, string, string][];
 
@@ -61,7 +62,8 @@ export function usePools(
     .filter((result): result is Result => !!result)
     .map((result) => result[0]);
 
-  const slot0s = useMultipleContractSingleData(poolAddresses, DesireSwapV0PoolInterface, 'slot0');
+  const inUseInfos = useMultipleContractSingleData(poolAddresses, DesireSwapV0PoolInterface, 'inUseInfo');
+  const slot0s = inUseInfos;
 
   return useMemo(() => {
     return poolKeys.map((_key, index) => {
@@ -79,7 +81,7 @@ export function usePools(
 
         if (!slot0.currentPrice || slot0.currentPrice.eq(0)) return [PoolState.NOT_EXISTS, null];
 
-        return [PoolState.EXISTS, new Pool(token0, token1, fee, slot0.currentPrice, slot0.L, slot0.usingRange)];
+        return [PoolState.EXISTS, new Pool(token0, token1, fee, slot0.currentPrice, slot0.inUseLiq, slot0.usingRange)];
       } catch (error) {
         console.error('Error when constructing the pool', error);
         return [PoolState.NOT_EXISTS, null];

@@ -147,7 +147,14 @@ export const WETH9_EXTENDED: { [chainId: number]: Token } = {
   ),
   [SupportedChainId.HARDHAT]: new Token(
     SupportedChainId.HARDHAT,
-    '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707',
+    '0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681',
+    18,
+    'WETH',
+    'Wrapped Ether'
+  ),
+  [SupportedChainId.KONRAD]: new Token(
+    SupportedChainId.KONRAD,
+    '0xB47e6A5f8b33b3F17603C83a0535A9dcD7E32681',
     18,
     'WETH',
     'Wrapped Ether'
