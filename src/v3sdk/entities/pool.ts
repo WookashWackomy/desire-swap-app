@@ -10,8 +10,10 @@ import { TickMath } from '../utils/tickMath';
 import { Tick, TickConstructorArgs } from './tick';
 import { NoTickDataProvider, TickDataProvider } from './tickDataProvider';
 import { TickListDataProvider } from './tickListDataProvider';
+import { BigNumber } from 'ethers';
+import { D } from 'utils/DesireSwap/supply';
 
-const D = JSBI.BigInt("1000000000000000000");
+const D_BigInt = JSBI.BigInt(D.toString());
 
 interface StepComputations {
   sqrtPriceStartX96: JSBI;
@@ -39,6 +41,8 @@ export class Pool {
   public readonly liquidity: JSBI;
   public readonly tickCurrent: number;
   public readonly tickDataProvider: TickDataProvider;
+  public readonly reserve0: BigNumber;
+  public readonly reserve1: BigNumber;
 
   private _token0Price?: Price<Token, Token>;
   private _token1Price?: Price<Token, Token>;
@@ -64,7 +68,9 @@ export class Pool {
     sqrtRatioX96: BigintIsh,
     liquidity: BigintIsh,
     tickCurrent: number,
-    ticks: TickDataProvider | (Tick | TickConstructorArgs)[] = NO_TICK_DATA_PROVIDER_DEFAULT
+    ticks: TickDataProvider | (Tick | TickConstructorArgs)[] = NO_TICK_DATA_PROVIDER_DEFAULT,
+    reserve0: BigNumber = BigNumber.from(0),
+    reserve1: BigNumber = BigNumber.from(0)
   ) {
     invariant(Number.isInteger(fee) && fee < 1_000_000, 'FEE');
 
@@ -82,6 +88,8 @@ export class Pool {
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
     this.tickDataProvider = Array.isArray(ticks) ? new TickListDataProvider(ticks, TICK_SPACINGS[fee]) : ticks;
+    this.reserve0 = reserve0;
+    this.reserve1 = reserve1;
   }
 
   /**
@@ -102,8 +110,8 @@ export class Pool {
       (this._token0Price = new Price(
         this.token0,
         this.token1,
-        JSBI.BigInt(D),
-        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D)
+        JSBI.BigInt(D_BigInt),
+        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96), D_BigInt)
       ))
     );
   }
@@ -117,8 +125,8 @@ export class Pool {
       (this._token1Price = new Price(
         this.token1,
         this.token0,
-        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D),
-        D
+        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96), D_BigInt),
+        D_BigInt
       ))
     );
   }
@@ -146,7 +154,8 @@ export class Pool {
    * @param sqrtPriceLimitX96 The Q64.96 sqrt price limit
    * @returns The output amount and the pool with updated state
    */
-  public async getOutputAmount( //TODO sqrtRatioX96
+  public async getOutputAmount(
+    //TODO sqrtRatioX96
     inputAmount: CurrencyAmount<Token>,
     sqrtPriceLimitX96?: JSBI
   ): Promise<[CurrencyAmount<Token>, Pool]> {
@@ -173,7 +182,8 @@ export class Pool {
    * @param sqrtPriceLimitX96 The Q64.96 sqrt price limit. If zero for one, the price cannot be less than this value after the swap. If one for zero, the price cannot be greater than this value after the swap
    * @returns The input amount and the pool with updated state
    */
-  public async getInputAmount( //TODO sqrtRatioX96
+  public async getInputAmount(
+    //TODO sqrtRatioX96
     outputAmount: CurrencyAmount<Token>,
     sqrtPriceLimitX96?: JSBI
   ): Promise<[CurrencyAmount<Token>, Pool]> {
@@ -204,7 +214,8 @@ export class Pool {
    * @returns liquidity
    * @returns tickCurrent
    */
-  private async swap( //TODO sqrtRatioX96
+  private async swap(
+    //TODO sqrtRatioX96
     zeroForOne: boolean,
     amountSpecified: JSBI,
     sqrtPriceLimitX96?: JSBI

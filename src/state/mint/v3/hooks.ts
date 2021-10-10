@@ -33,6 +33,8 @@ import {
 import { tryParseTick } from './utils';
 import { usePool } from 'hooks/usePools';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
+import { token0Supply, token1Supply } from 'utils/DesireSwap/supply';
+import { BigNumber } from 'ethers';
 
 export function useV3MintState(): AppState['mintV3'] {
   return useAppSelector((state) => state.mintV3);
@@ -317,25 +319,63 @@ export function useV3DerivedMintInfo(
         return undefined;
       }
 
-      const position: Position | undefined = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
-        ? Position.fromAmount0({
-            pool: poolForPosition,
-            tickLower,
-            tickUpper,
-            amount0: independentAmount.quotient,
-            useFullPrecision: true, // we want full precision for the theoretical position
-          })
-        : Position.fromAmount1({
-            pool: poolForPosition,
-            tickLower,
-            tickUpper,
-            amount1: independentAmount.quotient,
-          });
+      // const position: Position | undefined = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
+      //   ? Position.fromAmount0({
+      //       pool: poolForPosition,
+      //       tickLower,
+      //       tickUpper,
+      //       amount0: independentAmount.quotient,
+      //       useFullPrecision: true, // we want full precision for the theoretical position
+      //     })
+      //   : Position.fromAmount1({
+      //       pool: poolForPosition,
+      //       tickLower,
+      //       tickUpper,
+      //       amount1: independentAmount.quotient,
+      //     });
 
-      const dependentTokenAmount = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
-        ? position.amount1
-        : position.amount0;
-      return dependentCurrency && CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient);
+      // const dependentTokenAmount = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
+      //   ? position.amount1
+      //   : position.amount0;
+      //return dependentCurrency && CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient);
+
+      const isToken0IndependentInput = wrappedIndependentAmount.currency.equals(poolForPosition.token0);
+      const desireSwapSupplyParams = {
+        amount: BigNumber.from(independentAmount.toExact()),
+        lowestRangeIndex: tickLower,
+        highestRangeIndex: tickUpper,
+        inUseRange: poolForPosition.tickCurrent,
+        ticksInRange: poolForPosition.tickSpacing,
+        reserve0: poolForPosition.reserve0,
+        reserve1: poolForPosition.reserve1,
+        liquidity: BigNumber.from(poolForPosition.liquidity.toString()),
+      };
+      const { amount: dependentTokenAmount } = isToken0IndependentInput
+        ? token0Supply(
+            desireSwapSupplyParams.amount,
+            desireSwapSupplyParams.lowestRangeIndex,
+            desireSwapSupplyParams.highestRangeIndex,
+            desireSwapSupplyParams.inUseRange,
+            desireSwapSupplyParams.ticksInRange,
+            desireSwapSupplyParams.reserve0,
+            desireSwapSupplyParams.reserve1,
+            desireSwapSupplyParams.liquidity
+          )
+        : token1Supply(
+            desireSwapSupplyParams.amount,
+            desireSwapSupplyParams.lowestRangeIndex,
+            desireSwapSupplyParams.highestRangeIndex,
+            desireSwapSupplyParams.inUseRange,
+            desireSwapSupplyParams.ticksInRange,
+            desireSwapSupplyParams.reserve0,
+            desireSwapSupplyParams.reserve1,
+            desireSwapSupplyParams.liquidity
+          );
+
+      return (
+        dependentCurrency &&
+        CurrencyAmount.fromRawAmount(dependentCurrency, JSBI.BigInt(dependentTokenAmount.toString()))
+      );
     }
 
     return undefined;

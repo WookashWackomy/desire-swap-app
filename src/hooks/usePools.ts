@@ -46,7 +46,11 @@ export function usePools(
   const poolAddressCallInputs = transformed
     .map((value) => {
       if (value === null) return null;
-      return [value[0].address, value[1].address, BigNumber.from(value[2]).mul(BigNumber.from("1000000000000")).toString()]; //TODO fee
+      return [
+        value[0].address,
+        value[1].address,
+        BigNumber.from(value[2]).mul(BigNumber.from('1000000000000')).toString(),
+      ]; //TODO fee
     })
     .filter((val) => val !== null) as [string, string, string][];
 
@@ -81,7 +85,20 @@ export function usePools(
 
         if (!slot0.currentPrice || slot0.currentPrice.eq(0)) return [PoolState.NOT_EXISTS, null];
 
-        return [PoolState.EXISTS, new Pool(token0, token1, fee, slot0.currentPrice, slot0.inUseLiq, slot0.usingRange)];
+        return [
+          PoolState.EXISTS,
+          new Pool(
+            token0,
+            token1,
+            fee,
+            slot0.currentPrice,
+            slot0.inUseLiq,
+            slot0.usingRange,
+            undefined,
+            slot0.inUseReserve0,
+            slot0.inUseReserve1
+          ),
+        ];
       } catch (error) {
         console.error('Error when constructing the pool', error);
         return [PoolState.NOT_EXISTS, null];

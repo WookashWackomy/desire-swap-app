@@ -1,0 +1,124 @@
+import { BigNumber } from 'ethers';
+
+export const D: BigNumber = BigNumber.from(10).pow(18); //10^18
+const d: BigNumber = BigNumber.from(10).pow(9);
+const m: BigNumber = BigNumber.from('1000049998750062496');
+
+function power(base: BigNumber, to: number) {
+  // in standard E18
+  let ret: BigNumber = D;
+  if (to > 0) {
+    for (let step = 0; step < to; step++) {
+      ret = ret.mul(base).div(D);
+    }
+  } else {
+    for (let step = 0; step > to; step--) {
+      base = base.mul(D).div(D);
+    }
+  }
+  return ret;
+}
+
+function supply(
+  lowestRangeIndex: number,
+  highestRangeIndex: number,
+  inUseRange: number,
+  ticksInRange: number,
+  reserve0: BigNumber,
+  reserve1: BigNumber,
+  liquidity: BigNumber
+) {
+  const liqToAdd = D.mul(d);
+  let sqrtPriceTop: BigNumber = BigNumber.from(0);
+  let sqrtPriceBottom: BigNumber = BigNumber.from(0);
+  let amount0: BigNumber = BigNumber.from(0);
+  let amount1: BigNumber = BigNumber.from(0);
+  if (lowestRangeIndex > inUseRange) {
+    for (let i: number = highestRangeIndex; i >= lowestRangeIndex; i = i - ticksInRange) {
+      sqrtPriceTop = power(m, i);
+      sqrtPriceBottom = power(m, i - ticksInRange);
+      amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)));
+    }
+  } else if (highestRangeIndex < inUseRange) {
+    for (let i = lowestRangeIndex; i <= highestRangeIndex; i = i + ticksInRange) {
+      sqrtPriceTop = power(m, i + ticksInRange);
+      sqrtPriceBottom = power(m, i);
+      amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)));
+    }
+  } else {
+    for (let i = highestRangeIndex; i >= inUseRange; i = i - ticksInRange) {
+      sqrtPriceTop = power(m, i);
+      sqrtPriceBottom = power(m, i - ticksInRange);
+      amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)));
+    }
+
+    for (let i = lowestRangeIndex; i <= inUseRange; i = i + ticksInRange) {
+      sqrtPriceTop = power(m, i + ticksInRange);
+      sqrtPriceBottom = power(m, i);
+      amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)));
+    }
+
+    let amount0ToAdd;
+    let amount1ToAdd;
+    sqrtPriceTop = power(m, inUseRange + ticksInRange);
+    sqrtPriceBottom = power(m, inUseRange);
+    if (reserve0.eq(0) && reserve1.eq(0)) {
+      amount0ToAdd = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)).div(2);
+      amount1ToAdd = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(2);
+    } else {
+      amount0ToAdd = liqToAdd.mul(reserve0).div(liquidity);
+      amount1ToAdd = liqToAdd.mul(reserve1).div(liquidity);
+    }
+    amount0 = amount0.add(amount0ToAdd);
+    amount1 = amount1.add(amount1ToAdd);
+  }
+  return { amount0, amount1 };
+}
+
+export function token0Supply(
+  amount0: BigNumber,
+  lowestRangeIndex: number,
+  highestRangeIndex: number,
+  inUseRange: number,
+  ticksInRange: number,
+  reserve0: BigNumber,
+  reserve1: BigNumber,
+  liquidity: BigNumber
+) {
+  const { amount0: amount0Help, amount1: amount1Help } = supply(
+    lowestRangeIndex,
+    highestRangeIndex,
+    inUseRange,
+    ticksInRange,
+    reserve0,
+    reserve1,
+    liquidity
+  );
+  const liqToAdd = D.mul(d).mul(amount0).div(amount0Help);
+  const amount = D.mul(amount1Help).mul(amount0).div(amount0Help); //amount1
+  return { liqToAdd, amount };
+}
+
+export function token1Supply(
+  amount1: BigNumber,
+  lowestRangeIndex: number,
+  highestRangeIndex: number,
+  inUseRange: number,
+  ticksInRange: number,
+  reserve0: BigNumber,
+  reserve1: BigNumber,
+  liquidity: BigNumber
+) {
+  const { amount0: amount0Help, amount1: amount1Help } = supply(
+    lowestRangeIndex,
+    highestRangeIndex,
+    inUseRange,
+    ticksInRange,
+    reserve0,
+    reserve1,
+    liquidity
+  );
+  const liqToAdd = D.mul(d).mul(amount1).div(amount1Help);
+  const amount = D.mul(amount0Help).mul(amount1).div(amount1Help); //amount0
+  return { liqToAdd, amount };
+}
