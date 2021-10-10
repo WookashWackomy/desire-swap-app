@@ -7,6 +7,7 @@ import { computePoolAddress } from '../utils/computePoolAddress';
 import { LiquidityMath } from '../utils/liquidityMath';
 import { SwapMath } from '../utils/swapMath';
 import { TickMath } from '../utils/tickMath';
+import { RangeMath } from '../utils/rangeMath';
 import { Tick, TickConstructorArgs } from './tick';
 import { NoTickDataProvider, TickDataProvider } from './tickDataProvider';
 import { TickListDataProvider } from './tickListDataProvider';
@@ -68,13 +69,23 @@ export class Pool {
   ) {
     invariant(Number.isInteger(fee) && fee < 1_000_000, 'FEE');
 
-    // const tickCurrentSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent);
-    // const nextTickSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent + 1);
-    // invariant(
-    //   JSBI.greaterThanOrEqual(JSBI.BigInt(sqrtRatioX96), tickCurrentSqrtRatioX96) &&
-    //     JSBI.lessThanOrEqual(JSBI.BigInt(sqrtRatioX96), nextTickSqrtRatioX96),
-    //   'PRICE_BOUNDS'
-    // );
+    const tickRangeSqrtRatioX96 = RangeMath.getSqrtRatioAtTick(tickCurrent);
+    const tickRangeSqrtRatioX96string = tickRangeSqrtRatioX96.toString();
+    const nextRangeSqrtRatioX96 = RangeMath.getSqrtRatioAtTick(tickCurrent + TICK_SPACINGS[fee]);
+    const nextRangeSqrtRatioX96String = nextRangeSqrtRatioX96.toString();
+    console.log(tickRangeSqrtRatioX96string);
+    console.log(nextRangeSqrtRatioX96String);
+
+    const a = sqrtRatioX96.toString();
+    const b = JSBI.BigInt(sqrtRatioX96).toString();
+    console.log(a);
+    console.log(b);
+
+    invariant(
+      JSBI.greaterThanOrEqual(JSBI.BigInt(sqrtRatioX96), tickRangeSqrtRatioX96) &&
+        JSBI.lessThanOrEqual(JSBI.BigInt(sqrtRatioX96), nextRangeSqrtRatioX96),
+      'PRICE_BOUNDS'
+    );
     // always create a copy of the list since we want the pool's tick list to be immutable
     [this.token0, this.token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA];
     this.fee = fee;
@@ -102,8 +113,8 @@ export class Pool {
       (this._token0Price = new Price(
         this.token0,
         this.token1,
-        JSBI.BigInt(D),
-        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D)
+        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D),
+        JSBI.BigInt(D)
       ))
     );
   }
@@ -117,8 +128,8 @@ export class Pool {
       (this._token1Price = new Price(
         this.token1,
         this.token0,
-        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D),
-        D
+        D,
+        JSBI.divide(JSBI.multiply(this.sqrtRatioX96, this.sqrtRatioX96),D)
       ))
     );
   }
