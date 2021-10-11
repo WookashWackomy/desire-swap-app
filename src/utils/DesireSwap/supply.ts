@@ -39,42 +39,42 @@ function supply(
   let sqrtB;
   let amountA;
   let amountB;
-  if (lowestRangeIndex > inUseRange) {
-    for (let i: number = lowestRangeIndex; i < highestRangeIndex; i = i + ticksInRange) {
-      sqrtPriceBottom = power(m, i);
+  if (highestRangeIndex < inUseRange) {
+    sqrtPriceBottom = power(m, lowestRangeIndex);
+    sqrtA = sqrtPriceBottom.toString();
+          sqrtPriceTop = power(m, highestRangeIndex);
+    sqrtB = sqrtPriceTop.toString();
+          amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
+    amountB = amount1.toString();
+      sqrtPriceBottom = power(m, lowestRangeIndex);
 sqrtA = sqrtPriceBottom.toString();
-      sqrtPriceTop = power(m, i + ticksInRange);
+      sqrtPriceTop = power(m, highestRangeIndex);
 sqrtB = sqrtPriceTop.toString();
       amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
 amountA = amount0.toString();
-    }
-  } else if (highestRangeIndex < inUseRange) {
-    for (let i = lowestRangeIndex; i < highestRangeIndex; i = i + ticksInRange) {
-      sqrtPriceBottom = power(m, i);
-sqrtA = sqrtPriceBottom.toString();
-      sqrtPriceTop = power(m, i + ticksInRange);
-sqrtB = sqrtPriceTop.toString();
-      amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
-amountB = amount1.toString();
-    }
-  } else {
-    for (let i = inUseRange + ticksInRange; i < highestRangeIndex; i = i + ticksInRange) {
-      sqrtPriceBottom = power(m, i);
-sqrtA = sqrtPriceBottom.toString();
-      sqrtPriceTop = power(m, i + ticksInRange);
-sqrtB = sqrtPriceTop.toString();
-      amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
-amountA = amount0.toString();
-    }
 
-    for (let i = lowestRangeIndex; i < inUseRange; i = i + ticksInRange) {
-      sqrtPriceBottom = power(m, i);
+  } else if (lowestRangeIndex > inUseRange) {
+    sqrtPriceBottom = power(m, lowestRangeIndex);
 sqrtA = sqrtPriceBottom.toString();
-      sqrtPriceTop = power(m, i + ticksInRange);
+    sqrtPriceTop = power(m, highestRangeIndex);
 sqrtB = sqrtPriceTop.toString();
-      amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
-amountB = amount1.toString();
-    }
+    amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
+amountA = amount0.toString();
+  } else {
+    sqrtPriceBottom = power(m, lowestRangeIndex);
+    sqrtA = sqrtPriceBottom.toString();
+    sqrtPriceTop = power(m, inUseRange);
+    sqrtB = sqrtPriceTop.toString();
+    amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
+    amountB = amount1.toString();
+
+    sqrtPriceBottom = power(m, inUseRange + ticksInRange);
+    sqrtA = sqrtPriceBottom.toString();
+    sqrtPriceTop = power(m, highestRangeIndex);
+    sqrtB = sqrtPriceTop.toString();
+    amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
+    amountA = amount0.toString();
+
 
     let amount0ToAdd;
     let amount1ToAdd;
