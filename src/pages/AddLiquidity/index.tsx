@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import JSBI from 'jsbi';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount, Percent } from 'sdkCore/index';
@@ -278,11 +279,11 @@ export default function AddLiquidity({
         token1: position.pool.token0.address,
         token0: position.pool.token1.address,
         fee: position.pool.DesireSwapFee.toString(),
-        lowestRangeIndex: position.tickLower.toString(),
-        highestRangeIndex: position.tickUpper.toString(),
+        lowestRangeIndex: (position.tickLower/10).toString(),
+        highestRangeIndex: (position.tickUpper/10).toString(),
         liqToAdd: liquidityToAdd.toString(),
-        amount0Max: parsedAmounts.CURRENCY_A.quotient.toString(),
-        amount1Max: parsedAmounts.CURRENCY_B.quotient.toString(),
+        amount0Max: JSBI.divide(JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(201)),JSBI.BigInt(100)).toString(),
+        amount1Max: JSBI.divide(JSBI.multiply(parsedAmounts.CURRENCY_B.quotient, JSBI.BigInt(201)),JSBI.BigInt(100)).toString(),
         recipient: account,
         deadline: deadline.toString(),
       };

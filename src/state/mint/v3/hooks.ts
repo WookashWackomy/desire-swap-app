@@ -353,7 +353,7 @@ export function useV3DerivedMintInfo(
       };
       const { amount: dependentTokenAmount, liquidityToAdd } = isToken0IndependentInput
         ? token0Supply(
-            desireSwapSupplyParams.amount,
+            desireSwapSupplyParams.amount.mul(BigNumber.from(10).pow(18)),
             desireSwapSupplyParams.lowestRangeIndex,
             desireSwapSupplyParams.highestRangeIndex,
             desireSwapSupplyParams.inUseRange,
@@ -363,7 +363,7 @@ export function useV3DerivedMintInfo(
             desireSwapSupplyParams.liquidity
           )
         : token1Supply(
-            desireSwapSupplyParams.amount,
+            desireSwapSupplyParams.amount.mul(BigNumber.from(10).pow(18)),
             desireSwapSupplyParams.lowestRangeIndex,
             desireSwapSupplyParams.highestRangeIndex,
             desireSwapSupplyParams.inUseRange,
