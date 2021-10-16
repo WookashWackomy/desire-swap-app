@@ -122,6 +122,7 @@ export function useV3DerivedMintInfo(
   depositBDisabled: boolean;
   invertPrice: boolean;
   ticksAtLimit: { [bound in Bound]?: boolean | undefined };
+  liquidityToAdd: BigNumber | undefined;
 } {
   const { account } = useActiveWeb3React();
 
@@ -303,7 +304,7 @@ export function useV3DerivedMintInfo(
     currencies[independentField]
   );
 
-  const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+  const dependentAmountAndLiqudityToAdd = useMemo(() => {
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA;
@@ -350,7 +351,7 @@ export function useV3DerivedMintInfo(
         reserve1: poolForPosition.reserve1,
         liquidity: BigNumber.from(poolForPosition.liquidity.toString()),
       };
-      const { amount: dependentTokenAmount } = isToken0IndependentInput
+      const { amount: dependentTokenAmount, liquidityToAdd } = isToken0IndependentInput
         ? token0Supply(
             desireSwapSupplyParams.amount,
             desireSwapSupplyParams.lowestRangeIndex,
@@ -372,10 +373,15 @@ export function useV3DerivedMintInfo(
             desireSwapSupplyParams.liquidity
           );
 
-      return (
-        dependentCurrency &&
-        CurrencyAmount.fromRawAmount(dependentCurrency, JSBI.BigInt(dependentTokenAmount.toString()))
-      );
+      return dependentCurrency
+        ? {
+            dependentAmount: CurrencyAmount.fromRawAmount(
+              dependentCurrency,
+              JSBI.BigInt(dependentTokenAmount.toString())
+            ),
+            liquidityToAdd,
+          }
+        : {};
     }
 
     return undefined;
@@ -390,6 +396,8 @@ export function useV3DerivedMintInfo(
     poolForPosition,
     invalidRange,
   ]);
+
+  const { dependentAmount, liquidityToAdd } = dependentAmountAndLiqudityToAdd ?? {};
 
   const parsedAmounts: { [field in Field]: CurrencyAmount<Currency> | undefined } = useMemo(() => {
     return {
@@ -517,6 +525,7 @@ export function useV3DerivedMintInfo(
     depositBDisabled,
     invertPrice,
     ticksAtLimit,
+    liquidityToAdd,
   };
 }
 

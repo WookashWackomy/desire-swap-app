@@ -36,7 +36,6 @@ const NO_TICK_DATA_PROVIDER_DEFAULT = new NoTickDataProvider();
 export class Pool {
   public readonly token0: Token;
   public readonly token1: Token;
-  public readonly fee: FeeAmount;
   public readonly sqrtRatioX96: JSBI;
   public readonly liquidity: JSBI;
   public readonly tickCurrent: number;
@@ -44,6 +43,7 @@ export class Pool {
   public readonly reserve0: BigNumber;
   public readonly reserve1: BigNumber;
 
+  private readonly _fee: FeeAmount;
   private _token0Price?: Price<Token, Token>;
   private _token1Price?: Price<Token, Token>;
 
@@ -83,7 +83,7 @@ export class Pool {
     // );
     // always create a copy of the list since we want the pool's tick list to be immutable
     [this.token0, this.token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA];
-    this.fee = fee;
+    this._fee = fee;
     this.sqrtRatioX96 = JSBI.BigInt(sqrtRatioX96);
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
@@ -99,6 +99,22 @@ export class Pool {
    */
   public involvesToken(token: Token): boolean {
     return token.equals(this.token0) || token.equals(this.token1);
+  }
+
+  /**
+   * Returns fee adjusted for DesireSwap solidity logic ie multiplied by 10^12
+   * @returns fee  multiplied by 10^12
+   */
+  public get DesireSwapFee(): BigNumber {
+    return BigNumber.from(this.fee.toString()).mul(BigNumber.from(10).pow(12));
+  }
+
+  /**
+   * Returns fee
+   * @returns fee
+   */
+  public get fee(): FeeAmount {
+    return this._fee;
   }
 
   /**

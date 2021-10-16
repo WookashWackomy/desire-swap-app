@@ -9,6 +9,31 @@ import { AppState } from '../index';
 import { UNSUPPORTED_LIST_URLS } from './../../constants/lists';
 import { WrappedTokenInfo } from './wrappedTokenInfo';
 
+const DEFAULT_TOKEN_LIST_HARDHAT_DEBUG = {
+  ...DEFAULT_TOKEN_LIST,
+  tokens: [
+    ...DEFAULT_TOKEN_LIST.tokens,
+    {
+      name: 'TOKEN A',
+      address: '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707',
+      symbol: 'TOA',
+      decimals: 18,
+      chainId: 31337,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png',
+    },
+    {
+      name: 'TOKEN B',
+      address: '0x0165878A594ca255338adfa4d48449f69242Eb8F',
+      symbol: 'TOB',
+      decimals: 18,
+      chainId: 31337,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png',
+    },
+  ],
+};
+
 export type TokenAddressMap = Readonly<{
   [chainId: number]: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList } }>;
 }>;
@@ -41,7 +66,7 @@ function listToTokenMap(list: TokenList): TokenAddressMap {
   return map;
 }
 
-const TRANSFORMED_DEFAULT_TOKEN_LIST = listToTokenMap(DEFAULT_TOKEN_LIST);
+const TRANSFORMED_DEFAULT_TOKEN_LIST = listToTokenMap(DEFAULT_TOKEN_LIST_HARDHAT_DEBUG);
 
 export function useAllLists(): AppState['lists']['byUrl'] {
   return useAppSelector((state) => state.lists.byUrl);

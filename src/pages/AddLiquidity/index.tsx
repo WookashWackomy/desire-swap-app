@@ -16,7 +16,7 @@ import {
   useRangeHopCallbacks,
   useV3DerivedMintInfo,
 } from 'state/mint/v3/hooks';
-import { FeeAmount, NonfungiblePositionManager } from 'v3sdk/index';
+import { FeeAmount, NonfungiblePositionManager, toHex } from 'v3sdk/index';
 import { useV3PositionFromTokenId } from 'hooks/useV3Positions';
 import { useDerivedPositionInfo } from 'hooks/useDerivedPositionInfo';
 import { PositionPreview } from 'components/PositionPreview';
@@ -29,8 +29,8 @@ import { AddRemoveTabs } from 'components/NavigationTabs';
 import HoverInlineText from 'components/HoverInlineText';
 import { SwitchLocaleLink } from 'components/SwitchLocaleLink';
 import LiquidityChartRangeInput from 'components/LiquidityChartRangeInput';
-import { ZERO_PERCENT } from '../../constants/misc';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from '../../constants/addresses';
+// import { ZERO_PERCENT } from '../../constants/misc';
+import { DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS } from '../../constants/addresses';
 import { WETH9_EXTENDED } from '../../constants/tokens';
 import { useArgentWalletContract } from '../../hooks/useArgentWalletContract';
 import { useV3NFTPositionManagerContract } from '../../hooks/useContract';
@@ -42,7 +42,7 @@ import CurrencyInputPanel from '../../components/CurrencyInputPanel';
 import Row, { RowBetween, RowFixed, AutoRow } from '../../components/Row';
 import { useIsSwapUnsupported } from '../../hooks/useIsSwapUnsupported';
 import { useUSDCValue } from '../../hooks/useUSDCPrice';
-import approveAmountCalldata from '../../utils/approveAmountCalldata';
+// import approveAmountCalldata from '../../utils/approveAmountCalldata';
 import { calculateGasMargin } from '../../utils/calculateGasMargin';
 import { Review } from './Review';
 import { useActiveWeb3React } from '../../hooks/web3';
@@ -52,7 +52,8 @@ import useTransactionDeadline from '../../hooks/useTransactionDeadline';
 import { useWalletModalToggle } from '../../state/application/hooks';
 import { Field, Bound } from '../../state/mint/v3/actions';
 import { useTransactionAdder } from '../../state/transactions/hooks';
-import { useIsExpertMode, useUserSlippageToleranceWithDefault } from '../../state/user/hooks';
+import { useIsExpertMode } from '../../state/user/hooks';
+// import { useIsExpertMode, useUserSlippageToleranceWithDefault } from '../../state/user/hooks';
 import { TYPE, ExternalLink } from '../../theme';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { Dots } from '../Pool/styleds';
@@ -74,6 +75,8 @@ import {
 import { SupportedChainId, CHAIN_INFO } from 'constants/chains';
 import OptimismDowntimeWarning from 'components/OptimismDowntimeWarning';
 import { Contract } from 'ethers';
+import { Interface } from '@ethersproject/abi';
+import LiquidityManagerABI from 'abis/LiquidityManager.json';
 
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -132,6 +135,7 @@ export default function AddLiquidity({
     depositBDisabled,
     invertPrice,
     ticksAtLimit,
+    liquidityToAdd,
   } = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
@@ -196,16 +200,16 @@ export default function AddLiquidity({
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     argentWalletContract ? undefined : parsedAmounts[Field.CURRENCY_A],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined
+    chainId ? DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS[chainId] : undefined
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     argentWalletContract ? undefined : parsedAmounts[Field.CURRENCY_B],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined
+    chainId ? DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS[chainId] : undefined
   );
 
-  const allowedSlippage = useUserSlippageToleranceWithDefault(
-    outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE
-  );
+  // const allowedSlippage = useUserSlippageToleranceWithDefault(
+  //   outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE
+  // );
 
   // only called on optimism, atm
   async function onCreate() {
@@ -219,7 +223,7 @@ export default function AddLiquidity({
       const { calldata, value } = NonfungiblePositionManager.createCallParameters(position.pool);
 
       const txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+        to: DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS[chainId],
         data: calldata,
         value,
       };
@@ -268,82 +272,80 @@ export default function AddLiquidity({
       return;
     }
 
-    if (position && account && deadline) {
-      const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined;
-      const { calldata, value } =
-        hasExistingPosition && tokenId
-          ? NonfungiblePositionManager.addCallParameters(position, {
-              tokenId,
-              slippageTolerance: allowedSlippage,
-              deadline: deadline.toString(),
-              useNative,
-            })
-          : NonfungiblePositionManager.addCallParameters(position, {
-              slippageTolerance: allowedSlippage,
-              recipient: account,
-              deadline: deadline.toString(),
-              useNative,
-              createPool: noLiquidity,
-            });
+    if (position && account && deadline && liquidityToAdd && parsedAmounts.CURRENCY_A && parsedAmounts.CURRENCY_B) {
+      // const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined;
+      const supplyParams = {
+        token1: position.pool.token0.address,
+        token0: position.pool.token1.address,
+        fee: position.pool.DesireSwapFee.toString(),
+        lowestRangeIndex: position.tickLower.toString(),
+        highestRangeIndex: position.tickUpper.toString(),
+        liqToAdd: liquidityToAdd.toString(),
+        amount0Max: parsedAmounts.CURRENCY_A.quotient.toString(),
+        amount1Max: parsedAmounts.CURRENCY_B.quotient.toString(),
+        recipient: account,
+        deadline: deadline.toString(),
+      };
+      const calldata = new Interface(LiquidityManagerABI).encodeFunctionData('supply', [supplyParams]);
 
-      let txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+      const txn: { to: string; data: string; value: string; gasLimit?: BigNumber } = {
+        to: DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS[chainId],
         data: calldata,
-        value,
+        value: toHex(0),
       };
 
-      if (argentWalletContract) {
-        const amountA = parsedAmounts[Field.CURRENCY_A];
-        const amountB = parsedAmounts[Field.CURRENCY_B];
-        const batch = [
-          ...(amountA && amountA.currency.isToken
-            ? [approveAmountCalldata(amountA, NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId])]
-            : []),
-          ...(amountB && amountB.currency.isToken
-            ? [approveAmountCalldata(amountB, NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId])]
-            : []),
-          {
-            to: txn.to,
-            data: txn.data,
-            value: txn.value,
-          },
-        ];
-        const data = argentWalletContract.interface.encodeFunctionData('wc_multiCall', [batch]);
-        txn = {
-          to: argentWalletContract.address,
-          data,
-          value: '0x0',
-        };
-      }
+      // if (argentWalletContract) {
+      //   const amountA = parsedAmounts[Field.CURRENCY_A];
+      //   const amountB = parsedAmounts[Field.CURRENCY_B];
+      //   const batch = [
+      //     ...(amountA && amountA.currency.isToken
+      //       ? [approveAmountCalldata(amountA, NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId])]
+      //       : []),
+      //     ...(amountB && amountB.currency.isToken
+      //       ? [approveAmountCalldata(amountB, NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId])]
+      //       : []),
+      //     {
+      //       to: txn.to,
+      //       data: txn.data,
+      //       value: txn.value,
+      //     },
+      //   ];
+      //   const data = argentWalletContract.interface.encodeFunctionData('wc_multiCall', [batch]);
+      //   txn = {\
+      //     to: argentWalletContract.address,
+      //     data,
+      //     value: '0x0',
+      //   };
+      // }
 
       setAttemptingTxn(true);
 
-      library
-        .getSigner()
-        .estimateGas(txn)
-        .then((estimate) => {
-          const newTxn = {
-            ...txn,
-            gasLimit: calculateGasMargin(chainId, estimate),
-          };
+      // library
+      //   .getSigner()
+      //   .estimateGas(txn)
+      //   // .then((estimate) => {
+      //   .then(() => {
+      const newTxn = {
+        ...txn,
+        gasLimit: BigNumber.from(10).pow(7), //TODO gaslimit //calculateGasMargin(chainId, estimate),
+      };
 
-          return library
-            .getSigner()
-            .sendTransaction(newTxn)
-            .then((response: TransactionResponse) => {
-              setAttemptingTxn(false);
-              addTransaction(response, {
-                summary: noLiquidity
-                  ? t`Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} V3 liquidity`
-                  : t`Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} V3 liquidity`,
-              });
-              setTxHash(response.hash);
-              ReactGA.event({
-                category: 'Liquidity',
-                action: 'Add',
-                label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/'),
-              });
-            });
+      return library
+        .getSigner()
+        .sendTransaction(newTxn)
+        .then((response: TransactionResponse) => {
+          setAttemptingTxn(false);
+          addTransaction(response, {
+            summary: noLiquidity
+              ? t`Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} V3 liquidity`
+              : t`Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} V3 liquidity`,
+          });
+          setTxHash(response.hash);
+          // ReactGA.event({
+          //   category: 'Liquidity',
+          //   action: 'Add',
+          //   label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/'),
+          // });
         })
         .catch((error) => {
           console.error('Failed to send transaction', error);
@@ -353,6 +355,7 @@ export default function AddLiquidity({
             console.error(error);
           }
         });
+      // })
     }
   }
 

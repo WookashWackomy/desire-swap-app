@@ -2,7 +2,7 @@ import { FACTORY_ADDRESS as V2_FACTORY_ADDRESS } from '../v2sdk/constants';
 import { FACTORY_ADDRESS as V3_FACTORY_ADDRESS } from 'v3sdk/index';
 import { constructSameAddressMap } from '../utils/constructSameAddressMap';
 import { SupportedChainId } from './chains';
-import { HARDHAT_MULTICALL_ADDRESS } from 'hardhatConsts';
+import { DESIRE_SWAP_HARDHAT_ADDRESSES } from 'hardhatConsts';
 
 type AddressMap = { [chainId: number]: string };
 
@@ -12,8 +12,9 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [SupportedChainId.OPTIMISM]: '0x90f872b3d8f33f305e0250db6A2761B354f7710A',
   [SupportedChainId.ARBITRUM_ONE]: '0xadF885960B47eA2CD9B55E6DAc6B42b7Cb2806dB',
   [SupportedChainId.ARBITRUM_RINKEBY]: '0xa501c031958F579dB7676fF1CE78AD305794d579',
-  [SupportedChainId.HARDHAT]: HARDHAT_MULTICALL_ADDRESS,
-  [SupportedChainId.KONRAD]: HARDHAT_MULTICALL_ADDRESS,
+  [SupportedChainId.HARDHAT]: DESIRE_SWAP_HARDHAT_ADDRESSES.MULTICALL,
+  [SupportedChainId.KONRAD]: DESIRE_SWAP_HARDHAT_ADDRESSES.MULTICALL,
+  [SupportedChainId.RINKEBY]: '0xc336bb76e39df2f30440948a28Ab57Ff09726DEa',
 };
 export const V2_FACTORY_ADDRESSES: AddressMap = constructSameAddressMap(V2_FACTORY_ADDRESS);
 export const V2_ROUTER_ADDRESS: AddressMap = constructSameAddressMap('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D');
@@ -57,6 +58,12 @@ export const QUOTER_ADDRESSES: AddressMap = constructSameAddressMap('0xb27308f9F
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.ARBITRUM_RINKEBY,
 ]);
+
+export const DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS: AddressMap = {
+  ...constructSameAddressMap('0xec31d1b7Dd586D8Ec873B3af9448c51DFE883785'),
+  [SupportedChainId.HARDHAT]: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+};
+
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = constructSameAddressMap(
   '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9', // LiquidityManager
   [

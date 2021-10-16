@@ -6,13 +6,13 @@ const m: BigNumber = BigNumber.from('1000049998750062496');
 function power(base: BigNumber, to: number) {
   // in standard E18
   let ret: BigNumber = D;
-  if(to > 0){
+  if (to > 0) {
     for (let step = 0; step < to; step++) {
       ret = ret.mul(base).div(D);
     }
     return ret;
   }
-  if(to < 0){
+  if (to < 0) {
     for (let step = 0; step > to; step--) {
       ret = ret.mul(D).div(base);
     }
@@ -42,24 +42,27 @@ function supply(
   if (highestRangeIndex < inUseRange) {
     sqrtPriceBottom = power(m, lowestRangeIndex);
     sqrtA = sqrtPriceBottom.toString();
-          sqrtPriceTop = power(m, highestRangeIndex);
+    sqrtPriceTop = power(m, highestRangeIndex);
     sqrtB = sqrtPriceTop.toString();
-          amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
+    amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
     amountB = amount1.toString();
-      sqrtPriceBottom = power(m, lowestRangeIndex);
-sqrtA = sqrtPriceBottom.toString();
-      sqrtPriceTop = power(m, highestRangeIndex);
-sqrtB = sqrtPriceTop.toString();
-      amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
-amountA = amount0.toString();
-
+    sqrtPriceBottom = power(m, lowestRangeIndex);
+    sqrtA = sqrtPriceBottom.toString();
+    sqrtPriceTop = power(m, highestRangeIndex);
+    sqrtB = sqrtPriceTop.toString();
+    amount0 = amount0.add(
+      liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop))
+    );
+    amountA = amount0.toString();
   } else if (lowestRangeIndex > inUseRange) {
     sqrtPriceBottom = power(m, lowestRangeIndex);
-sqrtA = sqrtPriceBottom.toString();
+    sqrtA = sqrtPriceBottom.toString();
     sqrtPriceTop = power(m, highestRangeIndex);
-sqrtB = sqrtPriceTop.toString();
-    amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
-amountA = amount0.toString();
+    sqrtB = sqrtPriceTop.toString();
+    amount0 = amount0.add(
+      liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop))
+    );
+    amountA = amount0.toString();
   } else {
     sqrtPriceBottom = power(m, lowestRangeIndex);
     sqrtA = sqrtPriceBottom.toString();
@@ -72,9 +75,10 @@ amountA = amount0.toString();
     sqrtA = sqrtPriceBottom.toString();
     sqrtPriceTop = power(m, highestRangeIndex);
     sqrtB = sqrtPriceTop.toString();
-    amount0 = amount0.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop)));
+    amount0 = amount0.add(
+      liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop))
+    );
     amountA = amount0.toString();
-
 
     let amount0ToAdd;
     let amount1ToAdd;
@@ -94,10 +98,10 @@ amountA = amount0.toString();
     amountA = amount0.toString();
     amountB = amount1.toString();
   }
-  console.log(amountA)
-  console.log(amountB)
-  console.log(sqrtA)
-  console.log(sqrtB)
+  console.log(amountA);
+  console.log(amountB);
+  console.log(sqrtA);
+  console.log(sqrtB);
   return { amount0, amount1 };
 }
 
@@ -120,9 +124,9 @@ export function token0Supply(
     reserve1,
     liquidity
   );
-  const liqToAdd = D.mul(D).mul(amount0).div(amount0Help);
+  const liquidityToAdd = D.mul(D).mul(amount0).div(amount0Help);
   const amount = D.mul(amount1Help).mul(amount0).div(amount0Help); //amount1
-  return { liqToAdd, amount };
+  return { liquidityToAdd, amount };
 }
 
 export function token1Supply(
@@ -144,7 +148,7 @@ export function token1Supply(
     reserve1,
     liquidity
   );
-  const liqToAdd = D.mul(D).mul(amount1).div(amount1Help);
+  const liquidityToAdd = D.mul(D).mul(amount1).div(amount1Help);
   const amount = D.mul(amount0Help).mul(amount1).div(amount1Help); //amount0
-  return { liqToAdd, amount };
+  return { liquidityToAdd, amount };
 }

@@ -12,10 +12,13 @@ import { Interface } from '@ethersproject/abi';
 import DesireSwapV0FactoryABI from 'abis/DesireSwapV0Factory.json';
 import DesireSwapV0PoolABI from 'abis/DesireSwapV0Pool.json';
 import { Contract } from 'ethers';
-import { DESIRE_SWAP_V0_FACTORY_ADDRESS } from 'hardhatConsts';
+// import { DESIRE_SWAP_HARDHAT_ADDRESSES } from 'hardhatConsts';
 
 const DesireSwapV0FactoryInterface = new Interface(DesireSwapV0FactoryABI);
-const DesireSwapV0FactoryContract = new Contract(DESIRE_SWAP_V0_FACTORY_ADDRESS, DesireSwapV0FactoryInterface);
+const DesireSwapV0FactoryContract = new Contract(
+  '0x1cdaFA7e6E96b125d4de01EEe9b8952fAff5a25d', // DESIRE_SWAP_HARDHAT_ADDRESSES.V0_FACTORY,
+  DesireSwapV0FactoryInterface
+);
 
 const DesireSwapV0PoolInterface = new Interface(DesireSwapV0PoolABI);
 
