@@ -9,6 +9,7 @@ export enum SupportedChainId {
   KOVAN = 42,
 
   HARDHAT = 31337,
+  KONRAD = 1337,
 
   ARBITRUM_ONE = 42161,
   ARBITRUM_RINKEBY = 421611,
@@ -24,6 +25,7 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.KOVAN,
 
   SupportedChainId.HARDHAT,
+  SupportedChainId.KONRAD,
 
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.ARBITRUM_RINKEBY,
@@ -134,6 +136,14 @@ export const CHAIN_INFO: ChainInfo = {
     explorer: 'https://optimistic.etherscan.io/',
     infoLink: 'https://info.uniswap.org/#/optimism',
     label: 'HARDHAT',
+    logoUrl: optimismLogoUrl,
+  },
+  [SupportedChainId.KONRAD]: {
+    bridge: 'https://http://localhost:8545/',
+    docs: 'https://optimism.io/',
+    explorer: 'https://optimistic.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/optimism',
+    label: 'KONRAD',
     logoUrl: optimismLogoUrl,
   },
 };

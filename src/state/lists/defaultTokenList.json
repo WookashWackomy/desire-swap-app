@@ -417,22 +417,6 @@
       "decimals": 18,
       "chainId": 42,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png"
-    },
-    {
-      "name": "Token A",
-      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
-      "symbol": "WETH",
-      "decimals": 18,
-      "chainId": 31337,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png"
-    },
-    {
-      "name": "Token B",
-      "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
-      "symbol": "WETH",
-      "decimals": 18,
-      "chainId": 31337,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png"
     }
   ]
 }

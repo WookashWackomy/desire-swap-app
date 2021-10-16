@@ -33,6 +33,8 @@ import {
 import { tryParseTick } from './utils';
 import { usePool } from 'hooks/usePools';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
+import { token0Supply, token1Supply } from 'utils/DesireSwap/supply';
+import { BigNumber } from 'ethers';
 
 export function useV3MintState(): AppState['mintV3'] {
   return useAppSelector((state) => state.mintV3);
@@ -120,6 +122,7 @@ export function useV3DerivedMintInfo(
   depositBDisabled: boolean;
   invertPrice: boolean;
   ticksAtLimit: { [bound in Bound]?: boolean | undefined };
+  liquidityToAdd: BigNumber | undefined;
 } {
   const { account } = useActiveWeb3React();
 
@@ -301,7 +304,7 @@ export function useV3DerivedMintInfo(
     currencies[independentField]
   );
 
-  const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+  const dependentAmountAndLiqudityToAdd = useMemo(() => {
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA;
@@ -317,25 +320,68 @@ export function useV3DerivedMintInfo(
         return undefined;
       }
 
-      const position: Position | undefined = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
-        ? Position.fromAmount0({
-            pool: poolForPosition,
-            tickLower,
-            tickUpper,
-            amount0: independentAmount.quotient,
-            useFullPrecision: true, // we want full precision for the theoretical position
-          })
-        : Position.fromAmount1({
-            pool: poolForPosition,
-            tickLower,
-            tickUpper,
-            amount1: independentAmount.quotient,
-          });
+      // const position: Position | undefined = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
+      //   ? Position.fromAmount0({
+      //       pool: poolForPosition,
+      //       tickLower,
+      //       tickUpper,
+      //       amount0: independentAmount.quotient,
+      //       useFullPrecision: true, // we want full precision for the theoretical position
+      //     })
+      //   : Position.fromAmount1({
+      //       pool: poolForPosition,
+      //       tickLower,
+      //       tickUpper,
+      //       amount1: independentAmount.quotient,
+      //     });
 
-      const dependentTokenAmount = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
-        ? position.amount1
-        : position.amount0;
-      return dependentCurrency && CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient);
+      // const dependentTokenAmount = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
+      //   ? position.amount1
+      //   : position.amount0;
+      //return dependentCurrency && CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient);
+
+      const isToken0IndependentInput = wrappedIndependentAmount.currency.equals(poolForPosition.token0);
+      const desireSwapSupplyParams = {
+        amount: BigNumber.from(independentAmount.toExact()),
+        lowestRangeIndex: tickLower,
+        highestRangeIndex: tickUpper,
+        inUseRange: poolForPosition.tickCurrent,
+        ticksInRange: poolForPosition.tickSpacing,
+        reserve0: poolForPosition.reserve0,
+        reserve1: poolForPosition.reserve1,
+        liquidity: BigNumber.from(poolForPosition.liquidity.toString()),
+      };
+      const { amount: dependentTokenAmount, liquidityToAdd } = isToken0IndependentInput
+        ? token0Supply(
+            desireSwapSupplyParams.amount,
+            desireSwapSupplyParams.lowestRangeIndex,
+            desireSwapSupplyParams.highestRangeIndex,
+            desireSwapSupplyParams.inUseRange,
+            desireSwapSupplyParams.ticksInRange,
+            desireSwapSupplyParams.reserve0,
+            desireSwapSupplyParams.reserve1,
+            desireSwapSupplyParams.liquidity
+          )
+        : token1Supply(
+            desireSwapSupplyParams.amount,
+            desireSwapSupplyParams.lowestRangeIndex,
+            desireSwapSupplyParams.highestRangeIndex,
+            desireSwapSupplyParams.inUseRange,
+            desireSwapSupplyParams.ticksInRange,
+            desireSwapSupplyParams.reserve0,
+            desireSwapSupplyParams.reserve1,
+            desireSwapSupplyParams.liquidity
+          );
+
+      return dependentCurrency
+        ? {
+            dependentAmount: CurrencyAmount.fromRawAmount(
+              dependentCurrency,
+              JSBI.BigInt(dependentTokenAmount.toString())
+            ),
+            liquidityToAdd,
+          }
+        : {};
     }
 
     return undefined;
@@ -350,6 +396,8 @@ export function useV3DerivedMintInfo(
     poolForPosition,
     invalidRange,
   ]);
+
+  const { dependentAmount, liquidityToAdd } = dependentAmountAndLiqudityToAdd ?? {};
 
   const parsedAmounts: { [field in Field]: CurrencyAmount<Currency> | undefined } = useMemo(() => {
     return {
@@ -477,6 +525,7 @@ export function useV3DerivedMintInfo(
     depositBDisabled,
     invertPrice,
     ticksAtLimit,
+    liquidityToAdd,
   };
 }
 
