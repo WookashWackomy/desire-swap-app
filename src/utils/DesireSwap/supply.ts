@@ -60,7 +60,7 @@ function supply(
     sqrtPriceTop = power(m, highestRangeIndex);
     sqrtB = sqrtPriceTop.toString();
     amount0 = amount0.add(
-      liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop))
+      (liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom))).div(sqrtPriceBottom.mul(sqrtPriceTop))
     );
     amountA = amount0.toString();
   } else {
@@ -87,7 +87,7 @@ function supply(
     sqrtB = sqrtPriceTop.toString();
     sqrtPriceBottom = power(m, inUseRange);
     if (reserve0.eq(0) && reserve1.eq(0)) {
-      amount0ToAdd = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)).div(2);
+      amount0ToAdd = liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)).div(2);
       amount1ToAdd = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(2);
     } else {
       amount0ToAdd = liqToAdd.mul(reserve0).div(liquidity);
@@ -124,8 +124,8 @@ export function token0Supply(
     reserve1,
     liquidity
   );
-  const liquidityToAdd = D.mul(D).mul(amount0).div(amount0Help);
-  const amount = D.mul(amount1Help).mul(amount0).div(amount0Help); //amount1
+  const liquidityToAdd = (D.mul(D).mul(amount0)).div(amount0Help);
+  const amount = (amount1Help.mul(amount0)).div(amount0Help); //amount1
   return { liquidityToAdd, amount };
 }
 
@@ -148,7 +148,7 @@ export function token1Supply(
     reserve1,
     liquidity
   );
-  const liquidityToAdd = D.mul(D).mul(amount1).div(amount1Help);
-  const amount = D.mul(amount0Help).mul(amount1).div(amount1Help); //amount0
+  const liquidityToAdd = (D.mul(D).mul(amount1)).div(amount1Help);
+  const amount = (amount0Help.mul(amount1)).div(amount1Help); //amount0
   return { liquidityToAdd, amount };
 }
