@@ -1,25 +1,8 @@
 import { BigNumber } from 'ethers';
+import { DSTickMath } from 'v3sdk/utils/DSTickMath';
 
 export const D: BigNumber = BigNumber.from(10).pow(18); //10^18
-const m: BigNumber = BigNumber.from('1000049998750062496');
-
-function power(base: BigNumber, to: number) {
-  // in standard E18
-  let ret: BigNumber = D;
-  if (to > 0) {
-    for (let step = 0; step < to; step++) {
-      ret = ret.mul(base).div(D);
-    }
-    return ret;
-  }
-  if (to < 0) {
-    for (let step = 0; step > to; step--) {
-      ret = ret.mul(D).div(base);
-    }
-    return ret;
-  }
-  return ret;
-}
+export const DDD: BigNumber = BigNumber.from(10).pow(54); //10^18
 
 function supply(
   lowestRangeIndex: number,
@@ -30,7 +13,7 @@ function supply(
   reserve1: BigNumber,
   liquidity: BigNumber
 ) {
-  const liqToAdd = D.mul(D);
+  const liqToAdd = DDD;
   let sqrtPriceTop: BigNumber = BigNumber.from(0);
   let sqrtPriceBottom: BigNumber = BigNumber.from(0);
   let amount0: BigNumber = BigNumber.from(0);
@@ -40,52 +23,52 @@ function supply(
   let amountA;
   let amountB;
   if (highestRangeIndex < inUseRange) {
-    sqrtPriceBottom = power(m, lowestRangeIndex);
+    sqrtPriceBottom = BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
+    sqrtPriceTop =BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
+    amount1 = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D);
     sqrtA = sqrtPriceBottom.toString();
-    sqrtPriceTop = power(m, highestRangeIndex);
     sqrtB = sqrtPriceTop.toString();
-    amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
     amountB = amount1.toString();
-    sqrtPriceBottom = power(m, lowestRangeIndex);
-    sqrtA = sqrtPriceBottom.toString();
-    sqrtPriceTop = power(m, highestRangeIndex);
-    sqrtB = sqrtPriceTop.toString();
-    amount0 = amount0.add(
-      liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop))
-    );
     amountA = amount0.toString();
-  } else if (lowestRangeIndex > inUseRange) {
-    sqrtPriceBottom = power(m, lowestRangeIndex);
+  } else if (lowestRangeIndex > inUseRange + ticksInRange) {
+    sqrtPriceBottom = BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
+    sqrtPriceTop =BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
+    amount0 = (liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom))).div(sqrtPriceBottom.mul(sqrtPriceTop))
     sqrtA = sqrtPriceBottom.toString();
-    sqrtPriceTop = power(m, highestRangeIndex);
     sqrtB = sqrtPriceTop.toString();
-    amount0 = amount0.add(
-      (liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom))).div(sqrtPriceBottom.mul(sqrtPriceTop))
-    );
+    amountB = amount1.toString();
     amountA = amount0.toString();
   } else {
-    sqrtPriceBottom = power(m, lowestRangeIndex);
+    sqrtPriceBottom = BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
+    sqrtPriceTop =BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(inUseRange).toString());
+    amount1 = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D);
     sqrtA = sqrtPriceBottom.toString();
-    sqrtPriceTop = power(m, inUseRange);
     sqrtB = sqrtPriceTop.toString();
-    amount1 = amount1.add(liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D));
     amountB = amount1.toString();
+    amountA = amount0.toString();
 
-    sqrtPriceBottom = power(m, inUseRange + ticksInRange);
+    sqrtPriceBottom = BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(inUseRange + ticksInRange).toString());
+    sqrtPriceTop =BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
+    amount0 = (liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom))).div(sqrtPriceBottom.mul(sqrtPriceTop))
     sqrtA = sqrtPriceBottom.toString();
-    sqrtPriceTop = power(m, highestRangeIndex);
     sqrtB = sqrtPriceTop.toString();
-    amount0 = amount0.add(
-      liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).mul(D).div(sqrtPriceBottom.mul(sqrtPriceTop))
-    );
+    amountB = amount1.toString();
     amountA = amount0.toString();
 
     let amount0ToAdd;
     let amount1ToAdd;
-    sqrtPriceTop = power(m, inUseRange + ticksInRange);
-    sqrtA = sqrtPriceBottom.toString();
-    sqrtB = sqrtPriceTop.toString();
-    sqrtPriceBottom = power(m, inUseRange);
+    sqrtPriceBottom = BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(inUseRange).toString());
+    sqrtPriceTop =BigNumber.from(
+      DSTickMath.getSqrtRatioAtTick(inUseRange + ticksInRange).toString());
     if (reserve0.eq(0) && reserve1.eq(0)) {
       amount0ToAdd = liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)).div(2);
       amount1ToAdd = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(2);
@@ -124,7 +107,7 @@ export function token0Supply(
     reserve1,
     liquidity
   );
-  const liquidityToAdd = (D.mul(D).mul(amount0)).div(amount0Help);
+  const liquidityToAdd = (DDD.mul(amount0)).div(amount0Help);
   const amount = (amount1Help.mul(amount0)).div(amount0Help); //amount1
   return { liquidityToAdd, amount };
 }
@@ -148,7 +131,7 @@ export function token1Supply(
     reserve1,
     liquidity
   );
-  const liquidityToAdd = (D.mul(D).mul(amount1)).div(amount1Help);
+  const liquidityToAdd = (DDD.mul(amount1)).div(amount1Help);
   const amount = (amount0Help.mul(amount1)).div(amount1Help); //amount0
   return { liquidityToAdd, amount };
 }
