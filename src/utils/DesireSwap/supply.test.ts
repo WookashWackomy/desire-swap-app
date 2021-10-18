@@ -8,6 +8,7 @@ const prettyPrintObj = (obj: Record<string, string | number | BigNumber>) =>
 
 fdescribe('#DesireSwap - supply', () => {
   describe('returns correct amount and liquidity for token0Supply', () => {
+    //Arrange
     const testCases = [
       {
         funcArguments: {
@@ -40,7 +41,7 @@ fdescribe('#DesireSwap - supply', () => {
       it(`\nargs: ${prettyPrintObj(testCase.funcArguments)}\n expected: ${prettyPrintObj(
         testCase.expectedValues
       )}`, () => {
-        expect(false).toBeTruthy();
+        //Act
         const { liquidityToAdd, amount } = token0Supply(
           testCase.funcArguments.amount,
           testCase.funcArguments.lowestRangeIndex,
@@ -51,6 +52,8 @@ fdescribe('#DesireSwap - supply', () => {
           testCase.funcArguments.reserve1,
           testCase.funcArguments.liquidity
         );
+
+        //Assert
         expect(liquidityToAdd.eq(testCase.expectedValues.liquidity)).toBeTruthy();
         expect(amount.eq(testCase.expectedValues.amount)).toBeTruthy();
       })

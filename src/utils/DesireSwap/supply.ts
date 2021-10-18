@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers';
 import { DSTickMath } from 'v3sdk/utils/DSTickMath';
 
 export const D: BigNumber = BigNumber.from(10).pow(18); //10^18
-export const DDD: BigNumber = BigNumber.from(10).pow(54); //10^18
+export const DDD: BigNumber = D.pow(3); //10^18
 
 function supply(
   lowestRangeIndex: number,

@@ -283,7 +283,7 @@ export default function AddLiquidity({
         highestRangeIndex: (position.tickUpper / 10 - 1).toString(), // '-1' jest wazne
         liqToAdd: liquidityToAdd.toString(),
         amount0Max: JSBI.divide(
-          JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(201)),
+          JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(201)), // TODO przemnażanie przez slippage
           JSBI.BigInt(100)
         ).toString(),
         amount1Max: JSBI.divide(

@@ -1,5 +1,4 @@
 import JSBI from 'jsbi';
-import { ONE } from '../internalConstants';
 import { DSTickMath } from './DSTickMath';
 
 fdescribe('DSTickMath', () => {
@@ -42,10 +41,10 @@ fdescribe('DSTickMath', () => {
   });
 
   describe('#getTickAtSqrtRatio', () => {
-    it('returns the correct value for sqrt ratio at min tick', () => {
+    it('returns the correct value for sqrt ratio at tick -1000000', () => {
       expect(DSTickMath.getTickAtSqrtRatio(JSBI.BigInt('6739631584085027'))).toEqual(-100000);
     });
-    it('returns the correct value for sqrt ratio at max tick', () => {
+    it('returns the correct value for sqrt ratio at tick 1000000', () => {
       expect(DSTickMath.getTickAtSqrtRatio(JSBI.BigInt('148376100000000000000'))).toEqual(100000);
     });
   });
