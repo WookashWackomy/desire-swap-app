@@ -21,3 +21,11 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# generated contract types
+/src/types/v3
+/src/types/DesireSwap
+/src/abis/types
+/src/locales/**/*.js
+/src/locales/**/en-US.po
+/src/state/data/generated.ts
