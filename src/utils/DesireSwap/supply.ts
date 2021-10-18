@@ -23,41 +23,33 @@ function supply(
   let amountA;
   let amountB;
   if (highestRangeIndex < inUseRange) {
-    sqrtPriceBottom = BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
-    sqrtPriceTop =BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
+    sqrtPriceBottom = BigNumber.from(DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
+    sqrtPriceTop = BigNumber.from(DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
     amount1 = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D);
     sqrtA = sqrtPriceBottom.toString();
     sqrtB = sqrtPriceTop.toString();
     amountB = amount1.toString();
     amountA = amount0.toString();
   } else if (lowestRangeIndex > inUseRange + ticksInRange) {
-    sqrtPriceBottom = BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
-    sqrtPriceTop =BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
-    amount0 = (liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom))).div(sqrtPriceBottom.mul(sqrtPriceTop))
+    sqrtPriceBottom = BigNumber.from(DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
+    sqrtPriceTop = BigNumber.from(DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
+    amount0 = liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop));
     sqrtA = sqrtPriceBottom.toString();
     sqrtB = sqrtPriceTop.toString();
     amountB = amount1.toString();
     amountA = amount0.toString();
   } else {
-    sqrtPriceBottom = BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
-    sqrtPriceTop =BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(inUseRange).toString());
+    sqrtPriceBottom = BigNumber.from(DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
+    sqrtPriceTop = BigNumber.from(DSTickMath.getSqrtRatioAtTick(inUseRange).toString());
     amount1 = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(D);
     sqrtA = sqrtPriceBottom.toString();
     sqrtB = sqrtPriceTop.toString();
     amountB = amount1.toString();
     amountA = amount0.toString();
 
-    sqrtPriceBottom = BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(inUseRange + ticksInRange).toString());
-    sqrtPriceTop =BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
-    amount0 = (liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom))).div(sqrtPriceBottom.mul(sqrtPriceTop))
+    sqrtPriceBottom = BigNumber.from(DSTickMath.getSqrtRatioAtTick(inUseRange + ticksInRange).toString());
+    sqrtPriceTop = BigNumber.from(DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
+    amount0 = liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop));
     sqrtA = sqrtPriceBottom.toString();
     sqrtB = sqrtPriceTop.toString();
     amountB = amount1.toString();
@@ -65,12 +57,14 @@ function supply(
 
     let amount0ToAdd;
     let amount1ToAdd;
-    sqrtPriceBottom = BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(inUseRange).toString());
-    sqrtPriceTop =BigNumber.from(
-      DSTickMath.getSqrtRatioAtTick(inUseRange + ticksInRange).toString());
+    sqrtPriceBottom = BigNumber.from(DSTickMath.getSqrtRatioAtTick(inUseRange).toString());
+    sqrtPriceTop = BigNumber.from(DSTickMath.getSqrtRatioAtTick(inUseRange + ticksInRange).toString());
     if (reserve0.eq(0) && reserve1.eq(0)) {
-      amount0ToAdd = liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop)).div(2);
+      amount0ToAdd = liqToAdd
+        .mul(D)
+        .mul(sqrtPriceTop.sub(sqrtPriceBottom))
+        .div(sqrtPriceBottom.mul(sqrtPriceTop))
+        .div(2);
       amount1ToAdd = liqToAdd.mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(2);
     } else {
       amount0ToAdd = liqToAdd.mul(reserve0).div(liquidity);
@@ -107,8 +101,8 @@ export function token0Supply(
     reserve1,
     liquidity
   );
-  const liquidityToAdd = (DDD.mul(amount0)).div(amount0Help);
-  const amount = (amount1Help.mul(amount0)).div(amount0Help); //amount1
+  const liquidityToAdd = DDD.mul(amount0).div(amount0Help);
+  const amount = amount1Help.mul(amount0).div(amount0Help); //amount1
   return { liquidityToAdd, amount };
 }
 
@@ -131,7 +125,7 @@ export function token1Supply(
     reserve1,
     liquidity
   );
-  const liquidityToAdd = (DDD.mul(amount1)).div(amount1Help);
-  const amount = (amount0Help.mul(amount1)).div(amount1Help); //amount0
+  const liquidityToAdd = DDD.mul(amount1).div(amount1Help);
+  const amount = amount0Help.mul(amount1).div(amount1Help); //amount0
   return { liquidityToAdd, amount };
 }

@@ -6,8 +6,6 @@ import invariant from 'tiny-invariant';
 import Decimals from 'decimal.js';
 import { BigNumber } from 'ethers';
 
-
-
 export abstract class DSTickMath {
   /**
    * Cannot be constructed.
@@ -38,21 +36,20 @@ export abstract class DSTickMath {
   public static m = new Decimals('1.000049998750062496');
   public static d = new Decimals('1000000000000000000');
 
- 
   public static getSqrtRatioAtTick(tick: number): JSBI {
     invariant(tick >= DSTickMath.MIN_TICK && tick <= DSTickMath.MAX_TICK && Number.isInteger(tick), 'TICK');
     let ret = DSTickMath.D;
-    if(tick > 0){
-      for (let step = 0; step < tick; step++){
+    if (tick > 0) {
+      for (let step = 0; step < tick; step++) {
         ret = ret.mul(DSTickMath.M).div(DSTickMath.D);
       }
     }
-    if(tick < 0){
-      for (let step = 0; step > tick; step--){
+    if (tick < 0) {
+      for (let step = 0; step > tick; step--) {
         ret = ret.mul(DSTickMath.D).div(DSTickMath.M);
       }
     }
-  return JSBI.BigInt(ret.toString());
+    return JSBI.BigInt(ret.toString());
   }
 
   public static getTickAtSqrtRatio(sqrtRatioE18: JSBI): number {
@@ -63,9 +60,9 @@ export abstract class DSTickMath {
     );
     let x = new Decimals(sqrtRatioE18.toString());
     x = x.div(DSTickMath.d);
-    let tick = Decimals.log(x,DSTickMath.m).toNumber();
-    if(tick > 0) tick = Math.floor(tick);
-    if(tick < 0) tick = Math.ceil(tick);
+    let tick = Decimals.log(x, DSTickMath.m).toNumber();
+    if (tick > 0) tick = Math.floor(tick);
+    if (tick < 0) tick = Math.ceil(tick);
     return tick;
   }
 }

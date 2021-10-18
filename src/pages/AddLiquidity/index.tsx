@@ -279,11 +279,17 @@ export default function AddLiquidity({
         token1: position.pool.token0.address,
         token0: position.pool.token1.address,
         fee: position.pool.DesireSwapFee.toString(),
-        lowestRangeIndex: (position.tickLower/10).toString(), // TODO "/10" zamienic na /10TICK_SPACING[fee] 
-        highestRangeIndex: (position.tickUpper/10 - 1).toString(), // '-1' jest wazne
+        lowestRangeIndex: (position.tickLower / 10).toString(), // TODO "/10" zamienic na /10TICK_SPACING[fee]
+        highestRangeIndex: (position.tickUpper / 10 - 1).toString(), // '-1' jest wazne
         liqToAdd: liquidityToAdd.toString(),
-        amount0Max: JSBI.divide(JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(201)),JSBI.BigInt(100)).toString(),
-        amount1Max: JSBI.divide(JSBI.multiply(parsedAmounts.CURRENCY_B.quotient, JSBI.BigInt(201)),JSBI.BigInt(100)).toString(),
+        amount0Max: JSBI.divide(
+          JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(201)),
+          JSBI.BigInt(100)
+        ).toString(),
+        amount1Max: JSBI.divide(
+          JSBI.multiply(parsedAmounts.CURRENCY_B.quotient, JSBI.BigInt(201)),
+          JSBI.BigInt(100)
+        ).toString(),
         recipient: account,
         deadline: deadline.toString(),
       };

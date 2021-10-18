@@ -41,7 +41,7 @@ fdescribe('#DesireSwap - supply', () => {
         testCase.expectedValues
       )}`, () => {
         expect(false).toBeTruthy();
-        const { liqToAdd, amount } = token0Supply(
+        const { liquidityToAdd, amount } = token0Supply(
           testCase.funcArguments.amount,
           testCase.funcArguments.lowestRangeIndex,
           testCase.funcArguments.highestRangeIndex,
@@ -51,7 +51,7 @@ fdescribe('#DesireSwap - supply', () => {
           testCase.funcArguments.reserve1,
           testCase.funcArguments.liquidity
         );
-        expect(liqToAdd.eq(testCase.expectedValues.liquidity)).toBeTruthy();
+        expect(liquidityToAdd.eq(testCase.expectedValues.liquidity)).toBeTruthy();
         expect(amount.eq(testCase.expectedValues.amount)).toBeTruthy();
       })
     );
@@ -78,7 +78,7 @@ fdescribe('#DesireSwap - supply', () => {
         testCase.expectedValues
       )}`, () => {
         expect(false).toBeTruthy();
-        const { liqToAdd, amount } = token1Supply(
+        const { liquidityToAdd, amount } = token1Supply(
           testCase.funcArguments.amount,
           testCase.funcArguments.lowestRangeIndex,
           testCase.funcArguments.highestRangeIndex,
@@ -88,7 +88,7 @@ fdescribe('#DesireSwap - supply', () => {
           testCase.funcArguments.reserve1,
           testCase.funcArguments.liquidity
         );
-        expect(liqToAdd.eq(testCase.expectedValues.liquidity)).toBeTruthy();
+        expect(liquidityToAdd.eq(testCase.expectedValues.liquidity)).toBeTruthy();
         expect(amount.eq(testCase.expectedValues.amount)).toBeTruthy();
       })
     );
