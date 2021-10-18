@@ -1,6 +1,3 @@
-/* eslint-disable eqeqeq */
-/* eslint-disable complexity */
-
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import Decimals from 'decimal.js';
