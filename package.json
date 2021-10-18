@@ -3,11 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/icons": "^1.0.15",
-    "@chakra-ui/react": "^1.6.7",
-    "@chakra-ui/theme-tools": "^1.2.0",
-    "@emotion/react": "^11.4.1",
-    "@emotion/styled": "^11.3.0",
     "@ethersproject/abi": "^5.4.1",
     "@ethersproject/address": "^5.0.2",
     "@ethersproject/bignumber": "^5.4.1",
@@ -144,10 +139,19 @@
     "workbox-routing": "^6.1.0"
   },
   "scripts": {
+    "graphql:generate": "graphql-codegen --config codegen.yml",
+    "prei18n:extract": "touch src/locales/en-US.po",
+    "i18n:extract": "lingui extract --locale en-US",
+    "i18n:compile": "npm run i18n:extract && lingui compile",
+    "postinstall": "npm run contracts:compile && npm run graphql:generate && npm run i18n:compile",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --env=./custom-test-env.js",
+    "test:e2e": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run --record'",
+    "contracts:compile:abi": "typechain --target ethers-v5 --out-dir src/abis/types \"./src/abis/**/*.json\"",
+    "contracts:compile:v3": "typechain --target ethers-v5 --out-dir src/types/v3 \"./node_modules/@uniswap/?(v3-core|v3-periphery)/artifacts/contracts/**/*.json\"",
+    "contracts:compile:ds": "typechain --target ethers-v5 --out-dir src/types/DesireSwap \"../DesireSwapV0/artifacts/contracts/**/*[^dbg].json\"",
+    "contracts:compile": "npm run contracts:compile:abi && npm run contracts:compile:v3 && npm run contracts:compile:ds"
   },
   "browserslist": {
     "production": [

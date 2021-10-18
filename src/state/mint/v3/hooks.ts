@@ -342,7 +342,7 @@ export function useV3DerivedMintInfo(
 
       const isToken0IndependentInput = wrappedIndependentAmount.currency.equals(poolForPosition.token0);
       const desireSwapSupplyParams = {
-        amount: BigNumber.from(independentAmount.toExact()),
+        amount: BigNumber.from(independentAmount.quotient),
         lowestRangeIndex: tickLower,
         highestRangeIndex: tickUpper,
         inUseRange: poolForPosition.tickCurrent,
