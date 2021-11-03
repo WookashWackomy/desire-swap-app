@@ -83,10 +83,16 @@ const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
 export default function AddLiquidity({
   match: {
-    params: { currencyIdA, currencyIdB, feeAmount: feeAmountFromUrl, tokenId },
+    params: { currencyIdA, currencyIdB, feeAmount: feeAmountFromUrl, tokenId, poolAddress },
   },
   history,
-}: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string; feeAmount?: string; tokenId?: string }>) {
+}: RouteComponentProps<{
+  currencyIdA?: string;
+  currencyIdB?: string;
+  feeAmount?: string;
+  tokenId?: string;
+  poolAddress?: string;
+}>) {
   const { account, chainId, library } = useActiveWeb3React();
   const theme = useContext(ThemeContext);
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
@@ -96,7 +102,7 @@ export default function AddLiquidity({
 
   // check for existing position if tokenId in url
   const { position: existingPositionDetails, loading: positionLoading } = useV3PositionFromTokenId(
-    //TODO podmienić zwracanie pozycji
+    poolAddress,
     tokenId ? BigNumber.from(tokenId) : undefined
   );
   const hasExistingPosition = !!existingPositionDetails && !positionLoading;
@@ -283,11 +289,11 @@ export default function AddLiquidity({
         highestRangeIndex: (position.tickUpper / 10 - 1).toString(), // '-1' jest wazne
         liqToAdd: liquidityToAdd.toString(),
         amount0Max: JSBI.divide(
-          JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(201)), // TODO przemnażanie przez slippage
+          JSBI.multiply(parsedAmounts.CURRENCY_B.quotient, JSBI.BigInt(101)), // TODO przemnażanie przez slippage
           JSBI.BigInt(100)
         ).toString(),
         amount1Max: JSBI.divide(
-          JSBI.multiply(parsedAmounts.CURRENCY_B.quotient, JSBI.BigInt(201)),
+          JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(101)),
           JSBI.BigInt(100)
         ).toString(),
         recipient: account,

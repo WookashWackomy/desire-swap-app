@@ -20,6 +20,7 @@ import { DAI, USDC, USDT, WBTC, WETH9_EXTENDED } from '../../constants/tokens';
 import { Trans } from '@lingui/macro';
 import useIsTickAtLimit from 'hooks/useIsTickAtLimit';
 import { Bound } from 'state/mint/v3/actions';
+import { BigNumber } from 'ethers';
 
 const LinkRow = styled(Link)`
   align-items: center;
@@ -206,7 +207,7 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
 
   const position = useMemo(() => {
     if (pool) {
-      return new Position({ pool, liquidity: liquidity.toString(), tickLower, tickUpper });
+      return new Position({ pool, liquidity: (liquidity || BigNumber.from(0)).toString(), tickLower, tickUpper });
     }
     return undefined;
   }, [liquidity, pool, tickLower, tickUpper]);
@@ -220,9 +221,11 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
   const currencyBase = base && unwrappedToken(base);
 
   // check if price is within range
-  const outOfRange: boolean = pool ? pool.tickCurrent < tickLower || pool.tickCurrent >= tickUpper : false;
+  const outOfRange: boolean = pool
+    ? pool.tickCurrent + pool.tickSpacing < tickLower || pool.tickCurrent >= tickUpper
+    : false;
 
-  const positionSummaryLink = '/pool/' + positionDetails.tokenId;
+  const positionSummaryLink = `/pool/${positionDetails.poolAddress}/${positionDetails.tokenId}`;
 
   const removed = liquidity?.eq(0);
 

@@ -13,6 +13,7 @@ export type { Erc20 } from "./Erc20";
 export type { GovernorBravo } from "./GovernorBravo";
 export type { LiquidityManager } from "./LiquidityManager";
 export type { LiquidityManagerHelper } from "./LiquidityManagerHelper";
+export type { PositionViewer } from "./PositionViewer";
 export type { TestERC20Token } from "./TestERC20Token";
 export type { Weth } from "./Weth";
 
@@ -28,5 +29,6 @@ export { Erc20__factory } from "./factories/Erc20__factory";
 export { GovernorBravo__factory } from "./factories/GovernorBravo__factory";
 export { LiquidityManager__factory } from "./factories/LiquidityManager__factory";
 export { LiquidityManagerHelper__factory } from "./factories/LiquidityManagerHelper__factory";
+export { PositionViewer__factory } from "./factories/PositionViewer__factory";
 export { TestERC20Token__factory } from "./factories/TestERC20Token__factory";
 export { Weth__factory } from "./factories/Weth__factory";

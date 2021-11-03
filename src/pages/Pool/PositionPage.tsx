@@ -46,6 +46,8 @@ import { Bound } from 'state/mint/v3/actions';
 import useIsTickAtLimit from 'hooks/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/formatTickPrice';
 import { SupportedChainId } from 'constants/chains';
+import { PositionDetails } from 'types/position';
+import JSBI from 'jsbi';
 
 const PageWrapper = styled.div`
   min-width: 800px;
@@ -315,29 +317,30 @@ const useInverter = ({
 
 export function PositionPage({
   match: {
-    params: { tokenId: tokenIdFromUrl },
+    params: { poolAddress: poolAddressFromUrl, tokenId: tokenIdFromUrl },
   },
-}: RouteComponentProps<{ tokenId?: string }>) {
+}: RouteComponentProps<{ tokenId?: string; poolAddress?: string }>) {
   const { chainId, account, library } = useActiveWeb3React();
   const theme = useTheme();
 
   const parsedTokenId = tokenIdFromUrl ? BigNumber.from(tokenIdFromUrl) : undefined;
-  const { loading, position: positionDetails } = useV3PositionFromTokenId(parsedTokenId);
+  const { loading, position: positionDetails } = useV3PositionFromTokenId(poolAddressFromUrl, parsedTokenId);
 
   const {
     token0: token0Address,
     token1: token1Address,
     fee: feeAmount,
-    liquidity,
     tickLower,
     tickUpper,
     tokenId,
-  } = positionDetails || {};
-
-  const removed = liquidity?.eq(0);
-
+  } = positionDetails || ({} as PositionDetails);
   const token0 = useToken(token0Address);
   const token1 = useToken(token1Address);
+
+  // construct Position from details returned
+  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined, feeAmount);
+  const { liquidity } = pool || ({} as Pool);
+  const removed = JSBI.EQ(liquidity, 0);
 
   const metadata = usePositionTokenURI(parsedTokenId);
 
@@ -347,8 +350,6 @@ export function PositionPage({
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false);
 
-  // construct Position from details returned
-  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined, feeAmount);
   const position = useMemo(() => {
     if (pool && liquidity && typeof tickLower === 'number' && typeof tickUpper === 'number') {
       return new Position({ pool, liquidity: liquidity.toString(), tickLower, tickUpper });
@@ -477,7 +478,7 @@ export function PositionPage({
   const feeValueLower = inverted ? feeValue1 : feeValue0;
 
   // check if price is within range
-  const below = pool && typeof tickLower === 'number' ? pool.tickCurrent < tickLower : undefined;
+  const below = pool && typeof tickLower === 'number' ? pool.tickCurrent + pool.tickSpacing < tickLower : undefined;
   const above = pool && typeof tickUpper === 'number' ? pool.tickCurrent >= tickUpper : undefined;
   const inRange: boolean = typeof below === 'boolean' && typeof above === 'boolean' ? !below && !above : false;
 

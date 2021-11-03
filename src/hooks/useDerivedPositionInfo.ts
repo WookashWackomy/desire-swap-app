@@ -17,7 +17,7 @@ export function useDerivedPositionInfo(positionDetails: PositionDetails | undefi
   if (pool && positionDetails) {
     position = new Position({
       pool,
-      liquidity: positionDetails.liquidity.toString(),
+      liquidity: pool.liquidity,
       tickLower: positionDetails.tickLower,
       tickUpper: positionDetails.tickUpper,
     });

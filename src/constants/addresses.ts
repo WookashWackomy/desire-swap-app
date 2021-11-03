@@ -61,7 +61,7 @@ export const QUOTER_ADDRESSES: AddressMap = constructSameAddressMap('0xb27308f9F
 
 export const DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS: AddressMap = {
   ...constructSameAddressMap('0xec31d1b7Dd586D8Ec873B3af9448c51DFE883785'),
-  [SupportedChainId.HARDHAT]: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+  [SupportedChainId.HARDHAT]: DESIRE_SWAP_HARDHAT_ADDRESSES.LIQUDITY_MANAGER,
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = constructSameAddressMap(

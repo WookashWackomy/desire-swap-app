@@ -1,6 +1,6 @@
 import { BigintIsh, MaxUint256, Percent, Price, CurrencyAmount, Token } from 'sdkCore/index';
 import JSBI from 'jsbi';
-import invariant from 'tiny-invariant';
+// import invariant from 'tiny-invariant';
 import { ZERO } from '../internalConstants';
 import { maxLiquidityForAmounts } from '../utils/maxLiquidityForAmounts';
 import { tickToPrice } from '../utils/priceTickConversions';
@@ -38,9 +38,9 @@ export class Position {
    * @param tickUpper The upper tick of the position
    */
   public constructor({ pool, liquidity, tickLower, tickUpper }: PositionConstructorArgs) {
-    invariant(tickLower < tickUpper, 'TICK_ORDER');
-    invariant(tickLower >= TickMath.MIN_TICK && tickLower % pool.tickSpacing === 0, 'TICK_LOWER');
-    invariant(tickUpper <= TickMath.MAX_TICK && tickUpper % pool.tickSpacing === 0, 'TICK_UPPER');
+    // invariant(tickLower < tickUpper, 'TICK_ORDER');
+    // invariant(tickLower >= TickMath.MIN_TICK && tickLower % pool.tickSpacing === 0, 'TICK_LOWER');
+    // invariant(tickUpper <= TickMath.MAX_TICK && tickUpper % pool.tickSpacing === 0, 'TICK_UPPER');
 
     this.pool = pool;
     this.tickLower = tickLower;
@@ -67,7 +67,7 @@ export class Position {
    */
   public get amount0(): CurrencyAmount<Token> {
     if (this._token0Amount === null) {
-      if (this.pool.tickCurrent < this.tickLower) {
+      if (this.pool.tickCurrent + this.pool.tickSpacing < this.tickLower) {
         this._token0Amount = CurrencyAmount.fromRawAmount(
           this.pool.token0,
           SqrtPriceMath.getAmount0Delta(
@@ -99,7 +99,7 @@ export class Position {
    */
   public get amount1(): CurrencyAmount<Token> {
     if (this._token1Amount === null) {
-      if (this.pool.tickCurrent < this.tickLower) {
+      if (this.pool.tickCurrent + this.pool.tickSpacing < this.tickLower) {
         this._token1Amount = CurrencyAmount.fromRawAmount(this.pool.token1, ZERO);
       } else if (this.pool.tickCurrent < this.tickUpper) {
         this._token1Amount = CurrencyAmount.fromRawAmount(
@@ -257,7 +257,7 @@ export class Position {
    */
   public get mintAmounts(): Readonly<{ amount0: JSBI; amount1: JSBI }> {
     if (this._mintAmounts === null) {
-      if (this.pool.tickCurrent < this.tickLower) {
+      if (this.pool.tickCurrent + this.pool.tickSpacing < this.tickLower) {
         return {
           amount0: SqrtPriceMath.getAmount0Delta(
             TickMath.getSqrtRatioAtTick(this.tickLower),

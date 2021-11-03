@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { useCallback, useMemo, useState } from 'react';
 import { useV3PositionFromTokenId } from 'hooks/useV3Positions';
 import { Redirect, RouteComponentProps } from 'react-router-dom';
@@ -43,9 +44,9 @@ const DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE = new Percent(5, 100);
 export default function RemoveLiquidityV3({
   location,
   match: {
-    params: { tokenId },
+    params: { tokenId, poolAddress },
   },
-}: RouteComponentProps<{ tokenId: string }>) {
+}: RouteComponentProps<{ tokenId: string; poolAddress: string }>) {
   const parsedTokenId = useMemo(() => {
     try {
       return BigNumber.from(tokenId);
@@ -58,10 +59,10 @@ export default function RemoveLiquidityV3({
     return <Redirect to={{ ...location, pathname: '/pool' }} />;
   }
 
-  return <Remove tokenId={parsedTokenId} />;
+  return <Remove tokenId={parsedTokenId} poolAddress={poolAddress} />;
 }
-function Remove({ tokenId }: { tokenId: BigNumber }) {
-  const { position } = useV3PositionFromTokenId(tokenId);
+function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: string }) {
+  const { position } = useV3PositionFromTokenId(poolAddress, tokenId);
   const theme = useTheme();
   const { account, chainId, library } = useActiveWeb3React();
 

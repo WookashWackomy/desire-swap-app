@@ -17,6 +17,9 @@ import ERC20_ABI from 'abis/erc20.json';
 import ERC20_BYTES32_ABI from 'abis/erc20_bytes32.json';
 import WETH_ABI from 'abis/weth.json';
 import EIP_2612 from 'abis/eip_2612.json';
+import { abi as PositionViewerABI } from 'abis/PositionViewer.json';
+import { abi as DesireSwapV0FactoryABI } from 'abis/DesireSwapV0Factory.json';
+import { PositionViewer } from 'types/DesireSwap/PositionViewer';
 
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -39,6 +42,8 @@ import { getContract } from 'utils';
 // import { Erc20, ArgentWalletDetector, EnsPublicResolver, EnsRegistrar, Weth } from '../abis/types'
 import { UNI, WETH9_EXTENDED } from '../constants/tokens';
 import { useActiveWeb3React } from './web3';
+import { DESIRE_SWAP_HARDHAT_ADDRESSES } from 'hardhatConsts';
+import { DesireSwapV0Factory } from 'abis/types';
 //import DesireSwapAbi from 'abis/factory';
 // import { ethers } from 'ethers';
 
@@ -184,6 +189,14 @@ export function useV3NFTPositionManagerContract(withSignerIfPossible?: boolean):
     NFTPositionManagerABI,
     withSignerIfPossible
   );
+}
+
+export function usePositionViewer(): PositionViewer | null {
+  return useContract<PositionViewer>(DESIRE_SWAP_HARDHAT_ADDRESSES.POSITION_VIEWER, PositionViewerABI);
+}
+
+export function useDesireSwapPoolFactory(): DesireSwapV0Factory | null {
+  return useContract<DesireSwapV0Factory>(DESIRE_SWAP_HARDHAT_ADDRESSES.FACTORY, DesireSwapV0FactoryABI);
 }
 
 export function useV3Quoter() {

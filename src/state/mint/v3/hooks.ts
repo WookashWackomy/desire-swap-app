@@ -316,7 +316,7 @@ export function useV3DerivedMintInfo(
       poolForPosition
     ) {
       // if price is out of range or invalid range - return 0 (single deposit will be independent)
-      if (outOfRange || invalidRange) {
+      if (invalidRange) {
         return undefined;
       }
 
@@ -411,7 +411,9 @@ export function useV3DerivedMintInfo(
     typeof tickUpper === 'number' && poolForPosition && poolForPosition.tickCurrent >= tickUpper
   );
   const deposit1Disabled = Boolean(
-    typeof tickLower === 'number' && poolForPosition && poolForPosition.tickCurrent <= tickLower
+    typeof tickLower === 'number' &&
+      poolForPosition &&
+      poolForPosition.tickCurrent + poolForPosition.tickSpacing <= tickLower
   );
 
   // sorted for token order

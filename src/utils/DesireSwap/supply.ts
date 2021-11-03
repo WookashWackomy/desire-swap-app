@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers';
 import { DSTickMath } from 'v3sdk/utils/DSTickMath';
 
 export const D: BigNumber = BigNumber.from(10).pow(18); //10^18
-export const DDD: BigNumber = D.pow(3); //10^18
+export const DDD: BigNumber = D.pow(3); //10^18^3
 
 function supply(
   lowestRangeIndex: number,
@@ -30,7 +30,7 @@ function supply(
     sqrtB = sqrtPriceTop.toString();
     amountB = amount1.toString();
     amountA = amount0.toString();
-  } else if (lowestRangeIndex > inUseRange + ticksInRange) {
+  } else if (lowestRangeIndex >= inUseRange + ticksInRange) {
     sqrtPriceBottom = BigNumber.from(DSTickMath.getSqrtRatioAtTick(lowestRangeIndex).toString());
     sqrtPriceTop = BigNumber.from(DSTickMath.getSqrtRatioAtTick(highestRangeIndex).toString());
     amount0 = liqToAdd.mul(D).mul(sqrtPriceTop.sub(sqrtPriceBottom)).div(sqrtPriceBottom.mul(sqrtPriceTop));

@@ -103,7 +103,7 @@ export default function App() {
               <Route exact strict path="/pool/v2/find" component={PoolFinder} />
               <Route exact strict path="/pool/v2" component={PoolV2} />
               <Route exact strict path="/pool" component={Pool} />
-              <Route exact strict path="/pool/:tokenId" component={PositionPage} />
+              <Route exact strict path="/pool/:poolAddress/:tokenId" component={PositionPage} />
 
               <Route exact strict path="/add/v2/:currencyIdA?/:currencyIdB?" component={RedirectDuplicateTokenIdsV2} />
               <Route
@@ -116,12 +116,12 @@ export default function App() {
               <Route
                 exact
                 strict
-                path="/increase/:currencyIdA?/:currencyIdB?/:feeAmount?/:tokenId?"
+                path="/increase/:currencyIdA?/:currencyIdB?/:feeAmount?/:poolAddress?/:tokenId?"
                 component={AddLiquidity}
               />
 
               <Route exact strict path="/remove/v2/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
-              <Route exact strict path="/remove/:tokenId" component={RemoveLiquidityV3} />
+              <Route exact strict path="/remove/:poolAddress/:tokenId" component={RemoveLiquidityV3} />
 
               <Route exact strict path="/migrate/v2" component={MigrateV2} />
               <Route exact strict path="/migrate/v2/:address" component={MigrateV2Pair} />

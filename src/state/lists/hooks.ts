@@ -8,6 +8,7 @@ import BROKEN_LIST from '../../constants/tokenLists/broken.tokenlist.json';
 import { AppState } from '../index';
 import { UNSUPPORTED_LIST_URLS } from './../../constants/lists';
 import { WrappedTokenInfo } from './wrappedTokenInfo';
+import { DESIRE_SWAP_HARDHAT_ADDRESSES } from 'hardhatConsts';
 
 const DEFAULT_TOKEN_LIST_HARDHAT_DEBUG = {
   ...DEFAULT_TOKEN_LIST,
@@ -15,7 +16,7 @@ const DEFAULT_TOKEN_LIST_HARDHAT_DEBUG = {
     ...DEFAULT_TOKEN_LIST.tokens,
     {
       name: 'TOKEN A',
-      address: '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707',
+      address: DESIRE_SWAP_HARDHAT_ADDRESSES.TOKENA,
       symbol: 'TOA',
       decimals: 18,
       chainId: 31337,
@@ -24,7 +25,7 @@ const DEFAULT_TOKEN_LIST_HARDHAT_DEBUG = {
     },
     {
       name: 'TOKEN B',
-      address: '0x0165878A594ca255338adfa4d48449f69242Eb8F',
+      address: DESIRE_SWAP_HARDHAT_ADDRESSES.TOKENB,
       symbol: 'TOB',
       decimals: 18,
       chainId: 31337,
