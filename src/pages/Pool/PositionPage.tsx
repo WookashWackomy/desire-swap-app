@@ -27,7 +27,7 @@ import { useV3PositionFees } from 'hooks/useV3PositionFees';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Token, Currency, CurrencyAmount, Percent, Fraction, Price } from 'sdkCore/index';
 import { useActiveWeb3React } from 'hooks/web3';
-import { usePositionViewer, useV3NFTPositionManagerContract } from 'hooks/useContract';
+import { useDesireSwapPool, useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks';
 import ReactGA from 'react-ga';
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal';
@@ -422,7 +422,7 @@ export function PositionPage({
 
   const addTransaction = useTransactionAdder();
   const positionManager = useV3NFTPositionManagerContract();
-  const positionViewer = usePositionViewer();
+  const poolContract = useDesireSwapPool(positionDetails?.poolAddress);
   const collect = useCallback(() => {
     if (!chainId || !feeValue0 || !feeValue1 || !positionManager || !account || !tokenId || !library) return;
 
@@ -474,10 +474,7 @@ export function PositionPage({
       });
   }, [chainId, feeValue0, feeValue1, positionManager, account, tokenId, addTransaction, library]);
 
-  const owner = useSingleCallResult(!!tokenId ? positionViewer : null, 'getTicketOwner', [
-    positionDetails?.poolAddress,
-    tokenId,
-  ]).result?.[0];
+  const owner = useSingleCallResult(!!tokenId ? poolContract : null, 'ownerOf', [tokenId]).result?.[0];
   const ownsNFT = owner === account || positionDetails?.operator === account;
 
   const feeValueUpper = inverted ? feeValue0 : feeValue1;

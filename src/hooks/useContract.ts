@@ -19,6 +19,7 @@ import WETH_ABI from 'abis/weth.json';
 import EIP_2612 from 'abis/eip_2612.json';
 import { abi as PositionViewerABI } from 'abis/PositionViewer.json';
 import { abi as DesireSwapV0FactoryABI } from 'abis/DesireSwapV0Factory.json';
+import { abi as DesireSwapV0PoolABI } from 'abis/DesireSwapV0Pool.json';
 import { PositionViewer } from 'types/DesireSwap/PositionViewer';
 
 import {
@@ -44,6 +45,7 @@ import { UNI, WETH9_EXTENDED } from '../constants/tokens';
 import { useActiveWeb3React } from './web3';
 import { DESIRE_SWAP_HARDHAT_ADDRESSES } from 'hardhatConsts';
 import { DesireSwapV0Factory } from 'abis/types';
+import { DesireSwapV0Pool } from 'types/DesireSwap';
 //import DesireSwapAbi from 'abis/factory';
 // import { ethers } from 'ethers';
 
@@ -197,6 +199,10 @@ export function usePositionViewer(): PositionViewer | null {
 
 export function useDesireSwapPoolFactory(): DesireSwapV0Factory | null {
   return useContract<DesireSwapV0Factory>(DESIRE_SWAP_HARDHAT_ADDRESSES.FACTORY, DesireSwapV0FactoryABI);
+}
+
+export function useDesireSwapPool(poolAddress?: string): DesireSwapV0Pool | null {
+  return useContract<DesireSwapV0Pool>(poolAddress, DesireSwapV0PoolABI);
 }
 
 export function useV3Quoter() {
