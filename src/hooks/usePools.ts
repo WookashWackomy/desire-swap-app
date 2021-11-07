@@ -49,10 +49,6 @@ export function usePools(
 
   const poolAddressResult = useSingleContractMultipleData(factoryContract, 'poolAddress', poolAddressCallInputs);
 
-  if (poolAddressResult.length > 0) {
-    console.log(poolAddressResult[0].result);
-    console.log({ poolAddressCallInputs });
-  }
   const poolAddresses = poolAddressResult
     .map(({ result }) => result)
     .filter((result): result is Result => !!result)

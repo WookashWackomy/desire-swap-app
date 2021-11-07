@@ -21,13 +21,13 @@ export function encodeRouteToPath(route: Route<Currency, Currency>, exactOutput:
       if (index === 0) {
         return {
           inputToken: outputToken,
-          types: ['address', 'uint24', 'address'],
+          types: ['address', 'uint256', 'address'],
           path: [inputToken.address, pool.fee, outputToken.address],
         };
       } else {
         return {
           inputToken: outputToken,
-          types: [...types, 'uint24', 'address'],
+          types: [...types, 'uint256', 'address'],
           path: [...path, pool.fee, outputToken.address],
         };
       }

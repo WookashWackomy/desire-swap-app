@@ -1,13 +1,10 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { t } from '@lingui/macro';
-import { Trade as V2Trade } from '../v2sdk/entities/trade';
-import { Router } from '../v2sdk/router';
 import { SwapRouter, Trade as V3Trade } from 'v3sdk/index';
 import { Currency, Percent, TradeType } from 'sdkCore/index';
 import { useMemo } from 'react';
 import { SWAP_ROUTER_ADDRESSES } from '../constants/addresses';
 import { calculateGasMargin } from '../utils/calculateGasMargin';
-import approveAmountCalldata from '../utils/approveAmountCalldata';
 import { getTradeVersion } from '../utils/getTradeVersion';
 import { useTransactionAdder } from '../state/transactions/hooks';
 import { isAddress, shortenAddress } from '../utils';
@@ -55,7 +52,7 @@ interface FailedCall extends SwapCallEstimate {
  * @param signatureData the signature data of the permit of the input token amount, if available
  */
 function useSwapCallArguments(
-  trade: V2Trade<Currency, Currency, TradeType> | V3Trade<Currency, Currency, TradeType> | undefined, // trade to execute, required
+  trade: V3Trade<Currency, Currency, TradeType> | undefined, // trade to execute, required
   allowedSlippage: Percent, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
   signatureData: SignatureData | null | undefined
@@ -71,109 +68,42 @@ function useSwapCallArguments(
   return useMemo(() => {
     if (!trade || !recipient || !library || !account || !chainId || !deadline) return [];
 
-    if (trade instanceof V2Trade) {
-      if (!routerContract) return [];
-      const swapMethods = [];
+    // trade is V3Trade
+    const swapRouterAddress = chainId ? SWAP_ROUTER_ADDRESSES[chainId] : undefined;
+    if (!swapRouterAddress) return [];
 
-      swapMethods.push(
-        Router.swapCallParameters(trade, {
-          feeOnTransfer: false,
-          allowedSlippage,
-          recipient,
-          deadline: deadline.toNumber(),
-        })
-      );
-
-      if (trade.tradeType === TradeType.EXACT_INPUT) {
-        swapMethods.push(
-          Router.swapCallParameters(trade, {
-            feeOnTransfer: true,
-            allowedSlippage,
-            recipient,
-            deadline: deadline.toNumber(),
-          })
-        );
-      }
-      return swapMethods.map(({ methodName, args, value }) => {
-        if (argentWalletContract && trade.inputAmount.currency.isToken) {
-          return {
-            address: argentWalletContract.address,
-            calldata: argentWalletContract.interface.encodeFunctionData('wc_multiCall', [
-              [
-                approveAmountCalldata(trade.maximumAmountIn(allowedSlippage), routerContract.address),
-                {
-                  to: routerContract.address,
-                  value,
-                  data: routerContract.interface.encodeFunctionData(methodName, args),
-                },
-              ],
-            ]),
-            value: '0x0',
-          };
-        } else {
-          return {
-            address: routerContract.address,
-            calldata: routerContract.interface.encodeFunctionData(methodName, args),
-            value,
-          };
-        }
-      });
-    } else {
-      // trade is V3Trade
-      const swapRouterAddress = chainId ? SWAP_ROUTER_ADDRESSES[chainId] : undefined;
-      if (!swapRouterAddress) return [];
-
-      const { value, calldata } = SwapRouter.swapCallParameters(trade, {
-        recipient,
-        slippageTolerance: allowedSlippage,
-        deadline: deadline.toString(),
-        ...(signatureData
-          ? {
-              inputTokenPermit:
-                'allowed' in signatureData
-                  ? {
-                      expiry: signatureData.deadline,
-                      nonce: signatureData.nonce,
-                      s: signatureData.s,
-                      r: signatureData.r,
-                      v: signatureData.v as any,
-                    }
-                  : {
-                      deadline: signatureData.deadline,
-                      amount: signatureData.amount,
-                      s: signatureData.s,
-                      r: signatureData.r,
-                      v: signatureData.v as any,
-                    },
-            }
-          : {}),
-      });
-      if (argentWalletContract && trade.inputAmount.currency.isToken) {
-        return [
-          {
-            address: argentWalletContract.address,
-            calldata: argentWalletContract.interface.encodeFunctionData('wc_multiCall', [
-              [
-                approveAmountCalldata(trade.maximumAmountIn(allowedSlippage), swapRouterAddress),
-                {
-                  to: swapRouterAddress,
-                  value,
-                  data: calldata,
-                },
-              ],
-            ]),
-            value: '0x0',
-          },
-        ];
-      }
-      return [
-        {
-          address: swapRouterAddress,
-          calldata,
-          value,
-        },
-      ];
-    }
+    const { value, calldata } = SwapRouter.swapCallParameters(trade, {
+      recipient,
+      slippageTolerance: allowedSlippage,
+      deadline: deadline.toString(),
+      ...(signatureData
+        ? {
+            inputTokenPermit:
+              'allowed' in signatureData
+                ? {
+                    expiry: signatureData.deadline,
+                    nonce: signatureData.nonce,
+                    s: signatureData.s,
+                    r: signatureData.r,
+                    v: signatureData.v as any,
+                  }
+                : {
+                    deadline: signatureData.deadline,
+                    amount: signatureData.amount,
+                    s: signatureData.s,
+                    r: signatureData.r,
+                    v: signatureData.v as any,
+                  },
+          }
+        : {}),
+    });
+    return [
+      {
+        address: swapRouterAddress,
+        calldata,
+        value,
+      },
+    ];
   }, [
     account,
     allowedSlippage,
@@ -234,7 +164,7 @@ function swapErrorToUserReadableMessage(error: any): string {
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useSwapCallback(
-  trade: V2Trade<Currency, Currency, TradeType> | V3Trade<Currency, Currency, TradeType> | undefined, // trade to execute, required
+  trade: V3Trade<Currency, Currency, TradeType> | undefined, // trade to execute, required
   allowedSlippage: Percent, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
   signatureData: SignatureData | undefined | null
@@ -285,19 +215,22 @@ export function useSwapCallback(
                   gasEstimate,
                 };
               })
-              .catch((gasError) => {
+              .catch(() => {
                 console.debug('Gas estimate failed, trying eth_call to extract error', call);
-
-                return library
-                  .call(tx)
-                  .then((result) => {
-                    console.debug('Unexpected successful call after failed estimate gas', call, gasError, result);
-                    return { call, error: new Error('Unexpected issue with estimating the gas. Please try again.') };
-                  })
-                  .catch((callError) => {
-                    console.debug('Call threw error', call, callError);
-                    return { call, error: new Error(swapErrorToUserReadableMessage(callError)) };
-                  });
+                return {
+                  call,
+                  gasEstimate: BigNumber.from(10_000_000),
+                };
+                // return library
+                //   .call(tx)
+                //   .then((result) => {
+                //     console.debug('Unexpected successful call after failed estimate gas', call, gasError, result);
+                //     return { call, error: new Error('Unexpected issue with estimating the gas. Please try again.') };
+                //   })
+                //   .catch((callError) => {
+                //     console.debug('Call threw error', call, callError);
+                //     return { call, error: new Error(swapErrorToUserReadableMessage(callError)) };
+                //   });
               });
           })
         );

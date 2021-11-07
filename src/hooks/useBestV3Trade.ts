@@ -31,7 +31,7 @@ const DEFAULT_GAS_QUOTE = 2_000_000;
 export function useBestV3TradeExactIn(
   amountIn?: CurrencyAmount<Currency>,
   currencyOut?: Currency
-): { state: V3TradeState; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null } {
+): { state: V3TradeState; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | undefined } {
   const { chainId } = useActiveWeb3React();
   const quoter = useV3Quoter();
   const { routes, loading: routesLoading } = useAllV3Routes(amountIn?.currency, currencyOut);
@@ -56,14 +56,14 @@ export function useBestV3TradeExactIn(
     ) {
       return {
         state: V3TradeState.INVALID,
-        trade: null,
+        trade: undefined,
       };
     }
 
     if (routesLoading || quotesResults.some(({ loading }) => loading)) {
       return {
         state: V3TradeState.LOADING,
-        trade: null,
+        trade: undefined,
       };
     }
 
@@ -94,7 +94,7 @@ export function useBestV3TradeExactIn(
     if (!bestRoute || !amountOut) {
       return {
         state: V3TradeState.NO_ROUTE_FOUND,
-        trade: null,
+        trade: undefined,
       };
     }
 
@@ -120,7 +120,7 @@ export function useBestV3TradeExactIn(
 export function useBestV3TradeExactOut(
   currencyIn?: Currency,
   amountOut?: CurrencyAmount<Currency>
-): { state: V3TradeState; trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null } {
+): { state: V3TradeState; trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | undefined } {
   const { chainId } = useActiveWeb3React();
   const quoter = useV3Quoter();
   const { routes, loading: routesLoading } = useAllV3Routes(currencyIn, amountOut?.currency);
@@ -146,14 +146,14 @@ export function useBestV3TradeExactOut(
     ) {
       return {
         state: V3TradeState.INVALID,
-        trade: null,
+        trade: undefined,
       };
     }
 
     if (routesLoading || quotesResults.some(({ loading }) => loading)) {
       return {
         state: V3TradeState.LOADING,
-        trade: null,
+        trade: undefined,
       };
     }
 
@@ -184,7 +184,7 @@ export function useBestV3TradeExactOut(
     if (!bestRoute || !amountIn) {
       return {
         state: V3TradeState.NO_ROUTE_FOUND,
-        trade: null,
+        trade: undefined,
       };
     }
 

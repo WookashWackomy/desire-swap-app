@@ -91,15 +91,13 @@ export function useV3Positions(account: string | null | undefined): UseV3Positio
   const positionDataListResults = useSingleContractMultipleData(
     positionViewer,
     'getPositionDataList',
-    positionDataListArgs
+    positionDataListArgs,
+    { gasRequired: 30_000_000 }
   );
   const somePositionsLoading = useMemo(
     () => positionDataListResults.some(({ loading }) => loading),
     [positionDataListResults]
   );
-
-  if (positionViewer && positionDataListArgs[0])
-    console.log(positionViewer?.getPositionDataList(positionDataListArgs[0][0], positionDataListArgs[0][1]));
 
   const positions: PositionDetails[] = useMemo(() => {
     if (account) {

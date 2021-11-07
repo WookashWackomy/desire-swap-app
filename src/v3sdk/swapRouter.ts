@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { Interface } from '@ethersproject/abi';
 import { BigintIsh, Currency, CurrencyAmount, Percent, TradeType, validateAndParseAddress } from 'sdkCore/index';
 import invariant from 'tiny-invariant';
@@ -6,7 +7,7 @@ import { ADDRESS_ZERO } from './constants';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { encodeRouteToPath } from './utils';
 import { MethodParameters, toHex } from './utils/calldata';
-import { abi } from '@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json';
+import { abi as DesireSwapV0SwapRouterABI } from 'abis/DesireSwapV0SwapRouter.json';
 
 export interface FeeOptions {
   /**
@@ -59,7 +60,7 @@ export interface SwapOptions {
  * Represents the Uniswap V3 SwapRouter, and has static methods for helping execute trades.
  */
 export abstract class SwapRouter extends SelfPermit {
-  public static INTERFACE: Interface = new Interface(abi);
+  public static INTERFACE: Interface = new Interface(DesireSwapV0SwapRouterABI);
 
   /**
    * Cannot be constructed.

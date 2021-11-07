@@ -4,7 +4,6 @@ import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json';
 import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
-import { abi as QuoterABI } from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json';
 import { abi as V2MigratorABI } from '@uniswap/v3-periphery/artifacts/contracts/V3Migrator.sol/V3Migrator.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import { abi as MulticallABI } from '@uniswap/v3-periphery/artifacts/contracts/lens/UniswapInterfaceMulticall.sol/UniswapInterfaceMulticall.json';
@@ -20,6 +19,7 @@ import EIP_2612 from 'abis/eip_2612.json';
 import { abi as PositionViewerABI } from 'abis/PositionViewer.json';
 import { abi as DesireSwapV0FactoryABI } from 'abis/DesireSwapV0Factory.json';
 import { abi as DesireSwapV0PoolABI } from 'abis/DesireSwapV0Pool.json';
+import { abi as DesireSwapV0QuoterABI } from 'abis/Quoter.json';
 import { PositionViewer } from 'types/DesireSwap/PositionViewer';
 
 import {
@@ -206,7 +206,7 @@ export function useDesireSwapPool(poolAddress?: string): DesireSwapV0Pool | null
 }
 
 export function useV3Quoter() {
-  return useContract<Quoter>(QUOTER_ADDRESSES, QuoterABI);
+  return useContract<Quoter>(QUOTER_ADDRESSES, DesireSwapV0QuoterABI);
 }
 
 // export function useDesireSwapContract() {

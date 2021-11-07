@@ -52,12 +52,15 @@ export const V3_CORE_FACTORY_ADDRESSES: AddressMap = constructSameAddressMap(V3_
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.ARBITRUM_RINKEBY,
 ]);
-export const QUOTER_ADDRESSES: AddressMap = constructSameAddressMap('0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6', [
-  SupportedChainId.OPTIMISM,
-  SupportedChainId.OPTIMISTIC_KOVAN,
-  SupportedChainId.ARBITRUM_ONE,
-  SupportedChainId.ARBITRUM_RINKEBY,
-]);
+export const QUOTER_ADDRESSES: AddressMap = {
+  ...constructSameAddressMap('0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6', [
+    SupportedChainId.OPTIMISM,
+    SupportedChainId.OPTIMISTIC_KOVAN,
+    SupportedChainId.ARBITRUM_ONE,
+    SupportedChainId.ARBITRUM_RINKEBY,
+  ]),
+  [SupportedChainId.HARDHAT]: DESIRE_SWAP_HARDHAT_ADDRESSES.SWAP_QUOTER,
+};
 
 export const DESIRE_SWAP_V0_LIQUIDITY_MANAGER_ADDRESS: AddressMap = {
   ...constructSameAddressMap('0xec31d1b7Dd586D8Ec873B3af9448c51DFE883785'),
@@ -75,15 +78,7 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = constructSameA
     SupportedChainId.KONRAD,
   ]
 );
-// export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = constructSameAddressMap(
-//   '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
-//   [
-//     SupportedChainId.OPTIMISM,
-//     SupportedChainId.OPTIMISTIC_KOVAN,
-//     SupportedChainId.ARBITRUM_ONE,
-//     SupportedChainId.ARBITRUM_RINKEBY,
-//   ]
-// );
+
 export const ENS_REGISTRAR_ADDRESSES: AddressMap = {
   [SupportedChainId.MAINNET]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
   [SupportedChainId.ROPSTEN]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
@@ -93,12 +88,15 @@ export const ENS_REGISTRAR_ADDRESSES: AddressMap = {
 export const SOCKS_CONTROLLER_ADDRESSES: AddressMap = {
   [SupportedChainId.MAINNET]: '0x65770b5283117639760beA3F867b69b3697a91dd',
 };
-export const SWAP_ROUTER_ADDRESSES: AddressMap = constructSameAddressMap('0xE592427A0AEce92De3Edee1F18E0157C05861564', [
-  SupportedChainId.OPTIMISM,
-  SupportedChainId.OPTIMISTIC_KOVAN,
-  SupportedChainId.ARBITRUM_ONE,
-  SupportedChainId.ARBITRUM_RINKEBY,
-]);
+export const SWAP_ROUTER_ADDRESSES: AddressMap = {
+  ...constructSameAddressMap('0xE592427A0AEce92De3Edee1F18E0157C05861564', [
+    SupportedChainId.OPTIMISM,
+    SupportedChainId.OPTIMISTIC_KOVAN,
+    SupportedChainId.ARBITRUM_ONE,
+    SupportedChainId.ARBITRUM_RINKEBY,
+  ]),
+  [SupportedChainId.HARDHAT]: DESIRE_SWAP_HARDHAT_ADDRESSES.SWAP_ROUTER,
+};
 export const V3_MIGRATOR_ADDRESSES: AddressMap = constructSameAddressMap('0xA5644E29708357803b5A882D272c41cC0dF92B34', [
   SupportedChainId.ARBITRUM_ONE,
   SupportedChainId.ARBITRUM_RINKEBY,
