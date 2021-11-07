@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { Contract } from '@ethersproject/contracts';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, Percent } from 'sdkCore/index';

@@ -77,7 +77,7 @@ import { SupportedChainId, CHAIN_INFO } from 'constants/chains';
 import OptimismDowntimeWarning from 'components/OptimismDowntimeWarning';
 import { Contract } from 'ethers';
 import { Interface } from '@ethersproject/abi';
-import LiquidityManagerABI from 'abis/LiquidityManager.json';
+import { abi as LiquidityManagerABI } from 'abis/LiquidityManager.json';
 
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -281,23 +281,34 @@ export default function AddLiquidity({
 
     if (position && account && deadline && liquidityToAdd && parsedAmounts.CURRENCY_A && parsedAmounts.CURRENCY_B) {
       // const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined;
+
+      const getAmountMax = (amount: JSBI) =>
+        JSBI.divide(
+          JSBI.multiply(amount, JSBI.BigInt(101)), // TODO przemnażanie przez slippage
+          JSBI.BigInt(100)
+        ).toString();
+
+      const tokenArgs = position.pool.token0.sortsBefore(position.pool.token1)
+        ? {
+            token0: position.pool.token0.address,
+            amount0Max: getAmountMax(parsedAmounts.CURRENCY_A.quotient),
+            token1: position.pool.token1.address,
+            amount1Max: getAmountMax(parsedAmounts.CURRENCY_B.quotient),
+          }
+        : {
+            token0: position.pool.token1.address,
+            amount0Max: getAmountMax(parsedAmounts.CURRENCY_B.quotient),
+            token1: position.pool.token0.address,
+            amount1Max: getAmountMax(parsedAmounts.CURRENCY_A.quotient),
+          };
       const supplyParams = {
-        token1: position.pool.token0.address,
-        token0: position.pool.token1.address,
         fee: position.pool.DesireSwapFee.toString(),
-        lowestRangeIndex: (position.tickLower / 10).toString(), // TODO "/10" zamienic na /10TICK_SPACING[fee]
-        highestRangeIndex: (position.tickUpper / 10 - 1).toString(), // '-1' jest wazne
+        lowestRangeIndex: (position.tickLower / position.pool.tickSpacing).toString(), // TODO "/10" zamienic na /10TICK_SPACING[fee]
+        highestRangeIndex: (position.tickUpper / position.pool.tickSpacing - 1).toString(), // '-1' jest wazne
         liqToAdd: liquidityToAdd.toString(),
-        amount0Max: JSBI.divide(
-          JSBI.multiply(parsedAmounts.CURRENCY_B.quotient, JSBI.BigInt(101)), // TODO przemnażanie przez slippage
-          JSBI.BigInt(100)
-        ).toString(),
-        amount1Max: JSBI.divide(
-          JSBI.multiply(parsedAmounts.CURRENCY_A.quotient, JSBI.BigInt(101)),
-          JSBI.BigInt(100)
-        ).toString(),
         recipient: account,
         deadline: deadline.toString(),
+        ...tokenArgs,
       };
       const calldata = new Interface(LiquidityManagerABI).encodeFunctionData('supply', [supplyParams]);
 

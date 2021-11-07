@@ -3,7 +3,6 @@ import { Position } from 'v3sdk/index';
 import { usePool } from 'hooks/usePools';
 import { useActiveWeb3React } from 'hooks/web3';
 import { useToken } from 'hooks/Tokens';
-import { useV3PositionFees } from 'hooks/useV3PositionFees';
 import { useCallback, useMemo } from 'react';
 import { PositionDetails } from 'types/position';
 
@@ -25,13 +24,10 @@ export function useDerivedV3BurnInfo(
   liquidityPercentage?: Percent;
   liquidityValue0?: CurrencyAmount<Currency>;
   liquidityValue1?: CurrencyAmount<Currency>;
-  feeValue0?: CurrencyAmount<Currency>;
-  feeValue1?: CurrencyAmount<Currency>;
   outOfRange: boolean;
   error?: string;
 } {
   const { account } = useActiveWeb3React();
-  const { percent } = useBurnV3State();
 
   const token0 = useToken(position?.token0);
   const token1 = useToken(position?.token1);
@@ -40,10 +36,10 @@ export function useDerivedV3BurnInfo(
 
   const positionSDK = useMemo(
     () =>
-      pool && position?.liquidity && typeof position?.tickLower === 'number' && typeof position?.tickUpper === 'number'
+      pool && pool?.liquidity && typeof position?.tickLower === 'number' && typeof position?.tickUpper === 'number'
         ? new Position({
             pool,
-            liquidity: position.liquidity.toString(),
+            liquidity: pool.liquidity.toString(),
             tickLower: position.tickLower,
             tickUpper: position.tickUpper,
           })
@@ -51,13 +47,13 @@ export function useDerivedV3BurnInfo(
     [pool, position]
   );
 
-  const liquidityPercentage = new Percent(percent, 100);
+  const liquidityPercentage = new Percent(100, 100);
 
-  const discountedAmount0 = positionSDK
-    ? liquidityPercentage.multiply(positionSDK.amount0.quotient).quotient
+  const discountedAmount0 = position?.tokensOwed0
+    ? liquidityPercentage.multiply(position.tokensOwed0.toString()).quotient
     : undefined;
-  const discountedAmount1 = positionSDK
-    ? liquidityPercentage.multiply(positionSDK.amount1.quotient).quotient
+  const discountedAmount1 = position?.tokensOwed1
+    ? liquidityPercentage.multiply(position.tokensOwed1.toString()).quotient
     : undefined;
 
   const liquidityValue0 =
@@ -69,8 +65,6 @@ export function useDerivedV3BurnInfo(
       ? CurrencyAmount.fromRawAmount(asWETH ? token1 : unwrappedToken(token1), discountedAmount1)
       : undefined;
 
-  const [feeValue0, feeValue1] = useV3PositionFees(pool ?? undefined, position?.tokenId, asWETH);
-
   const outOfRange =
     pool && position
       ? pool.tickCurrent + pool.tickSpacing < position.tickLower || pool.tickCurrent > position.tickUpper
@@ -80,16 +74,12 @@ export function useDerivedV3BurnInfo(
   if (!account) {
     error = t`Connect Wallet`;
   }
-  if (percent === 0) {
-    error = error ?? t`Enter a percent`;
-  }
+
   return {
     position: positionSDK,
     liquidityPercentage,
     liquidityValue0,
     liquidityValue1,
-    feeValue0,
-    feeValue1,
     outOfRange,
     error,
   };

@@ -20,7 +20,7 @@ import { DAI, USDC, USDT, WBTC, WETH9_EXTENDED } from '../../constants/tokens';
 import { Trans } from '@lingui/macro';
 import useIsTickAtLimit from 'hooks/useIsTickAtLimit';
 import { Bound } from 'state/mint/v3/actions';
-import { BigNumber } from 'ethers';
+import JSBI from 'jsbi';
 
 const LinkRow = styled(Link)`
   align-items: center;
@@ -187,14 +187,7 @@ export function getPriceOrderingFromPositionForUI(position?: Position): {
 }
 
 export default function PositionListItem({ positionDetails }: PositionListItemProps) {
-  const {
-    token0: token0Address,
-    token1: token1Address,
-    fee: feeAmount,
-    liquidity,
-    tickLower,
-    tickUpper,
-  } = positionDetails;
+  const { token0: token0Address, token1: token1Address, fee: feeAmount, tickLower, tickUpper } = positionDetails;
 
   const token0 = useToken(token0Address);
   const token1 = useToken(token1Address);
@@ -207,10 +200,10 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
 
   const position = useMemo(() => {
     if (pool) {
-      return new Position({ pool, liquidity: (liquidity || BigNumber.from(0)).toString(), tickLower, tickUpper });
+      return new Position({ pool, liquidity: pool.liquidity.toString(), tickLower, tickUpper });
     }
     return undefined;
-  }, [liquidity, pool, tickLower, tickUpper]);
+  }, [pool?.liquidity, pool, tickLower, tickUpper]);
 
   const tickAtLimit = useIsTickAtLimit(feeAmount, tickLower, tickUpper);
 
@@ -227,7 +220,7 @@ export default function PositionListItem({ positionDetails }: PositionListItemPr
 
   const positionSummaryLink = `/pool/${positionDetails.poolAddress}/${positionDetails.tokenId}`;
 
-  const removed = liquidity?.eq(0);
+  const removed = JSBI.EQ(0, pool?.liquidity);
 
   return (
     <LinkRow to={positionSummaryLink}>

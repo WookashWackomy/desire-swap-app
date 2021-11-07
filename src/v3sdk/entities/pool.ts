@@ -106,7 +106,7 @@ export class Pool {
    * @returns fee  multiplied by 10^12
    */
   public get DesireSwapFee(): BigNumber {
-    return BigNumber.from(this.fee.toString()).mul(BigNumber.from(10).pow(12));
+    return BigNumber.from(this.fee.toString());
   }
 
   /**

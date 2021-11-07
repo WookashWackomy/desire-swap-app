@@ -27,7 +27,7 @@ import { useV3PositionFees } from 'hooks/useV3PositionFees';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Token, Currency, CurrencyAmount, Percent, Fraction, Price } from 'sdkCore/index';
 import { useActiveWeb3React } from 'hooks/web3';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import { usePositionViewer, useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks';
 import ReactGA from 'react-ga';
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal';
@@ -333,6 +333,8 @@ export function PositionPage({
     tickLower,
     tickUpper,
     tokenId,
+    tokensOwed0,
+    tokensOwed1,
   } = positionDetails || ({} as PositionDetails);
   const token0 = useToken(token0Address);
   const token1 = useToken(token1Address);
@@ -420,6 +422,7 @@ export function PositionPage({
 
   const addTransaction = useTransactionAdder();
   const positionManager = useV3NFTPositionManagerContract();
+  const positionViewer = usePositionViewer();
   const collect = useCallback(() => {
     if (!chainId || !feeValue0 || !feeValue1 || !positionManager || !account || !tokenId || !library) return;
 
@@ -471,7 +474,10 @@ export function PositionPage({
       });
   }, [chainId, feeValue0, feeValue1, positionManager, account, tokenId, addTransaction, library]);
 
-  const owner = useSingleCallResult(!!tokenId ? positionManager : null, 'ownerOf', [tokenId]).result?.[0];
+  const owner = useSingleCallResult(!!tokenId ? positionViewer : null, 'getTicketOwner', [
+    positionDetails?.poolAddress,
+    tokenId,
+  ]).result?.[0];
   const ownsNFT = owner === account || positionDetails?.operator === account;
 
   const feeValueUpper = inverted ? feeValue0 : feeValue1;
@@ -593,7 +599,7 @@ export function PositionPage({
                   {tokenId && !removed ? (
                     <ResponsiveButtonPrimary
                       as={Link}
-                      to={`/remove/${tokenId}`}
+                      to={`/remove/${positionDetails?.poolAddress}/${tokenId}`}
                       width="fit-content"
                       padding="6px 8px"
                       $borderRadius="12px"
@@ -658,38 +664,44 @@ export function PositionPage({
                     )}
                   </AutoColumn>
                   <LightCard padding="12px 16px">
-                    <AutoColumn gap="md">
-                      <RowBetween>
-                        <LinkedCurrency chainId={chainId} currency={currencyQuote} />
-                        <RowFixed>
-                          <TYPE.main>
-                            {inverted ? position?.amount0.toSignificant(4) : position?.amount1.toSignificant(4)}
-                          </TYPE.main>
-                          {typeof ratio === 'number' && !removed ? (
-                            <Badge style={{ marginLeft: '10px' }}>
-                              <TYPE.main fontSize={11}>
-                                <Trans>{inverted ? ratio : 100 - ratio}%</Trans>
-                              </TYPE.main>
-                            </Badge>
-                          ) : null}
-                        </RowFixed>
-                      </RowBetween>
-                      <RowBetween>
-                        <LinkedCurrency chainId={chainId} currency={currencyBase} />
-                        <RowFixed>
-                          <TYPE.main>
-                            {inverted ? position?.amount1.toSignificant(4) : position?.amount0.toSignificant(4)}
-                          </TYPE.main>
-                          {typeof ratio === 'number' && !removed ? (
-                            <Badge style={{ marginLeft: '10px' }}>
-                              <TYPE.main color={theme.text2} fontSize={11}>
-                                <Trans>{inverted ? 100 - ratio : ratio}%</Trans>
-                              </TYPE.main>
-                            </Badge>
-                          ) : null}
-                        </RowFixed>
-                      </RowBetween>
-                    </AutoColumn>
+                    {currencyQuote && currencyBase && (
+                      <AutoColumn gap="md">
+                        <RowBetween>
+                          <LinkedCurrency chainId={chainId} currency={currencyQuote} />
+                          <RowFixed>
+                            <TYPE.main>
+                              {inverted
+                                ? CurrencyAmount.fromRawAmount(currencyQuote, tokensOwed0.toString()).toSignificant(4)
+                                : CurrencyAmount.fromRawAmount(currencyBase, tokensOwed1.toString()).toSignificant(4)}
+                            </TYPE.main>
+                            {typeof ratio === 'number' && !removed ? (
+                              <Badge style={{ marginLeft: '10px' }}>
+                                <TYPE.main fontSize={11}>
+                                  <Trans>{inverted ? ratio : 100 - ratio}%</Trans>
+                                </TYPE.main>
+                              </Badge>
+                            ) : null}
+                          </RowFixed>
+                        </RowBetween>
+                        <RowBetween>
+                          <LinkedCurrency chainId={chainId} currency={currencyBase} />
+                          <RowFixed>
+                            <TYPE.main>
+                              {inverted
+                                ? CurrencyAmount.fromRawAmount(currencyBase, tokensOwed1.toString()).toSignificant(4)
+                                : CurrencyAmount.fromRawAmount(currencyQuote, tokensOwed0.toString()).toSignificant(4)}
+                            </TYPE.main>
+                            {typeof ratio === 'number' && !removed ? (
+                              <Badge style={{ marginLeft: '10px' }}>
+                                <TYPE.main color={theme.text2} fontSize={11}>
+                                  <Trans>{inverted ? 100 - ratio : ratio}%</Trans>
+                                </TYPE.main>
+                              </Badge>
+                            ) : null}
+                          </RowFixed>
+                        </RowBetween>
+                      </AutoColumn>
+                    )}
                   </LightCard>
                 </AutoColumn>
               </DarkCard>

@@ -4,7 +4,18 @@ import { PositionDetails } from 'types/position';
 import { usePositionViewer } from './useContract';
 import { BigNumber } from '@ethersproject/bignumber';
 import { DESIRE_SWAP_HARDHAT_ADDRESSES } from 'hardhatConsts';
-import { FeeAmount } from 'v3sdk';
+
+const getPositionDataFromResult = (position: any) => ({
+  poolAddress: position.poolAddress,
+  token0: position.token0,
+  token1: position.token1,
+  tokenId: position.ticketId,
+  tickLower: position.lowestTick,
+  tickUpper: position.highestTick,
+  tokensOwed0: position.amount0,
+  tokensOwed1: position.amount1,
+  fee: position.feeAmount.toNumber(),
+});
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -30,17 +41,7 @@ function useV3PositionsFromTokenIds(
       return results.map((call) => {
         const result = call.result as Result;
         const position = result[0];
-        return {
-          poolAddress: position.poolAddress,
-          token0: position.token0,
-          token1: position.token1,
-          tokenId: position.ticketId,
-          tickLower: position.lowestTick,
-          tickUpper: position.highestTick,
-          tokensOwed0: position.amount0,
-          tokensOwed1: position.amount1,
-          fee: FeeAmount.LOW,
-        };
+        return getPositionDataFromResult(position);
       });
     }
     return undefined;
@@ -97,7 +98,8 @@ export function useV3Positions(account: string | null | undefined): UseV3Positio
     [positionDataListResults]
   );
 
-  console.log(positionViewer?.getPositionDataList(positionDataListArgs[0][0], positionDataListArgs[0][1]));
+  if (positionViewer && positionDataListArgs[0])
+    console.log(positionViewer?.getPositionDataList(positionDataListArgs[0][0], positionDataListArgs[0][1]));
 
   const positions: PositionDetails[] = useMemo(() => {
     if (account) {
@@ -107,17 +109,7 @@ export function useV3Positions(account: string | null | undefined): UseV3Positio
         .map((result) => result[0]);
 
       return poolsResults.flatMap((poolResult) =>
-        poolResult.map((position: any) => ({
-          poolAddress: position.poolAddress,
-          token0: position.token0,
-          token1: position.token1,
-          tokenId: position.ticketId,
-          tickLower: position.lowestTick,
-          tickUpper: position.highestTick,
-          tokensOwed0: position.amount0,
-          tokensOwed1: position.amount1,
-          fee: FeeAmount.LOW,
-        }))
+        poolResult.map((position: any) => getPositionDataFromResult(position))
       );
     }
     return [];

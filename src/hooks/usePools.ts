@@ -41,7 +41,7 @@ export function usePools(
   const poolAddressCallInputs = transformed
     .map((value) => {
       if (value === null) return null;
-      return [value[0].address, value[1].address, BigNumber.from(value[2]).mul(BigNumber.from(10).pow(12)).toString()]; //TODO fee
+      return [value[0].address, value[1].address, BigNumber.from(value[2]).toString()];
     })
     .filter((val) => val !== null) as [string, string, string][];
 

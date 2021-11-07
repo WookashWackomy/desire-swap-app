@@ -6,10 +6,8 @@ import { WETH9_EXTENDED } from '../../constants/tokens';
 import { calculateGasMargin } from '../../utils/calculateGasMargin';
 import AppBody from '../AppBody';
 import { BigNumber } from '@ethersproject/bignumber';
-import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler';
-import { useBurnV3ActionHandlers, useBurnV3State, useDerivedV3BurnInfo } from 'state/burn/v3/hooks';
-import Slider from 'components/Slider';
-import { AutoRow, RowBetween, RowFixed } from 'components/Row';
+import { useDerivedV3BurnInfo } from 'state/burn/v3/hooks';
+import { RowBetween, RowFixed } from 'components/Row';
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal';
 import { AutoColumn } from 'components/Column';
 import { ButtonConfirmed, ButtonPrimary } from 'components/Button';
@@ -20,23 +18,22 @@ import FormattedCurrencyAmount from 'components/FormattedCurrencyAmount';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import ReactGA from 'react-ga';
 import { useActiveWeb3React } from 'hooks/web3';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { Percent } from 'sdkCore/index';
 import { TYPE } from 'theme';
-import { Wrapper, SmallMaxButton, ResponsiveHeaderText } from './styled';
+import { Wrapper } from './styled';
 import Loader from 'components/Loader';
 import DoubleCurrencyLogo from 'components/DoubleLogo';
-import { Break } from 'components/earn/styled';
-import { NonfungiblePositionManager } from 'v3sdk/index';
-import useTheme from 'hooks/useTheme';
 import { AddRemoveTabs } from 'components/NavigationTabs';
 import RangeBadge from 'components/Badge/RangeBadge';
 import Toggle from 'components/Toggle';
 import { t, Trans } from '@lingui/macro';
 import { SupportedChainId } from 'constants/chains';
+import { abi as DesireSwapV0PoolABI } from 'abis/DesireSwapV0Pool.json';
+import { Interface } from '@ethersproject/abi';
+import { toHex } from 'v3sdk/utils';
 
 const DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE = new Percent(5, 100);
 
@@ -63,30 +60,23 @@ export default function RemoveLiquidityV3({
 }
 function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: string }) {
   const { position } = useV3PositionFromTokenId(poolAddress, tokenId);
-  const theme = useTheme();
   const { account, chainId, library } = useActiveWeb3React();
 
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false);
 
-  // burn state
-  const { percent } = useBurnV3State();
   const {
     position: positionSDK,
     liquidityPercentage,
     liquidityValue0,
     liquidityValue1,
-    feeValue0,
-    feeValue1,
     outOfRange,
     error,
   } = useDerivedV3BurnInfo(position, receiveWETH);
-  const { onPercentSelect } = useBurnV3ActionHandlers();
 
   const removed = position?.liquidity?.eq(0);
 
   // boilerplate for the slider
-  const [percentForSlider, onPercentSelectForSlider] = useDebouncedChangeHandler(percent, onPercentSelect);
 
   const deadline = useTransactionDeadline(); // custom from users settings
   const allowedSlippage = useUserSlippageToleranceWithDefault(DEFAULT_REMOVE_V3_LIQUIDITY_SLIPPAGE_TOLERANCE); // custom from users
@@ -99,14 +89,13 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
   const burn = useCallback(async () => {
     setAttemptingTxn(true);
     if (
-      !positionManager ||
+      // !positionManager ||
       !liquidityValue0 ||
       !liquidityValue1 ||
+      !position?.poolAddress ||
       !deadline ||
       !account ||
       !chainId ||
-      !feeValue0 ||
-      !feeValue1 ||
       !positionSDK ||
       !liquidityPercentage ||
       !library
@@ -114,22 +103,12 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
       return;
     }
 
-    const { calldata, value } = NonfungiblePositionManager.removeCallParameters(positionSDK, {
-      tokenId: tokenId.toString(),
-      liquidityPercentage,
-      slippageTolerance: allowedSlippage,
-      deadline: deadline.toString(),
-      collectOptions: {
-        expectedCurrencyOwed0: feeValue0,
-        expectedCurrencyOwed1: feeValue1,
-        recipient: account,
-      },
-    });
+    const calldata = new Interface(DesireSwapV0PoolABI).encodeFunctionData('burn', [account, tokenId]);
 
     const txn = {
-      to: positionManager.address,
+      to: position?.poolAddress,
       data: calldata,
-      value,
+      value: toHex(0),
     };
 
     library
@@ -145,11 +124,6 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
           .getSigner()
           .sendTransaction(newTxn)
           .then((response: TransactionResponse) => {
-            ReactGA.event({
-              category: 'Liquidity',
-              action: 'RemoveV3',
-              label: [liquidityValue0.currency.symbol, liquidityValue1.currency.symbol].join('/'),
-            });
             setTxnHash(response.hash);
             setAttemptingTxn(false);
             addTransaction(response, {
@@ -171,8 +145,6 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
     addTransaction,
     positionManager,
     chainId,
-    feeValue0,
-    feeValue1,
     library,
     liquidityPercentage,
     positionSDK,
@@ -180,13 +152,9 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
-    // if there was a tx hash, we want to clear the input
-    if (txnHash) {
-      onPercentSelectForSlider(0);
-    }
     setAttemptingTxn(false);
     setTxnHash('');
-  }, [onPercentSelectForSlider, txnHash]);
+  }, [txnHash]);
 
   const pendingText = `Removing ${liquidityValue0?.toSignificant(6)} ${
     liquidityValue0?.currency?.symbol
@@ -217,35 +185,6 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
             <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={liquidityValue1?.currency} />
           </RowFixed>
         </RowBetween>
-        {feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0) ? (
-          <>
-            <TYPE.italic fontSize={12} color={theme.text2} textAlign="left" padding={'8px 0 0 0'}>
-              <Trans>You will also collect fees earned from this position.</Trans>
-            </TYPE.italic>
-            <RowBetween>
-              <Text fontSize={16} fontWeight={500}>
-                <Trans>{feeValue0?.currency?.symbol} Fees Earned:</Trans>
-              </Text>
-              <RowFixed>
-                <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                  {feeValue0 && <FormattedCurrencyAmount currencyAmount={feeValue0} />}
-                </Text>
-                <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={feeValue0?.currency} />
-              </RowFixed>
-            </RowBetween>
-            <RowBetween>
-              <Text fontSize={16} fontWeight={500}>
-                <Trans>{feeValue1?.currency?.symbol} Fees Earned:</Trans>
-              </Text>
-              <RowFixed>
-                <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                  {feeValue1 && <FormattedCurrencyAmount currencyAmount={feeValue1} />}
-                </Text>
-                <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={feeValue1?.currency} />
-              </RowFixed>
-            </RowBetween>
-          </>
-        ) : null}
         <ButtonPrimary mt="16px" onClick={burn}>
           <Trans>Remove</Trans>
         </ButtonPrimary>
@@ -292,45 +231,18 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
               <RowBetween>
                 <RowFixed>
                   <DoubleCurrencyLogo
-                    currency0={feeValue0?.currency}
-                    currency1={feeValue1?.currency}
+                    currency0={liquidityValue0?.currency}
+                    currency1={liquidityValue1?.currency}
                     size={20}
                     margin={true}
                   />
                   <TYPE.label
                     ml="10px"
                     fontSize="20px"
-                  >{`${feeValue0?.currency?.symbol}/${feeValue1?.currency?.symbol}`}</TYPE.label>
+                  >{`${liquidityValue0?.currency?.symbol}/${liquidityValue1?.currency?.symbol}`}</TYPE.label>
                 </RowFixed>
                 <RangeBadge removed={removed} inRange={!outOfRange} />
               </RowBetween>
-              <LightCard>
-                <AutoColumn gap="md">
-                  <TYPE.main fontWeight={400}>
-                    <Trans>Amount</Trans>
-                  </TYPE.main>
-                  <RowBetween>
-                    <ResponsiveHeaderText>
-                      <Trans>{percentForSlider}%</Trans>
-                    </ResponsiveHeaderText>
-                    <AutoRow gap="4px" justify="flex-end">
-                      <SmallMaxButton onClick={() => onPercentSelect(25)} width="20%">
-                        <Trans>25%</Trans>
-                      </SmallMaxButton>
-                      <SmallMaxButton onClick={() => onPercentSelect(50)} width="20%">
-                        <Trans>50%</Trans>
-                      </SmallMaxButton>
-                      <SmallMaxButton onClick={() => onPercentSelect(75)} width="20%">
-                        <Trans>75%</Trans>
-                      </SmallMaxButton>
-                      <SmallMaxButton onClick={() => onPercentSelect(100)} width="20%">
-                        <Trans>Max</Trans>
-                      </SmallMaxButton>
-                    </AutoRow>
-                  </RowBetween>
-                  <Slider value={percentForSlider} onChange={onPercentSelectForSlider} />
-                </AutoColumn>
-              </LightCard>
               <LightCard>
                 <AutoColumn gap="md">
                   <RowBetween>
@@ -355,33 +267,6 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
                       <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={liquidityValue1?.currency} />
                     </RowFixed>
                   </RowBetween>
-                  {feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0) ? (
-                    <>
-                      <Break />
-                      <RowBetween>
-                        <Text fontSize={16} fontWeight={500}>
-                          <Trans>{feeValue0?.currency?.symbol} Fees Earned:</Trans>
-                        </Text>
-                        <RowFixed>
-                          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                            {feeValue0 && <FormattedCurrencyAmount currencyAmount={feeValue0} />}
-                          </Text>
-                          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={feeValue0?.currency} />
-                        </RowFixed>
-                      </RowBetween>
-                      <RowBetween>
-                        <Text fontSize={16} fontWeight={500}>
-                          <Trans>{feeValue1?.currency?.symbol} Fees Earned:</Trans>
-                        </Text>
-                        <RowFixed>
-                          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                            {feeValue1 && <FormattedCurrencyAmount currencyAmount={feeValue1} />}
-                          </Text>
-                          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={feeValue1?.currency} />
-                        </RowFixed>
-                      </RowBetween>
-                    </>
-                  ) : null}
                 </AutoColumn>
               </LightCard>
 
@@ -402,7 +287,7 @@ function Remove({ tokenId, poolAddress }: { tokenId: BigNumber; poolAddress: str
                 <AutoColumn gap="12px" style={{ flex: '1' }}>
                   <ButtonConfirmed
                     confirmed={false}
-                    disabled={removed || percent === 0 || !liquidityValue0}
+                    disabled={removed || !liquidityValue0}
                     onClick={() => setShowConfirm(true)}
                   >
                     {removed ? <Trans>Closed</Trans> : error ?? <Trans>Remove</Trans>}

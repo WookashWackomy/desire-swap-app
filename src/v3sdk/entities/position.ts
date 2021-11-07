@@ -5,9 +5,9 @@ import { ZERO } from '../internalConstants';
 import { maxLiquidityForAmounts } from '../utils/maxLiquidityForAmounts';
 import { tickToPrice } from '../utils/priceTickConversions';
 import { SqrtPriceMath } from '../utils/sqrtPriceMath';
-import { TickMath } from '../utils/tickMath';
 import { encodeSqrtRatioX96 } from '../utils/encodeSqrtRatioX96';
 import { Pool } from './pool';
+import { DSTickMath } from 'v3sdk/utils/DSTickMath';
 
 interface PositionConstructorArgs {
   pool: Pool;
@@ -39,8 +39,8 @@ export class Position {
    */
   public constructor({ pool, liquidity, tickLower, tickUpper }: PositionConstructorArgs) {
     // invariant(tickLower < tickUpper, 'TICK_ORDER');
-    // invariant(tickLower >= TickMath.MIN_TICK && tickLower % pool.tickSpacing === 0, 'TICK_LOWER');
-    // invariant(tickUpper <= TickMath.MAX_TICK && tickUpper % pool.tickSpacing === 0, 'TICK_UPPER');
+    // invariant(tickLower >= DSTickMath.MIN_TICK && tickLower % pool.tickSpacing === 0, 'TICK_LOWER');
+    // invariant(tickUpper <= DSTickMath.MAX_TICK && tickUpper % pool.tickSpacing === 0, 'TICK_UPPER');
 
     this.pool = pool;
     this.tickLower = tickLower;
@@ -71,8 +71,8 @@ export class Position {
         this._token0Amount = CurrencyAmount.fromRawAmount(
           this.pool.token0,
           SqrtPriceMath.getAmount0Delta(
-            TickMath.getSqrtRatioAtTick(this.tickLower),
-            TickMath.getSqrtRatioAtTick(this.tickUpper),
+            DSTickMath.getSqrtRatioAtTick(this.tickLower),
+            DSTickMath.getSqrtRatioAtTick(this.tickUpper),
             this.liquidity,
             false
           )
@@ -82,7 +82,7 @@ export class Position {
           this.pool.token0,
           SqrtPriceMath.getAmount0Delta(
             this.pool.sqrtRatioX96,
-            TickMath.getSqrtRatioAtTick(this.tickUpper),
+            DSTickMath.getSqrtRatioAtTick(this.tickUpper),
             this.liquidity,
             false
           )
@@ -105,7 +105,7 @@ export class Position {
         this._token1Amount = CurrencyAmount.fromRawAmount(
           this.pool.token1,
           SqrtPriceMath.getAmount1Delta(
-            TickMath.getSqrtRatioAtTick(this.tickLower),
+            DSTickMath.getSqrtRatioAtTick(this.tickLower),
             this.pool.sqrtRatioX96,
             this.liquidity,
             false
@@ -115,8 +115,8 @@ export class Position {
         this._token1Amount = CurrencyAmount.fromRawAmount(
           this.pool.token1,
           SqrtPriceMath.getAmount1Delta(
-            TickMath.getSqrtRatioAtTick(this.tickLower),
-            TickMath.getSqrtRatioAtTick(this.tickUpper),
+            DSTickMath.getSqrtRatioAtTick(this.tickLower),
+            DSTickMath.getSqrtRatioAtTick(this.tickUpper),
             this.liquidity,
             false
           )
@@ -135,12 +135,12 @@ export class Position {
     const priceLower = this.pool.token0Price.asFraction.multiply(new Percent(1).subtract(slippageTolerance));
     const priceUpper = this.pool.token0Price.asFraction.multiply(slippageTolerance.add(1));
     let sqrtRatioX96Lower = encodeSqrtRatioX96(priceLower.numerator, priceLower.denominator);
-    if (JSBI.lessThanOrEqual(sqrtRatioX96Lower, TickMath.MIN_SQRT_RATIO)) {
-      sqrtRatioX96Lower = JSBI.add(TickMath.MIN_SQRT_RATIO, JSBI.BigInt(1));
+    if (JSBI.lessThanOrEqual(sqrtRatioX96Lower, DSTickMath.MIN_SQRT_RATIO)) {
+      sqrtRatioX96Lower = JSBI.add(DSTickMath.MIN_SQRT_RATIO, JSBI.BigInt(1));
     }
     let sqrtRatioX96Upper = encodeSqrtRatioX96(priceUpper.numerator, priceUpper.denominator);
-    if (JSBI.greaterThanOrEqual(sqrtRatioX96Upper, TickMath.MAX_SQRT_RATIO)) {
-      sqrtRatioX96Upper = JSBI.subtract(TickMath.MAX_SQRT_RATIO, JSBI.BigInt(1));
+    if (JSBI.greaterThanOrEqual(sqrtRatioX96Upper, DSTickMath.MAX_SQRT_RATIO)) {
+      sqrtRatioX96Upper = JSBI.subtract(DSTickMath.MAX_SQRT_RATIO, JSBI.BigInt(1));
     }
     return {
       sqrtRatioX96Lower,
@@ -165,7 +165,7 @@ export class Position {
       this.pool.fee,
       sqrtRatioX96Lower,
       0 /* liquidity doesn't matter */,
-      TickMath.getTickAtSqrtRatio(sqrtRatioX96Lower)
+      DSTickMath.getTickAtSqrtRatio(sqrtRatioX96Lower)
     );
     const poolUpper = new Pool(
       this.pool.token0,
@@ -173,7 +173,7 @@ export class Position {
       this.pool.fee,
       sqrtRatioX96Upper,
       0 /* liquidity doesn't matter */,
-      TickMath.getTickAtSqrtRatio(sqrtRatioX96Upper)
+      DSTickMath.getTickAtSqrtRatio(sqrtRatioX96Upper)
     );
 
     // because the router is imprecise, we need to calculate the position that will be created (assuming no slippage)
@@ -221,7 +221,7 @@ export class Position {
       this.pool.fee,
       sqrtRatioX96Lower,
       0 /* liquidity doesn't matter */,
-      TickMath.getTickAtSqrtRatio(sqrtRatioX96Lower)
+      DSTickMath.getTickAtSqrtRatio(sqrtRatioX96Lower)
     );
     const poolUpper = new Pool(
       this.pool.token0,
@@ -229,7 +229,7 @@ export class Position {
       this.pool.fee,
       sqrtRatioX96Upper,
       0 /* liquidity doesn't matter */,
-      TickMath.getTickAtSqrtRatio(sqrtRatioX96Upper)
+      DSTickMath.getTickAtSqrtRatio(sqrtRatioX96Upper)
     );
 
     // we want the smaller amounts...
@@ -260,8 +260,8 @@ export class Position {
       if (this.pool.tickCurrent + this.pool.tickSpacing < this.tickLower) {
         return {
           amount0: SqrtPriceMath.getAmount0Delta(
-            TickMath.getSqrtRatioAtTick(this.tickLower),
-            TickMath.getSqrtRatioAtTick(this.tickUpper),
+            DSTickMath.getSqrtRatioAtTick(this.tickLower),
+            DSTickMath.getSqrtRatioAtTick(this.tickUpper),
             this.liquidity,
             true
           ),
@@ -271,12 +271,12 @@ export class Position {
         return {
           amount0: SqrtPriceMath.getAmount0Delta(
             this.pool.sqrtRatioX96,
-            TickMath.getSqrtRatioAtTick(this.tickUpper),
+            DSTickMath.getSqrtRatioAtTick(this.tickUpper),
             this.liquidity,
             true
           ),
           amount1: SqrtPriceMath.getAmount1Delta(
-            TickMath.getSqrtRatioAtTick(this.tickLower),
+            DSTickMath.getSqrtRatioAtTick(this.tickLower),
             this.pool.sqrtRatioX96,
             this.liquidity,
             true
@@ -286,8 +286,8 @@ export class Position {
         return {
           amount0: ZERO,
           amount1: SqrtPriceMath.getAmount1Delta(
-            TickMath.getSqrtRatioAtTick(this.tickLower),
-            TickMath.getSqrtRatioAtTick(this.tickUpper),
+            DSTickMath.getSqrtRatioAtTick(this.tickLower),
+            DSTickMath.getSqrtRatioAtTick(this.tickUpper),
             this.liquidity,
             true
           ),
@@ -324,8 +324,8 @@ export class Position {
     amount1: BigintIsh;
     useFullPrecision: boolean;
   }) {
-    const sqrtRatioAX96 = TickMath.getSqrtRatioAtTick(tickLower);
-    const sqrtRatioBX96 = TickMath.getSqrtRatioAtTick(tickUpper);
+    const sqrtRatioAX96 = DSTickMath.getSqrtRatioAtTick(tickLower);
+    const sqrtRatioBX96 = DSTickMath.getSqrtRatioAtTick(tickUpper);
     return new Position({
       pool,
       tickLower,
