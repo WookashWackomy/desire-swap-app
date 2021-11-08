@@ -194,11 +194,11 @@ export function useV3NFTPositionManagerContract(withSignerIfPossible?: boolean):
 }
 
 export function usePositionViewer(): PositionViewer | null {
-  return useContract<PositionViewer>(DESIRE_SWAP_HARDHAT_ADDRESSES.POSITION_VIEWER, PositionViewerABI);
+  return useContract<PositionViewer>(DESIRE_SWAP_HARDHAT_ADDRESSES.PositionViewer, PositionViewerABI);
 }
 
 export function useDesireSwapPoolFactory(): DesireSwapV0Factory | null {
-  return useContract<DesireSwapV0Factory>(DESIRE_SWAP_HARDHAT_ADDRESSES.FACTORY, DesireSwapV0FactoryABI);
+  return useContract<DesireSwapV0Factory>(DESIRE_SWAP_HARDHAT_ADDRESSES.DesireSwapV0Factory, DesireSwapV0FactoryABI);
 }
 
 export function useDesireSwapPool(poolAddress?: string): DesireSwapV0Pool | null {

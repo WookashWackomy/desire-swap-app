@@ -69,7 +69,12 @@ export function useV3PositionFromTokenId(
   };
 }
 
-const POOL_ADDRESSES = [DESIRE_SWAP_HARDHAT_ADDRESSES.POOL];
+const POOL_ADDRESSES = [
+  DESIRE_SWAP_HARDHAT_ADDRESSES.poolAB,
+  DESIRE_SWAP_HARDHAT_ADDRESSES.poolAUSDC,
+  DESIRE_SWAP_HARDHAT_ADDRESSES.poolBUSDC,
+  DESIRE_SWAP_HARDHAT_ADDRESSES.poolUSDCT,
+];
 
 export function useV3Positions(account: string | null | undefined): UseV3PositionsResults {
   const positionViewer = usePositionViewer();

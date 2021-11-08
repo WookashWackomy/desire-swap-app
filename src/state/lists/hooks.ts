@@ -32,6 +32,24 @@ const DEFAULT_TOKEN_LIST_HARDHAT_DEBUG = {
       logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png',
     },
+    {
+      name: 'USDC',
+      address: DESIRE_SWAP_HARDHAT_ADDRESSES.CoinbaseUSD,
+      symbol: 'USDC',
+      decimals: 18,
+      chainId: 31337,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png',
+    },
+    {
+      name: 'USDT',
+      address: DESIRE_SWAP_HARDHAT_ADDRESSES.TetherUSD,
+      symbol: 'USDT',
+      decimals: 18,
+      chainId: 31337,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png',
+    },
   ],
 };
 
